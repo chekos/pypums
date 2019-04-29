@@ -31,4 +31,4 @@ class TestPypums(unittest.TestCase):
         assert 'Download complete!' in result.output
         help_result = runner.invoke(cli.main, ['--help'])
         assert help_result.exit_code == 0
-        assert 'Usage: main [OPTIONS]\n\n Download' in help_result.output
+        assert 'Usage: main [OPTIONS]\n\n  Download' in help_result.output
