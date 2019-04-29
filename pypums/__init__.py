@@ -41,7 +41,7 @@ def get_data(
                  )
     
     # download data
-    pypums(
+    download_acs_data(
         url = URL, 
         download_path = download_path, 
         extract = extract, 
