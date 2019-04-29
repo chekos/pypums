@@ -28,7 +28,7 @@ class TestPypums(unittest.TestCase):
         runner = CliRunner()
         result = runner.invoke(cli.main)
         assert result.exit_code == 0
-        assert 'pypums.cli.main' in result.output
+        assert 'Download complete!' in result.output
         help_result = runner.invoke(cli.main, ['--help'])
         assert help_result.exit_code == 0
-        assert '--help  Show this message and exit.' in help_result.output
+        assert 'Usage: main [OPTIONS]\n\n Download' in help_result.output
