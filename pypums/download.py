@@ -1,5 +1,5 @@
 from pathlib import Path
-from tqdm.autonotebook import tqdm
+from tqdm.auto import tqdm
 from zipfile import ZipFile
 import requests
 import time
