@@ -4,15 +4,15 @@
 # imports
 from pathlib import Path
 from typing import Union
-from tqdm.autonotebook import tqdm
+from tqdm.auto import tqdm
 from zipfile import ZipFile
 import requests
 import time
 import us
 
-import acs_download
-from acs_download.download import download_acs_data
-from acs_download.url_builder import build_acs_url
+import pypums
+from pypums.download import download_acs_data
+from pypums.url_builder import build_acs_url
 
 
 def get_data(
