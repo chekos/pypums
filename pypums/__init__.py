@@ -10,7 +10,7 @@ __version__ = "0.0.1"
 # imports
 from pathlib import Path
 from typing import Union
-from tqdm.autonotebook import tqdm
+from tqdm.auto import tqdm
 from zipfile import ZipFile
 import requests
 import time
