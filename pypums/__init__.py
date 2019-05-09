@@ -16,7 +16,7 @@ import requests
 import time
 import us
 
-import pypums.pypums as pypums
+from pypums.pypums import *
 # from pypums.download import download_acs_data
 # from pypums.url_builder import build_acs_url
 
@@ -47,13 +47,13 @@ import pypums.pypums as pypums
     # return None
 
 
-## from realpython.com
-def tree(directory):
-    print(f"+ {directory}")
-    for path in sorted(directory.rglob("*")):
-        depth = len(path.relative_to(directory).parts)
-        spacer = "    " * depth
-        print(f"{spacer}+ {path.name}")
+# ## from realpython.com
+# def tree(directory):
+#     print(f"+ {directory}")
+#     for path in sorted(directory.rglob("*")):
+#         depth = len(path.relative_to(directory).parts)
+#         spacer = "    " * depth
+#         print(f"{spacer}+ {path.name}")
 
 
 if __name__ == "__main__":
