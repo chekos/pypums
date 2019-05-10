@@ -159,7 +159,7 @@ class ACS:
         return None
 
     def __post_init__(self):
-        self.NAME = field(default = "ACS", repr = False,)
+        self.NAME = 'ACS'
         self._SURVEY_URL_MAKER()
         self._year = _clean_year(self.year)
 
