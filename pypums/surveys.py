@@ -39,8 +39,8 @@ def _check_data_dirs(
     """
     # set directory's values
     _data_directory = Path(data_directory)
-    _raw_data_directory = data_directory.joinpath('raw/')
-    _interim_data_directory = data_directory.joinpath('interim/')
+    _raw_data_directory = _data_directory.joinpath('raw/')
+    _interim_data_directory = _data_directory.joinpath('interim/')
 
     # make sure they exists
     if not _data_directory.exists():
@@ -92,9 +92,11 @@ def _download_data(
         _state = state.upper()
         _extract__folder = f"{name}_{_year}"
         _extract_path_and_folder = _extract_path.joinpath(_extract__folder)
-        _extract_path_and_folder.mkdir()
+        if not _extract_path_and_folder.exists():
+            _extract_path_and_folder.mkdir()
         _full_extract_path = _extract_path_and_folder.joinpath(_state)
-        _full_extract_path.mkdir()
+        if not _full_extract_path.exists():
+            _full_extract_path.mkdir()
         CONTENT_FILE = ZipFile(_full_download_path)
         for item in tqdm(iterable = CONTENT_FILE.filelist):
             CONTENT_FILE.extract(item)
