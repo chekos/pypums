@@ -57,7 +57,7 @@ def _download_data(
     year: int,
     name: str,
     state: str,
-    data_directory: Path = Path("../data/"),
+    data_directory: str = "../data/",
     extract: bool = True,
     ) -> None:
     """
@@ -68,6 +68,7 @@ def _download_data(
     # TOTAL_SIZE = int(_request.headers["content-length"])
     TOTAL_SIZE = len(_request.content)
     _filename = url.split("/")[-1]
+    data_directory = Path(data_directory)
     _download_path = data_directory.joinpath("raw/")
     _extract_path = data_directory.joinpath("interim/")
     _full_download_path = _download_path.joinpath(_filename)
