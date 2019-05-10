@@ -159,7 +159,7 @@ class ACS:
     def __post_init__(self):
         self.NAME = field(default = "ACS", repr = False,)
         self._SURVEY_URL_MAKER()
-        self._year = _clean_year(year)
+        self._year = _clean_year(self.year)
 
     def download_data(self, data_directory: str = "../data/", extract: bool = True) -> None:
         """
