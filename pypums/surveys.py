@@ -75,7 +75,7 @@ def _download_data(
     
     # download file
     with open(_full_download_path, "wb") as file:
-        print(f"Downloading at {_full_download_path}...")
+        print(f"Downloading at {_full_download_path} ")
         for data in tqdm(
             iterable = _request.iter_content(chunk_size = CHUNK_SIZE),
             total = TOTAL_SIZE / CHUNK_SIZE,
@@ -91,7 +91,7 @@ def _download_data(
         _extract__folder = f"{name}_{_year}"
         _full_extract_path = _extract_path.joinpath(_extract__folder).joinpath(_state)
 
-        CONTENT_FILE = ZipFile(_full_download_path)
+        CONTENT_FILE = ZipFile(_full_extract_path)
         for item in tqdm(iterable = CONTENT_FILE.filelist):
             CONTENT_FILE.extract(item)
         print(f"Files extracted successfully at {_full_extract_path}")
