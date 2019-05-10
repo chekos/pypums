@@ -73,7 +73,7 @@ def _download_data(
     _extract_path = data_directory.joinpath("interim/")
     _full_download_path = _download_path.joinpath(_filename)
     
-    # download file
+    # download fileacs
     with open(_full_download_path, "wb") as file:
         print(f"Downloading at {_full_download_path} ")
         for data in tqdm(
@@ -89,6 +89,7 @@ def _download_data(
         _year = str(year)[-2:]
         _state = state.upper()
         _extract__folder = f"{name}_{_year}"
+        _extract_path.joinpath(_extract__folder).mkdir()
         _full_extract_path = _extract_path.joinpath(_extract__folder).joinpath(_state)
         _full_extract_path.mkdir()
         CONTENT_FILE = ZipFile(_full_download_path)
