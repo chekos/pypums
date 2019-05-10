@@ -63,6 +63,8 @@ def _download_data(
     """
     Downloads a file from Census FTP server.
     """
+
+    _check_data_dirs(data_directory=data_directory)
     _request = requests.get(url, stream = True)
     CHUNK_SIZE = 1024
     # TOTAL_SIZE = int(_request.headers["content-length"])
@@ -89,8 +91,9 @@ def _download_data(
         _year = str(year)[-2:]
         _state = state.upper()
         _extract__folder = f"{name}_{_year}"
-        _extract_path.joinpath(_extract__folder).mkdir()
-        _full_extract_path = _extract_path.joinpath(_extract__folder).joinpath(_state)
+        _extract_path_and_folder = _extract_path.joinpath(_extract__folder)
+        _extract_path_and_folder.mkdir()
+        _full_extract_path = _extract_path_and_folder.joinpath(_state)
         _full_extract_path.mkdir()
         CONTENT_FILE = ZipFile(_full_download_path)
         for item in tqdm(iterable = CONTENT_FILE.filelist):
