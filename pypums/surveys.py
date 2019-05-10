@@ -64,13 +64,12 @@ def _download_data(
     Downloads a file from Census FTP server.
     """
 
-    _check_data_dirs(data_directory=data_directory)
+    data_directory = _check_data_dirs(data_directory=data_directory)
     _request = requests.get(url, stream = True)
     CHUNK_SIZE = 1024
     # TOTAL_SIZE = int(_request.headers["content-length"])
     TOTAL_SIZE = len(_request.content)
     _filename = url.split("/")[-1]
-    data_directory = Path(data_directory)
     _download_path = data_directory.joinpath("raw/")
     _extract_path = data_directory.joinpath("interim/")
     _full_download_path = _download_path.joinpath(_filename)
@@ -89,8 +88,8 @@ def _download_data(
     # extract file
     if extract:
         _year = str(year)[-2:]
-        _state = state.upper()
-        _extract__folder = f"{name}_{_year}"
+        _state = us.states.lookup(state).abbr.upper()
+        _extract__folder = f"{name}_{_year}/"
         _extract_path_and_folder = _extract_path.joinpath(_extract__folder)
         if not _extract_path_and_folder.exists():
             _extract_path_and_folder.mkdir()
