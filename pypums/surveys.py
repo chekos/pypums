@@ -65,7 +65,8 @@ def _download_data(
     """
     _request = requests.get(url, stream = True)
     CHUNK_SIZE = 1024
-    TOTAL_SIZE = int(_request.headers["content-length"])
+    # TOTAL_SIZE = int(_request.headers["content-length"])
+    TOTAL_SIZE = len(_request.content)
     _filename = url.split("/")[-1]
     _download_path = data_directory.joinpath("raw/")
     _extract_path = data_directory.joinpath("interim/")
