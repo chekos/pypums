@@ -1,6 +1,9 @@
 from typing import Union
 import us
 
+from pypums.surveys import _clean_year
+
+BASE_URL = "https://www2.census.gov/programs-surveys/" 
 
 def build_acs_url(
     year: Union[int, str] = "2017",
@@ -11,49 +14,51 @@ def build_acs_url(
     """
     Builds CENSUS FTP-server URL where you can download ACS 1-, 3-, or 5- year estimates. 
     """
+    _BASE_URL = BASE_URL + "acs/data/pums/"
+    _unit = person_or_household[0].lower()
+    _state_abbr = us.states.lookup(state).abbr.lower()
 
-    # Building URL
-    BASE_URL = "https://www2.census.gov/programs-surveys/acs/data/pums/"
+    if "5" in str(survey):
+        _survey = "5-Year"
+    elif "3" in str(survey):
+        _survey = "3-Year"
+    else:
+        _survey = "1-Year"
+    _year = _clean_year(year)
 
-    ## YEAR
-    try:
-        year = int(year)
-    except ValueError:
-        raise ValueError("year must be a number.")
+    def _ONE_THREE_OR_FIVE_YEAR(_survey: str = _survey, _year: int = _year) -> str:
+        """
+        Fixes URL part for survey. Some years don't have 3-Year surveys.
+        If year <= 2006, _survey == ''.
+        From 2007-2008, _survey can be either 1 or 3 years.
+        From 2009-2013, _survey can be either 1, 3, or 5 years.
+        From 2013 onward, only 1 or 5 years.
+        """
+        if _year <= 2006:
+            if _survey != "1-Year":
+                print(
+                    "Prior to 2007, only 1-Year ACS are available, defaulting to 1-Year"
+                )
+                _survey = ""
+        elif (2007 <= _year) and (_year <= 2008):
+            if _survey == "5-Year":
+                print(f"There is no 5-Year ACS for {_year}, defaulting to 3-Year")
+                _survey = "3-Year"
+        elif _year >= 2014:
+            if _survey == "3-Year":
+                print(f"There is no 3-Year ACS for {_year}, defaulting to 5-Year")
+                _survey = "5-Year"
+        return _survey
 
-    if (0 <= year) & (year <= 17):
-        year += 2000
+    _survey = _ONE_THREE_OR_FIVE_YEAR(_survey, _year)
 
-    if not ((2000 <= year) & (year <= 2017)):
-        raise ValueError("Year must be between 2000 and 2017.")
-
-    ## SURVEY
-    if type(survey) == str:
-        survey = survey.title()
-    ####### TO DO ########
-    # make sure that it's either 1-Year
-    # or for certain years 3- or 5- year
-
-    ### IF YEAR < 2007 there is no option to choose 1- 3- or 5- year surveys
-    if year < 2007:
-        survey = ""
-
-    ## PERSON OR HOUSEHOLD
-    person_or_household = person_or_household.lower()
-
-    if (person_or_household == "person") or (person_or_household == "household"):
-        person_or_household = person_or_household[0]
-
-    ## STATE
-    if us.states.lookup(state) is not None:
-        state_abbr = us.states.lookup(state).abbr.lower()
-
-    ## URL
-    YEAR_URL = f"{str(year)}/"
-    SURVEY_URL = f"{survey}/" if survey else ""
-    STATE_URL = f"csv_{person_or_household}{state_abbr}.zip"
-
-    FINAL_URL = BASE_URL + YEAR_URL + SURVEY_URL + STATE_URL
-
-    #
-    return FINAL_URL
+    SURVEY_URL = (
+        _BASE_URL
+        + str(_year)
+        + "/"
+        + _survey
+        + "/"
+        + f"csv_{_unit}{_state_abbr}"
+        + ".zip"
+    )
+    return SURVEY_URL
