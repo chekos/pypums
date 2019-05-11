@@ -72,18 +72,18 @@ def _download_data(
     _filename = url.split("/")[-1]
     _download_path = data_directory.joinpath("raw/")
     _extract_path = data_directory.joinpath("interim/")
-    _full_download_path = _download_path.joinpath(_filename)
+    _full_download_path = (_download_path / _filename)
     
     # download fileacs
-    with open(_full_download_path, "wb") as file:
+    with open(_full_download_path, "wb") as f:
         print(f"Downloading at {_full_download_path} ")
         for data in tqdm(
             iterable = _request.iter_content(chunk_size = CHUNK_SIZE),
             total = TOTAL_SIZE / CHUNK_SIZE,
             unit = "KB",
         ):
-            file.write(data)
-        print("Download complete!")
+            f.write(data)
+    print("Download complete!")
 
     # extract file
     if extract:
@@ -96,9 +96,10 @@ def _download_data(
         _full_extract_path = _extract_path_and_folder.joinpath(_state)
         if not _full_extract_path.exists():
             _full_extract_path.mkdir()
+        print(_full_download_path)
         CONTENT_FILE = ZipFile(_full_download_path)
         for item in tqdm(iterable = CONTENT_FILE.filelist):
-            CONTENT_FILE.extract(item)
+            CONTENT_FILE.extract(item, _full_extract_path)
         print(f"Files extracted successfully at {_full_extract_path}")
 
 
@@ -153,7 +154,7 @@ class ACS:
         _survey = _ONE_THREE_OR_FIVE_YEAR(_survey, _year)
 
         self._SURVEY_URL = (
-            _BASE_URL
+            self._BASE_URL
             + str(_year)
             + "/"
             + _survey
@@ -164,9 +165,9 @@ class ACS:
         return None
 
     def __post_init__(self):
-        self.NAME = 'ACS'
         self._SURVEY_URL_MAKER()
         self._year = _clean_year(self.year)
+        self.NAME = 'ACS'
 
     def download_data(self, data_directory: str = "../data/", extract: bool = True) -> None:
         """
