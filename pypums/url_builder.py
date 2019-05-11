@@ -3,7 +3,8 @@ import us
 
 from pypums.surveys import _clean_year
 
-BASE_URL = "https://www2.census.gov/programs-surveys/" 
+BASE_URL = "https://www2.census.gov/programs-surveys/"
+
 
 def build_acs_url(
     year: Union[int, str] = "2017",

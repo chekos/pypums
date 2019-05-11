@@ -31,7 +31,7 @@ from pypums import pypums
     prompt="1-, 3-, or 5-year",
     default="1-year",
     show_default=True,
-    type=click.Choice(choices=("1-year","3-year", "5-year"), case_sensitive=False),
+    type=click.Choice(choices=("1-year", "3-year", "5-year"), case_sensitive=False),
 )
 @click.option(
     "--person-or-household",
