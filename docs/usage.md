@@ -3,12 +3,8 @@ Usage
 
 To use pypums in a project:
 
-```python
-from pypums import ACS
-```
-```python
-acs = ACS(state = 'California', year = 2012,)
-```
-```python
-acs.download_data()
-```
+![on a jupyter notebook](../static/usage.gif)
+
+or as a CLI
+
+![as a CLI](../static/cli.gif)
