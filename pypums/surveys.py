@@ -96,7 +96,7 @@ def _download_data(
         _full_extract_path = _extract_path_and_folder.joinpath(_state)
         if not _full_extract_path.exists():
             _full_extract_path.mkdir()
-        print(_full_download_path)
+        print("Extracting files...")
         CONTENT_FILE = ZipFile(_full_download_path)
         for item in tqdm(iterable=CONTENT_FILE.filelist):
             CONTENT_FILE.extract(item, _full_extract_path)
