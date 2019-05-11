@@ -48,7 +48,7 @@ source_suffix = [".rst", ".md"]
 master_doc = "index"
 
 # General information about the project.
-project = "pypums"
+project = "PyPUMS"
 copyright = "2019, Sergio Sánchez Zavala"
 author = "Sergio Sánchez Zavala"
 

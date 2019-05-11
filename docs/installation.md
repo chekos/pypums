@@ -4,7 +4,7 @@ Installation
 Stable release
 --------------
 
-To install pypums, run this command in your terminal:
+To install PyPUMS, run this command in your terminal:
 
 ```shell
 $ pip install pypums

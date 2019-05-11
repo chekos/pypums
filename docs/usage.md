@@ -1,7 +1,7 @@
 Usage
 =====
 
-To use pypums in a project:
+To use PyPUMS in a project:
 
 ![on a jupyter notebook](../static/usage.gif)
 
