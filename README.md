@@ -1,4 +1,4 @@
-pypums
+PyPUMS
 ======
 
 [![image](https://img.shields.io/pypi/v/pypums.svg)](https://pypi.python.org/pypi/pypums)
