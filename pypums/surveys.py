@@ -1,5 +1,10 @@
 from dataclasses import dataclass, field
 from typing import Union
+from pathlib import Path
+from tqdm.auto import tqdm
+from zipfile import ZipFile
+import requests
+import time
 import us
 
 _BASE_URL = "https://www2.census.gov/programs-surveys/"
@@ -25,6 +30,78 @@ def _clean_year(year: Union[int, str]) -> int:
     if not ((2000 <= year) & (year <= 2017)):
         raise ValueError("Year must be between 2000 and 2017.")
     return year
+
+def _check_data_dirs(
+    data_directory: str = "../data/",
+    ):
+    """
+    Validates data directory exists. If it doesn't exists, it creates it and creates 'raw/' and 'interim/' directories.
+    """
+    # set directory's values
+    _data_directory = Path(data_directory)
+    _raw_data_directory = _data_directory.joinpath('raw/')
+    _interim_data_directory = _data_directory.joinpath('interim/')
+
+    # make sure they exists
+    if not _data_directory.exists():
+        _data_directory.mkdir()
+    if not _raw_data_directory.exists():
+        _raw_data_directory.mkdir()
+    if not _interim_data_directory.exists():
+        _interim_data_directory.mkdir()
+
+    return _data_directory
+
+def _download_data(
+    url: str,
+    year: int,
+    name: str,
+    state: str,
+    data_directory: str = "../data/",
+    extract: bool = True,
+    ) -> None:
+    """
+    Downloads a file from Census FTP server.
+    """
+
+    data_directory = _check_data_dirs(data_directory=data_directory)
+    _request = requests.get(url, stream = True)
+    CHUNK_SIZE = 1024
+    # TOTAL_SIZE = int(_request.headers["content-length"])
+    TOTAL_SIZE = len(_request.content)
+    _filename = url.split("/")[-1]
+    _download_path = data_directory.joinpath("raw/")
+    _extract_path = data_directory.joinpath("interim/")
+    _full_download_path = (_download_path / _filename)
+    
+    # download fileacs
+    with open(_full_download_path, "wb") as f:
+        print(f"Downloading at {_full_download_path} ")
+        for data in tqdm(
+            iterable = _request.iter_content(chunk_size = CHUNK_SIZE),
+            total = TOTAL_SIZE / CHUNK_SIZE,
+            unit = "KB",
+        ):
+            f.write(data)
+    print("Download complete!")
+
+    # extract file
+    if extract:
+        _year = str(year)[-2:]
+        _state = us.states.lookup(state).abbr.upper()
+        _extract__folder = f"{name}_{_year}/"
+        _extract_path_and_folder = _extract_path.joinpath(_extract__folder)
+        if not _extract_path_and_folder.exists():
+            _extract_path_and_folder.mkdir()
+        _full_extract_path = _extract_path_and_folder.joinpath(_state)
+        if not _full_extract_path.exists():
+            _full_extract_path.mkdir()
+        print(_full_download_path)
+        CONTENT_FILE = ZipFile(_full_download_path)
+        for item in tqdm(iterable = CONTENT_FILE.filelist):
+            CONTENT_FILE.extract(item, _full_extract_path)
+        print(f"Files extracted successfully at {_full_extract_path}")
+
 
 
 @dataclass
@@ -77,7 +154,7 @@ class ACS:
         _survey = _ONE_THREE_OR_FIVE_YEAR(_survey, _year)
 
         self._SURVEY_URL = (
-            _BASE_URL
+            self._BASE_URL
             + str(_year)
             + "/"
             + _survey
@@ -89,3 +166,19 @@ class ACS:
 
     def __post_init__(self):
         self._SURVEY_URL_MAKER()
+        self._year = _clean_year(self.year)
+        self.NAME = 'ACS'
+
+    def download_data(self, data_directory: str = "../data/", extract: bool = True) -> None:
+        """
+        Downloads PUMS file from Census FTP server.
+        """
+        _download_data(
+            url = self._SURVEY_URL,
+            year = self._year,
+            name = self.NAME,
+            state = self.state,
+            data_directory = data_directory,
+            extract = extract,
+        )
+
