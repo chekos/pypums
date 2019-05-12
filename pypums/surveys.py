@@ -191,10 +191,11 @@ class ACS:
         _GET_DATA_REQUEST = requests.get(self._SURVEY_URL)
 
         with ZipFile(io.BytesIO(_GET_DATA_REQUEST.content)) as thezip:
-            csv_files = [file for file in thezip.infolist() if file.filename.endswith(".csv")]
+            csv_files = [
+                file for file in thezip.infolist() if file.filename.endswith(".csv")
+            ]
             # should be only 1
             assert len(csv_files) == 1
             with thezip.open(csv_files[0]) as thefile:
                 data = pd.read_csv(thefile)
         return data
-
