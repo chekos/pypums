@@ -17,6 +17,7 @@ requirements = [
     "tqdm>=4.31",
     "requests>=2.21",
     "dataclasses==0.6",
+    "pandas>=0.24"
 ]
 
 setup_requirements = [
@@ -25,6 +26,7 @@ setup_requirements = [
     "tqdm>=4.31",
     "requests>=2.21",
     "dataclasses==0.6",
+    "pandas>=0.24",
 ]
 
 test_requirements = [
@@ -33,6 +35,7 @@ test_requirements = [
     "tqdm>=4.31",
     "requests>=2.21",
     "dataclasses==0.6",
+    "pandas>=0.24",
 ]
 
 setup(
