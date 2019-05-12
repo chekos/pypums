@@ -3,9 +3,11 @@ from typing import Union
 from pathlib import Path
 from tqdm.auto import tqdm
 from zipfile import ZipFile
+import pandas as pd
 import requests
 import time
 import us
+import io
 
 _BASE_URL = "https://www2.census.gov/programs-surveys/"
 
@@ -67,7 +69,6 @@ def _download_data(
     data_directory = _check_data_dirs(data_directory=data_directory)
     _request = requests.get(url, stream=True)
     CHUNK_SIZE = 1024
-    # TOTAL_SIZE = int(_request.headers["content-length"])
     TOTAL_SIZE = len(_request.content)
     _filename = url.split("/")[-1]
     _download_path = data_directory.joinpath("raw/")
@@ -182,3 +183,18 @@ class ACS:
             data_directory=data_directory,
             extract=extract,
         )
+
+    def as_dataframe(self) -> pd.DataFrame:
+        """
+        Retrieves ACS PUMS csv file and returns a Pandas dataframe.
+        """
+        _GET_DATA_REQUEST = requests.get(self._SURVEY_URL)
+
+        with ZipFile(io.BytesIO(_GET_DATA_REQUEST.content)) as thezip:
+            csv_files = [file for file in thezip.infolist() if file.filename.endswith(".csv")]
+            # should be only 1
+            assert len(csv_files) == 1
+            with thezip.open(csv_files[0]) as thefile:
+                data = pd.read_csv(thefile)
+        return data
+
