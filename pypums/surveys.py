@@ -125,9 +125,9 @@ class ACS:
             _survey = "3-Year"
         else:
             _survey = "1-Year"
-        _year = _clean_year(self.year)
+        __year = _clean_year(self.year)
 
-        def _ONE_THREE_OR_FIVE_YEAR(_survey: str = _survey, _year: int = _year) -> str:
+        def _ONE_THREE_OR_FIVE_YEAR(_survey: str = _survey, __year: int = __year) -> str:
             """
             Fixes URL part for survey. Some years don't have 3-Year surveys.
             If year <= 2006, _survey == ''.
@@ -135,33 +135,33 @@ class ACS:
             From 2009-2013, _survey can be either 1, 3, or 5 years.
             From 2013 onward, only 1 or 5 years.
             """
-            if _year <= 2006:
+            if __year <= 2006:
                 if _survey != "1-Year":
                     print(
                         "Prior to 2007, only 1-Year ACS are available, defaulting to 1-Year"
                     )
-                    _survey = ""
-            elif (2007 <= _year) and (_year <= 2008):
+                _survey = ""
+            elif (2007 <= __year) and (__year <= 2008):
                 if _survey == "5-Year":
-                    print(f"There is no 5-Year ACS for {_year}, defaulting to 3-Year")
+                    print(f"There is no 5-Year ACS for {__year}, defaulting to 3-Year")
                     _survey = "3-Year"
-            elif _year >= 2014:
+            elif __year >= 2014:
                 if _survey == "3-Year":
-                    print(f"There is no 3-Year ACS for {_year}, defaulting to 5-Year")
+                    print(f"There is no 3-Year ACS for {__year}, defaulting to 5-Year")
                     _survey = "5-Year"
             return _survey
 
-        self._survey = _ONE_THREE_OR_FIVE_YEAR(_survey, _year)
+        self._survey = _ONE_THREE_OR_FIVE_YEAR(_survey, __year)
 
         self._SURVEY_URL = (
             self._BASE_URL
-            + str(_year)
+            + str(__year)
             + "/"
             + self._survey
             + "/"
             + f"csv_{_unit}{_state_abbr}"
             + ".zip"
-        )
+        ).replace("//csv", "/csv")
         return None
 
     def __post_init__(self):
