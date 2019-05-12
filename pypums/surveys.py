@@ -151,13 +151,13 @@ class ACS:
                     _survey = "5-Year"
             return _survey
 
-        _survey = _ONE_THREE_OR_FIVE_YEAR(_survey, _year)
+        self._survey = _ONE_THREE_OR_FIVE_YEAR(_survey, _year)
 
         self._SURVEY_URL = (
             self._BASE_URL
             + str(_year)
             + "/"
-            + _survey
+            + self._survey
             + "/"
             + f"csv_{_unit}{_state_abbr}"
             + ".zip"
