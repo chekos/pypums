@@ -1,11 +1,10 @@
-=======
 Credits
 =======
 
 Development Lead
 ----------------
 
-* Sergio Sánchez Zavala <sergio@cimarron.io>
+-   Sergio Sánchez Zavala \<<sergio@cimarron.io>\>
 
 Contributors
 ------------

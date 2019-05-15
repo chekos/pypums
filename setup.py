@@ -5,10 +5,10 @@
 
 from setuptools import setup, find_packages
 
-with open("README.rst") as readme_file:
+with open("README.md") as readme_file:
     readme = readme_file.read()
 
-with open("HISTORY.rst") as history_file:
+with open("HISTORY.md") as history_file:
     history = history_file.read()
 
 requirements = [
@@ -17,6 +17,7 @@ requirements = [
     "tqdm>=4.31",
     "requests>=2.21",
     "dataclasses==0.6",
+    "pandas>=0.24"
 ]
 
 setup_requirements = [
@@ -25,6 +26,7 @@ setup_requirements = [
     "tqdm>=4.31",
     "requests>=2.21",
     "dataclasses==0.6",
+    "pandas>=0.24",
 ]
 
 test_requirements = [
@@ -33,6 +35,7 @@ test_requirements = [
     "tqdm>=4.31",
     "requests>=2.21",
     "dataclasses==0.6",
+    "pandas>=0.24",
 ]
 
 setup(
@@ -62,7 +65,11 @@ setup(
     test_suite="tests",
     tests_require=test_requirements,
     url="https://github.com/chekos/pypums",
+<<<<<<< HEAD
     version="0.0.4",
     python_requires=">=3.6",
+=======
+    version="0.0.5",
+>>>>>>> 3a41cf85d8b01a4794b24984b6996e6c69970112
     zip_safe=False,
 )
