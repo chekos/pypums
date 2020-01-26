@@ -4,4 +4,4 @@ tqdm>=4.31
 dataclasses>=0.6
 sphinx_rtd_theme>=0.4.3
 recommonmark
-pandas
+pandas==0.25.3
