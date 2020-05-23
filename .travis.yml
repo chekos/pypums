@@ -3,13 +3,3 @@ python:
 - 3.6
 install: pip install -U tox-travis
 script: tox
-# deploy:
-#   provider: pypi
-#   distributions: sdist bdist_wheel
-#   user: chekos
-#   password:
-#     secure: I8ou36jqct6Y9b1+693gEiFYZFbaMuGMqXIuGMicP/epg7OJGOYipykpFYNZwUcKGC+fDKaQfQ8iSJ6NA4eFJP1ZNIkGTcRU7prkCvSzh9vrb2Th6pkBqcapsdek8iHqvPL5E6YwaJVLgYhaBVVWjrE56SVXyImad+YyGycBBXBgD95+MaJW3Roc34X3Q1A+7NaHUdAq8sKTV00jM866KoZ3EJobqG2zPCeKZmeRKIkDVVEjY44znLBh+7HjFnMJCxgUDoavtffD+OgEMMoTUTIbbz9kT6wNFWJxDHDB2btmMLKuBpF6/N8Fa9iWV3BFOQaWwWLHyfuqjaqE4Hk9dl1LLWM81EGtzHqY+U6ESy/qgnvWDTVjLQvLOKdg8Y+GBw55rlUTtkIugLprflC3Zyn3SidlVJstp4a4BK59G1JFCXSfAaqZytuLCfocfkU8W2RunCghQFMsqrZmbrZ+aytP+aCJ5WXro0S44b6iF9wxxmufE5F4Qn8+IQZxEcr1wo8dpDVZAJqSPvPzodGvhZL+iMQlYJKKaDkletaWRyRyjSqIBKSTkZ6ps5UCimrTddBXdoaJZSzE87ceGHhTbhJX165V9LXRGmkuHSoUSiuyDVL/fOS7hymMIlEwtAmw8krTcceVfutiYpD0TfSescaYU5pNSfQVYG1tYJHVylE=
-#   on:
-#     tags: true
-#     repo: chekos/pypums
-#     python: 3.6
