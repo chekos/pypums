@@ -44,7 +44,9 @@ def download_acs_data(
     chunk_size = 1024
 
     r = requests.get(url, stream=True)
-    total_size = int(r.headers["content-length"])
+
+    # content-lenght was dropped from their headers so try or use default 40 mb
+    total_size = int(r.headers.get("content-length", 40000000))
 
     ### Checks
     download_path = Path(download_path)
