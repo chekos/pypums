@@ -65,7 +65,7 @@ setup(
     test_suite="tests",
     tests_require=test_requirements,
     url="https://github.com/chekos/pypums",
-    version="0.0.6'",
+    version="0.0.6",
     python_requires=">=3.6",
     zip_safe=False,
 )
