@@ -1,6 +1,11 @@
 History
 =======
 
+0.0.6 (2020-05-23)
+------------------
+- Minor bugs and fixes. 
+- Automated building and publishing using GitHub Actions :rocket:
+
 0.0.5 (2019-05-11)
 ------------------
 - Add `.as_dataframe()` to ACS class. 
