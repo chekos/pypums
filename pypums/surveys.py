@@ -26,10 +26,10 @@ def _clean_year(year: Union[int, str]) -> int:
     except ValueError:
         raise ValueError("year must be a number.")
 
-    if (0 <= year) & (year <= 17):
+    if (year >= 0) & (year <= 17):
         year += 2000
 
-    if not ((2000 <= year) & (year <= 2017)):
+    if not (year >= 2000) & (year <= 2017):
         raise ValueError("Year must be between 2000 and 2017.")
     return year
 
@@ -68,7 +68,6 @@ def _download_data(
 
     data_directory = _check_data_dirs(data_directory=data_directory)
     _request = requests.get(url, stream=True)
-    CHUNK_SIZE = 1024
     TOTAL_SIZE = len(_request.content)
     _filename = url.split("/")[-1]
     _download_path = data_directory.joinpath("raw/")
@@ -78,6 +77,7 @@ def _download_data(
     # download fileacs
     with open(_full_download_path, "wb") as f:
         print(f"Downloading at {_full_download_path} ")
+        CHUNK_SIZE = 1024
         for data in tqdm(
             iterable=_request.iter_content(chunk_size=CHUNK_SIZE),
             total=TOTAL_SIZE / CHUNK_SIZE,
@@ -141,7 +141,7 @@ class ACS:
                         "Prior to 2007, only 1-Year ACS are available, defaulting to 1-Year"
                     )
                 _survey = ""
-            elif (2007 <= __year) and (__year <= 2008):
+            elif __year >= 2007 and __year <= 2008:
                 if _survey == "5-Year":
                     print(f"There is no 5-Year ACS for {__year}, defaulting to 3-Year")
                     _survey = "3-Year"

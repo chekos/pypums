@@ -41,7 +41,7 @@ def build_acs_url(
                     "Prior to 2007, only 1-Year ACS are available, defaulting to 1-Year"
                 )
                 _survey = ""
-        elif (2007 <= _year) and (_year <= 2008):
+        elif _year >= 2007 and _year <= 2008:
             if _survey == "5-Year":
                 print(f"There is no 5-Year ACS for {_year}, defaulting to 3-Year")
                 _survey = "3-Year"

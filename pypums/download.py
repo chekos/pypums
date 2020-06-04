@@ -8,9 +8,7 @@ import time
 def _check_data_folder(path: str = "../data/raw/", extract: bool = True):
     path = Path(path)
 
-    if path.exists():
-        pass
-    else:
+    if not path.exists():
         Path("../data/").mkdir()
         Path("../data/raw/").mkdir()
         if extract:
@@ -34,14 +32,12 @@ def download_acs_data(
 
     # Downloads Data
     BASE_URL = "https://www2.census.gov/programs-surveys/acs/data/pums/"
-    if not url[:55] == BASE_URL:
+    if url[:55] != BASE_URL:
         raise ValueError(
             "Census FPT-server url's start with 'https://www2.census.gov/programs-surveys/acs/data/pums/'"
         )
 
     state = url.split("/")[-1].split(".")[0][-2:]
-
-    chunk_size = 1024
 
     r = requests.get(url, stream=True)
 
@@ -66,6 +62,8 @@ def download_acs_data(
 
     with open(download_path / filename, "wb") as f:
         print(f"Downloading at {download_path / filename}.")
+        chunk_size = 1024
+
         for data in tqdm(
             iterable=r.iter_content(chunk_size=chunk_size),
             total=total_size / chunk_size,
