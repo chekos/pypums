@@ -26,11 +26,11 @@ def _clean_year(year: Union[int, str]) -> int:
     except ValueError:
         raise ValueError("year must be a number.")
 
-    if (year >= 0) & (year <= 17):
+    if (year >= 0) & (year <= 18):
         year += 2000
 
-    if not (year >= 2000) & (year <= 2017):
-        raise ValueError("Year must be between 2000 and 2017.")
+    if not (year >= 2000) & (year <= 2018):
+        raise ValueError("Year must be between 2000 and 2018.")
     return year
 
 
@@ -106,7 +106,7 @@ def _download_data(
 
 @dataclass
 class ACS:
-    year: Union[int, str] = 2017
+    year: Union[int, str] = 2018
     state: str = "California"
     survey: Union[int, str] = "1-Year"
     person_or_household: str = "person"

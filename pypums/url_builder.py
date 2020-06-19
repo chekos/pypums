@@ -7,7 +7,7 @@ BASE_URL = "https://www2.census.gov/programs-surveys/"
 
 
 def build_acs_url(
-    year: Union[int, str] = "2017",
+    year: Union[int, str] = "2018",
     survey: Union[str, int] = "1-Year",
     person_or_household: str = "person",
     state: str = "California",
