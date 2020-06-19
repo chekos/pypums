@@ -1,18 +1,17 @@
 from pathlib import Path
+from typing import Optional
 from tqdm.auto import tqdm
 from zipfile import ZipFile
 import requests
 import time
 
 
-def _check_data_folder(path: str = "../data/raw/", extract: bool = True):
+def _check_data_folder(path: str = "../data/raw/", extract_path: Optional[str] = None):
     path = Path(path)
-
-    if not path.exists():
-        Path("../data/").mkdir()
-        Path("../data/raw/").mkdir()
-        if extract:
-            Path("../data/interim/").mkdir()
+    path.mkdir(parents = True, exist_ok = True)
+    if extract_path is not None:
+        extract_path = Path(extract_path)
+        extract_path.mkdir(parents = True, exist_ok = True)
 
     return None
 
@@ -28,7 +27,7 @@ def download_acs_data(
     """
 
     # Checks download_path and extract_path exists
-    _check_data_folder(path=download_path, extract=extract)
+    _check_data_folder(path=download_path, extract_path=extract_path if extract else None)
 
     # Downloads Data
     BASE_URL = "https://www2.census.gov/programs-surveys/acs/data/pums/"
