@@ -13,10 +13,10 @@ from pypums import pypums
 @click.option(
     "--year",
     required=True,
-    prompt="2000-2017",
-    default=2017,
+    prompt="2000-2018",
+    default=2018,
     show_default=True,
-    type=click.IntRange(min=2000, max=2017, clamp=True),
+    type=click.IntRange(min=2000, max=2018, clamp=True),
 )
 @click.option(
     "--state",
