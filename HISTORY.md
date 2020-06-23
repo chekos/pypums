@@ -1,6 +1,12 @@
 History
 =======
 
+0.0.7 (2020-06-23)
+-----------------
+- Fixes bug where `_check_data_folder()` would ignore the path paramenter
+- Adds 2018 to possible survey years
+- First contributor! [@yonran](https://github.com/yonran)
+
 0.0.6 (2020-05-23)
 ------------------
 - Minor bugs and fixes. 
