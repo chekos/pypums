@@ -1,5 +1,5 @@
 myst-parser
-sphinx-tabs
+sphinx-tabs==1.1.13
 sphinxcontrib-bibtex
 sphinx-book-theme
 importlib_metadata
