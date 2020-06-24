@@ -1,5 +1,4 @@
-Usage
-=====
+# How to use `PyPUMS`
 
 To use PyPUMS in a project:
 

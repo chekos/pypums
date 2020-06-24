@@ -33,8 +33,17 @@ import pypums
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ["sphinx.ext.autodoc", "sphinx.ext.viewcode", "recommonmark"]
-
+extensions = [
+    "myst_parser",
+    "sphinx.ext.autosectionlabel",
+    "sphinx.ext.autodoc",
+    "sphinx.ext.intersphinx",
+    "sphinx.ext.viewcode",
+    "sphinx.ext.napoleon",
+    "sphinx.ext.autosummary",
+    "sphinxcontrib.bibtex",
+    "sphinx_tabs.tabs",
+]
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
 
@@ -49,7 +58,7 @@ master_doc = "index"
 
 # General information about the project.
 project = "PyPUMS"
-copyright = "2019, Sergio Sánchez Zavala"
+copyright = "2020, Sergio Sánchez Zavala"
 author = "Sergio Sánchez Zavala"
 
 # The version info for the project you're documenting, acts as replacement
@@ -66,7 +75,7 @@ release = pypums.__version__
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = "en"
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -85,19 +94,36 @@ todo_include_todos = False
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "sphinx_rtd_theme"
-
-# Theme options are theme-specific and customize the look and feel of a
-# theme further.  For a list of options available for each theme, see the
-# documentation.
-#
-# html_theme_options = {}
-
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ["_static"]
+html_static_path = ["static"]
 
+# Probando el theme de MyST
+html_theme = "sphinx_book_theme"
+html_logo = "static/tacosdedatos-utils.png"
+html_title = ""
+html_theme_options = {
+    "github_url": "https://github.com/chekos/pypums",
+    "repository_url": "https://github.com/chekos/pypums",
+    "expand_sections": ["examples/index"],
+    "path_to_docs": "docs",
+    "use_issues_button": True,
+    "use_edit_page_button": True,
+    "launch_buttons": {
+        "binderhub_url": "https://mybinder.org/v2/gh/chekos/pypums/v0.0.7",
+        "thebelab": True,
+    },
+}
+
+
+# from altair docs
+autodoc_default_flags = ["members", "inherited-members"]
+
+autodoc_member_order = "groupwise"
+
+# generate autosummary even if no references
+autosummary_generate = True
 
 # -- Options for HTMLHelp output ---------------------------------------
 

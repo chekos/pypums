@@ -18,11 +18,11 @@ Usage
 
 To use PyPUMS in a project:
 
-![on a jupyter notebook](static/usage.gif)
+![on a jupyter notebook](https://github.com/chekos/pypums/blob/master/static/usage.gif?raw=true)
 
 or as a CLI
 
-![as a CLI](static/cli.gif)
+![as a CLI](https://github.com/chekos/pypums/blob/master/static/cli.gif?raw=true)
 
 
 Features
