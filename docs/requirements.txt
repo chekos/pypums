@@ -2,5 +2,5 @@ myst-parser
 sphinx-tabs
 sphinxcontrib-bibtex
 sphinx-book-theme
-importlib_metadata
+importlib_metadata==1.6.1
 pypums
