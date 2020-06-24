@@ -1,0 +1,6 @@
+myst-parser
+sphinx-tabs
+sphinxcontrib-bibtex
+sphinx-book-theme
+importlib_metadata
+pypums
