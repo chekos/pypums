@@ -1,131 +1,51 @@
-::: {.highlight}
-shell
-:::
+# How to contribute
 
-Contributing
-============
+## Dependencies
 
-Contributions are welcome, and they are greatly appreciated! Every
-little bit helps, and credit will always be given.
+We use `poetry` to manage the [dependencies](https://github.com/python-poetry/poetry).
+If you dont have `poetry` installed, you should run the command below.
 
-You can contribute in many ways:
+```bash
+make download-poetry
+```
 
-Types of Contributions
-----------------------
+To install dependencies and prepare [`pre-commit`](https://pre-commit.com/) hooks you would need to run `install` command:
 
-### Report Bugs
+```bash
+make install
+```
 
-Report bugs at <https://github.com/chekos/pypums/issues>.
+To activate your `virtualenv` run `poetry shell`.
 
-If you are reporting a bug, please include:
+## Codestyle
 
--   Your operating system name and version.
--   Any details about your local setup that might be helpful in
-    troubleshooting.
--   Detailed steps to reproduce the bug.
+After you run `make install` you can execute the automatic code formatting.
 
-### Fix Bugs
+```bash
+make codestyle
+```
 
-Look through the GitHub issues for bugs. Anything tagged with \"bug\"
-and \"help wanted\" is open to whoever wants to implement it.
+### Checks
 
-### Implement Features
+Many checks are configured for this project. Command `make check-style` will run black diffs, darglint docstring style and mypy.
+The `make check-safety` command will look at the security of your code.
 
-Look through the GitHub issues for features. Anything tagged with
-\"enhancement\" and \"help wanted\" is open to whoever wants to
-implement it.
+You can also use `STRICT=1` flag to make the check be strict.
 
-### Write Documentation
+### Before submitting
 
-pypums could always use more documentation, whether as part of the
-official pypums docs, in docstrings, or even on the web in blog posts,
-articles, and such.
+Before submitting your code please do the following steps:
 
-### Submit Feedback
+1. Add any changes you want
+1. Add tests for the new changes
+1. Edit documentation if you have changed something significant
+1. Run `make codestyle` to format your changes.
+1. Run `STRICT=1 make check-style` to ensure that types and docs are correct
+1. Run `STRICT=1 make check-safety` to ensure that security of your code is correct
 
-The best way to send feedback is to file an issue at
-<https://github.com/chekos/pypums/issues>.
+## Other help
 
-If you are proposing a feature:
-
--   Explain in detail how it would work.
--   Keep the scope as narrow as possible, to make it easier to
-    implement.
--   Remember that this is a volunteer-driven project, and that
-    contributions are welcome :)
-
-Get Started!
-------------
-
-Ready to contribute? Here\'s how to set up [pypums]{.title-ref} for
-local development.
-
-1.  Fork the [pypums]{.title-ref} repo on GitHub.
-
-2.  Clone your fork locally:
-
-        $ git clone git@github.com:your_name_here/pypums.git
-
-3.  Install your local copy into a virtualenv. Assuming you have
-    virtualenvwrapper installed, this is how you set up your fork for
-    local development:
-
-        $ mkvirtualenv pypums
-        $ cd pypums/
-        $ python setup.py develop
-
-4.  Create a branch for local development:
-
-        $ git checkout -b name-of-your-bugfix-or-feature
-
-    Now you can make your changes locally.
-
-5.  When you\'re done making changes, check that your changes pass
-    flake8 and the tests, including testing other Python versions with
-    tox:
-
-        $ flake8 pypums tests
-        $ python setup.py test or py.test
-        $ tox
-
-    To get flake8 and tox, just pip install them into your virtualenv.
-
-6.  Commit your changes and push your branch to GitHub:
-
-        $ git add .
-        $ git commit -m "Your detailed description of your changes."
-        $ git push origin name-of-your-bugfix-or-feature
-
-7.  Submit a pull request through the GitHub website.
-
-Pull Request Guidelines
------------------------
-
-Before you submit a pull request, check that it meets these guidelines:
-
-1.  The pull request should include tests.
-2.  If the pull request adds functionality, the docs should be updated.
-    Put your new functionality into a function with a docstring, and add
-    the feature to the list in README.rst.
-3.  The pull request should work for Python 2.7, 3.4, 3.5 and 3.6, and
-    for PyPy. Check <https://travis-ci.org/chekos/pypums/pull_requests>
-    and make sure that the tests pass for all supported Python versions.
-
-Tips
-----
-
-To run a subset of tests:
-
-    $ python -m unittest tests.test_pypums
-
-Deploying
----------
-
-A reminder for the maintainers on how to deploy. Make sure all your
-changes are committed (including an entry in HISTORY.rst). Then run:
-
-    $ bumpversion patch # possible: major / minor / patch
-    $ git push
-    $ git push --tags
-
-Travis will then deploy to PyPI if tests pass.
+You can contribute by spreading a word about this library.
+It would also be a huge contribution to write
+a short article on how you are using this project.
+You can also share your best practices with us.
