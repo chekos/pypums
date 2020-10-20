@@ -12,7 +12,7 @@ def build_acs_url(
     survey: Union[str, int] = "1-Year",
     person_or_household: str = "person",
     state: str = "California",
-):
+) -> str:
     """
     Builds CENSUS FTP-server URL where you can download ACS 1-, 3-, or 5- year estimates. 
     """

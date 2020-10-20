@@ -21,7 +21,7 @@ def get_data(
     download_path: str = "../data/raw/",
     extract: bool = True,
     extract_path: str = "../data/interim/",
-):
+) -> None:
     """
     Builds URL and downloads ACS 1-Year or 5-Year state PUMS estimates into a specified folder (defaults to ../data/raw/).
     """
