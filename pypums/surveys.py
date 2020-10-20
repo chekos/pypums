@@ -60,7 +60,7 @@ def _download_data(
     year: int,
     name: str,
     state: str,
-    data_directory: str = "../data/",
+    data_directory: Path = Path("../data/"),
     extract: bool = True,
 ) -> None:
     """
