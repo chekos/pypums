@@ -8,7 +8,8 @@ from tqdm.auto import tqdm
 
 
 def _check_data_folder(
-    path: Union[str, Path] = "../data/raw/", extract_path: Optional[str] = None
+    path: Union[str, Path] = "../data/raw/",
+    extract_path: Optional[Union[str, Path]] = None,
 ) -> None:
     path = Path(path)
     path.mkdir(parents=True, exist_ok=True)
