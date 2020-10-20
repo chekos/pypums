@@ -35,7 +35,7 @@ def _clean_year(year: Union[int, str]) -> int:
     return year
 
 
-def _check_data_dirs(data_directory: str = "../data/",):
+def _check_data_dirs(data_directory: Path = Path("../data/")) -> Path:
     """
     Validates data directory exists. If it doesn't exists, it creates it and creates 'raw/' and 'interim/' directories.
     """
