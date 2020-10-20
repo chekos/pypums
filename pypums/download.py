@@ -22,10 +22,10 @@ def _check_data_folder(
 
 def download_acs_data(
     url: str,
-    download_path: str = "../data/raw/",
+    download_path: Union[str, Path] = "../data/raw/",
     extract: bool = True,
-    extract_path: str = "../data/interim/",
-):
+    extract_path: Union[str, Path] = "../data/interim/",
+) -> None:
     """
     Downloads ACS 1-, 3-, or 5- estimates from a US Census Bureau's FTP-server URL.
     """
