@@ -109,9 +109,9 @@ def download_acs_data(
         content_file = ZipFile(download_path / filename)
 
         ## for progress bar
-        file_size = 0
-        for file_info in content_file.infolist():
-            file_size += int(file_info.file_size)
+        file_size = sum(
+            int(file_info.file_size) for file_info in content_file.infolist()
+        )
 
         extract_folder_size = sum(
             item.stat().st_size for item in final_extraction_folder.iterdir()
