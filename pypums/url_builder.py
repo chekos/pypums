@@ -1,3 +1,7 @@
+"""URL utils module.
+
+   isort:skip_file
+"""
 from typing import Union
 
 import us

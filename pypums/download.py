@@ -1,3 +1,7 @@
+"""Download module.
+
+   isort:skip_file
+"""
 import time
 from pathlib import Path
 from zipfile import ZipFile
