@@ -1,6 +1,6 @@
 import time
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Union
 from zipfile import ZipFile
 
 import requests
@@ -8,8 +8,8 @@ from tqdm.auto import tqdm
 
 
 def _check_data_folder(
-    path: str = "../data/raw/", extract_path: Optional[str] = None
-):
+    path: Union[str, Path] = "../data/raw/", extract_path: Optional[str] = None
+) -> None:
     path = Path(path)
     path.mkdir(parents=True, exist_ok=True)
     if extract_path is not None:
