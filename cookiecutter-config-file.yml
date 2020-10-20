@@ -1,0 +1,10 @@
+# This file contains values from Cookiecutter
+
+default_context:
+  project_name: "pypums"
+  project_description: "Download Public Use Micro Sample (PUMS) data files from the US Census Bureau's FTP server."
+  organization: "chekos"
+  license: "MIT"
+  version: "0.1.0"
+  github_name: "chekos"
+  email: "sergio@cimarron.io"

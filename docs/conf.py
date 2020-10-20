@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 #
 # pypums documentation build configuration file, created by
 # sphinx-quickstart on Fri Jun  9 13:47:02 2017.
@@ -21,9 +20,10 @@
 import os
 import sys
 
+import pypums
+
 sys.path.insert(0, os.path.abspath(".."))
 
-import pypums
 
 # -- General configuration ---------------------------------------------
 

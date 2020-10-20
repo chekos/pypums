@@ -1,33 +1,44 @@
-from pathlib import Path
-from typing import Optional
-from tqdm.auto import tqdm
-from zipfile import ZipFile
-import requests
+"""Download module.
+
+   isort:skip_file
+"""
 import time
+from pathlib import Path
+from zipfile import ZipFile
+
+from typing import Optional, Union
+
+import requests
+from tqdm.auto import tqdm
 
 
-def _check_data_folder(path: str = "../data/raw/", extract_path: Optional[str] = None):
+def _check_data_folder(
+    path: Union[str, Path] = "../data/raw/",
+    extract_path: Optional[Union[str, Path]] = None,
+) -> None:
     path = Path(path)
-    path.mkdir(parents = True, exist_ok = True)
+    path.mkdir(parents=True, exist_ok=True)
     if extract_path is not None:
         extract_path = Path(extract_path)
-        extract_path.mkdir(parents = True, exist_ok = True)
+        extract_path.mkdir(parents=True, exist_ok=True)
 
     return None
 
 
 def download_acs_data(
     url: str,
-    download_path: str = "../data/raw/",
+    download_path: Union[str, Path] = "../data/raw/",
     extract: bool = True,
-    extract_path: str = "../data/interim/",
-):
+    extract_path: Union[str, Path] = "../data/interim/",
+) -> None:
     """
     Downloads ACS 1-, 3-, or 5- estimates from a US Census Bureau's FTP-server URL.
     """
 
     # Checks download_path and extract_path exists
-    _check_data_folder(path=download_path, extract_path=extract_path if extract else None)
+    _check_data_folder(
+        path=download_path, extract_path=extract_path if extract else None
+    )
 
     # Downloads Data
     BASE_URL = "https://www2.census.gov/programs-surveys/acs/data/pums/"
@@ -117,7 +128,8 @@ def download_acs_data(
         content_file.extractall(final_extraction_folder)
         while extract_folder_size < expected_final_size:
             extract_folder_size = sum(
-                item.stat().st_size for item in final_extraction_folder.iterdir()
+                item.stat().st_size
+                for item in final_extraction_folder.iterdir()
             )
             print(
                 f"Extracting files to {final_extraction_folder}: {(extract_folder_size / file_size) :.2%}",

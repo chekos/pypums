@@ -26,4 +26,3 @@ about/history.md
 # Indices and tables
 
 * {ref}`genindex`
-
