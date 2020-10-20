@@ -1,14 +1,12 @@
-# -*- coding: utf-8 -*-
-
 """Main module."""
-# imports
+import time
 from pathlib import Path
 from typing import Union
-from tqdm.auto import tqdm
 from zipfile import ZipFile
+
 import requests
-import time
 import us
+from tqdm.auto import tqdm
 
 import pypums
 from pypums.download import download_acs_data
@@ -30,12 +28,18 @@ def get_data(
 
     # builds URL
     URL = build_acs_url(
-        year=year, survey=survey, person_or_household=person_or_household, state=state
+        year=year,
+        survey=survey,
+        person_or_household=person_or_household,
+        state=state,
     )
 
     # download data
     download_acs_data(
-        url=URL, download_path=download_path, extract=extract, extract_path=extract_path
+        url=URL,
+        download_path=download_path,
+        extract=extract,
+        extract_path=extract_path,
     )
 
     return None
@@ -46,11 +50,11 @@ def tree(directory):
     Displays a directory's tree.
     """
     directory = Path(directory)
-    print(f'+ {directory}')
-    for path in sorted(directory.rglob('[!.]*')):
+    print(f"+ {directory}")
+    for path in sorted(directory.rglob("[!.]*")):
         depth = len(path.relative_to(directory).parts)
-        spacer = '    ' * depth
-        print(f'{spacer}+ {path.name}')
+        spacer = "    " * depth
+        print(f"{spacer}+ {path.name}")
 
 
 if __name__ == "__main__":
