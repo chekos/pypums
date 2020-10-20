@@ -1,7 +1,8 @@
 import time
 from pathlib import Path
-from typing import Optional, Union
 from zipfile import ZipFile
+
+from typing import Optional, Union
 
 import requests
 from tqdm.auto import tqdm

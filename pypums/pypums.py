@@ -1,5 +1,6 @@
 """Main PyPUMS module."""
 from pathlib import Path
+
 from typing import Union
 
 from pypums.download import download_acs_data

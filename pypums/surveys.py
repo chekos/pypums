@@ -1,8 +1,9 @@
 import io
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Union
 from zipfile import ZipFile
+
+from typing import Union
 
 import pandas as pd
 import requests
