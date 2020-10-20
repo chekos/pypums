@@ -12,13 +12,6 @@ from tqdm.auto import tqdm
 
 _BASE_URL = "https://www2.census.gov/programs-surveys/"
 
-# @dataclass
-# class Survey:
-#     year: Union[int, str]
-#     state: str
-#     survey: Union[int, str]
-#     person_or_household: str
-
 
 def _clean_year(year: Union[int, str]) -> int:
     ## YEAR
