@@ -1,4 +1,4 @@
-"""Main module."""
+"""Main PyPUMS module."""
 import time
 from pathlib import Path
 from typing import Union
