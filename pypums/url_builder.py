@@ -1,4 +1,5 @@
 from typing import Union
+
 import us
 
 from pypums.surveys import _clean_year
@@ -27,7 +28,9 @@ def build_acs_url(
         _survey = "1-Year"
     _year = _clean_year(year)
 
-    def _ONE_THREE_OR_FIVE_YEAR(_survey: str = _survey, _year: int = _year) -> str:
+    def _ONE_THREE_OR_FIVE_YEAR(
+        _survey: str = _survey, _year: int = _year
+    ) -> str:
         """
         Fixes URL part for survey. Some years don't have 3-Year surveys.
         If year <= 2006, _survey == ''.
@@ -43,11 +46,15 @@ def build_acs_url(
                 _survey = ""
         elif _year >= 2007 and _year <= 2008:
             if _survey == "5-Year":
-                print(f"There is no 5-Year ACS for {_year}, defaulting to 3-Year")
+                print(
+                    f"There is no 5-Year ACS for {_year}, defaulting to 3-Year"
+                )
                 _survey = "3-Year"
         elif _year >= 2014:
             if _survey == "3-Year":
-                print(f"There is no 3-Year ACS for {_year}, defaulting to 5-Year")
+                print(
+                    f"There is no 3-Year ACS for {_year}, defaulting to 5-Year"
+                )
                 _survey = "5-Year"
         return _survey
 
