@@ -1,13 +1,14 @@
+import io
+import time
 from dataclasses import dataclass, field
-from typing import Union
 from pathlib import Path
-from tqdm.auto import tqdm
+from typing import Union
 from zipfile import ZipFile
+
 import pandas as pd
 import requests
-import time
 import us
-import io
+from tqdm.auto import tqdm
 
 _BASE_URL = "https://www2.census.gov/programs-surveys/"
 
@@ -127,7 +128,9 @@ class ACS:
             _survey = "1-Year"
         __year = _clean_year(self.year)
 
-        def _ONE_THREE_OR_FIVE_YEAR(_survey: str = _survey, __year: int = __year) -> str:
+        def _ONE_THREE_OR_FIVE_YEAR(
+            _survey: str = _survey, __year: int = __year
+        ) -> str:
             """
             Fixes URL part for survey. Some years don't have 3-Year surveys.
             If year <= 2006, _survey == ''.
@@ -143,11 +146,15 @@ class ACS:
                 _survey = ""
             elif __year >= 2007 and __year <= 2008:
                 if _survey == "5-Year":
-                    print(f"There is no 5-Year ACS for {__year}, defaulting to 3-Year")
+                    print(
+                        f"There is no 5-Year ACS for {__year}, defaulting to 3-Year"
+                    )
                     _survey = "3-Year"
             elif __year >= 2014:
                 if _survey == "3-Year":
-                    print(f"There is no 3-Year ACS for {__year}, defaulting to 5-Year")
+                    print(
+                        f"There is no 3-Year ACS for {__year}, defaulting to 5-Year"
+                    )
                     _survey = "5-Year"
             return _survey
 
@@ -192,7 +199,9 @@ class ACS:
 
         with ZipFile(io.BytesIO(_GET_DATA_REQUEST.content)) as thezip:
             csv_files = [
-                file for file in thezip.infolist() if file.filename.endswith(".csv")
+                file
+                for file in thezip.infolist()
+                if file.filename.endswith(".csv")
             ]
             # should be only 1
             assert len(csv_files) == 1
