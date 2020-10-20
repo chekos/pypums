@@ -35,7 +35,9 @@ def _clean_year(year: Union[int, str]) -> int:
     return year
 
 
-def _check_data_dirs(data_directory: Path = Path("../data/")) -> Path:
+def _check_data_dirs(
+    data_directory: Union[str, Path] = Path("../data/")
+) -> Path:
     """
     Validates data directory exists. If it doesn't exists, it creates it and creates 'raw/' and 'interim/' directories.
     """
@@ -101,7 +103,7 @@ def _download_data(
         print("Extracting files...")
         CONTENT_FILE = ZipFile(_full_download_path)
         for item in tqdm(iterable=CONTENT_FILE.filelist):
-            CONTENT_FILE.extract(item, _full_extract_path)
+            CONTENT_FILE.extract(item, str(_full_extract_path))
         print(f"Files extracted successfully at {_full_extract_path}")
 
 
