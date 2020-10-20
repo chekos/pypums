@@ -17,7 +17,7 @@ repository = "https://github.com/chekos/pypums"
 homepage = "https://github.com/chekos/pypums"
 
 # Keywords description https://python-poetry.org/docs/pyproject/#keywords
-keywords = []  # Update me
+keywords = ["PUMS", "census", "public-data"]  # Update me
 
 # Pypi classifiers: https://pypi.org/classifiers/
 classifiers = [  # Update me
