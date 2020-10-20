@@ -2,13 +2,7 @@
 import time
 from pathlib import Path
 from typing import Union
-from zipfile import ZipFile
 
-import requests
-import us
-from tqdm.auto import tqdm
-
-import pypums
 from pypums.download import download_acs_data
 from pypums.url_builder import build_acs_url
 
