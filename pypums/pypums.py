@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Union
 
 from pypums.download import download_acs_data
-from pypums.url_builder import build_acs_url
+from pypums.utils import build_acs_url
 
 
 def get_data(
