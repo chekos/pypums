@@ -8,7 +8,7 @@ from zipfile import ZipFile
 
 from typing import Optional, Union
 
-import requests
+import httpx
 from tqdm.auto import tqdm
 
 
@@ -49,7 +49,7 @@ def download_acs_data(
 
     state = url.split("/")[-1].split(".")[0][-2:]
 
-    r = requests.get(url, stream=True)
+    r = httpx.get(url, stream=True)
 
     # content-lenght was dropped from their headers so try or use default 40 mb
     total_size = int(r.headers.get("content-length", 40000000))
@@ -128,8 +128,7 @@ def download_acs_data(
         content_file.extractall(final_extraction_folder)
         while extract_folder_size < expected_final_size:
             extract_folder_size = sum(
-                item.stat().st_size
-                for item in final_extraction_folder.iterdir()
+                item.stat().st_size for item in final_extraction_folder.iterdir()
             )
             print(
                 f"Extracting files to {final_extraction_folder}: {(extract_folder_size / file_size) :.2%}",
