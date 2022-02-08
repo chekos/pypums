@@ -1,40 +1,20 @@
-"""Surveys module.
-
-   isort:skip_file
-"""
+"""Surveys module."""
 import io
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from zipfile import ZipFile
 
 from typing import Union
 
 import pandas as pd
-import requests
+import httpx
 import us
 from tqdm.auto import tqdm
 
-_BASE_URL = "https://www2.census.gov/programs-surveys/"
+from pypums.utils import _clean_year, _ONE_THREE_OR_FIVE_YEAR, build_acs_url
 
 
-def _clean_year(year: Union[int, str]) -> int:
-    ## YEAR
-    try:
-        year = int(year)
-    except ValueError:
-        raise ValueError("year must be a number.")
-
-    if (year >= 0) & (year <= 18):
-        year += 2000
-
-    if not (year >= 2000) & (year <= 2018):
-        raise ValueError("Year must be between 2000 and 2018.")
-    return year
-
-
-def _check_data_dirs(
-    data_directory: Union[str, Path] = Path("../data/")
-) -> Path:
+def _check_data_dirs(data_directory: Union[str, Path] = Path("../data/")) -> Path:
     """
     Validates data directory exists. If it doesn't exists, it creates it and creates 'raw/' and 'interim/' directories.
     """
@@ -67,7 +47,7 @@ def _download_data(
     """
 
     data_directory = _check_data_dirs(data_directory=data_directory)
-    _request = requests.get(url, stream=True)
+    _request = httpx.get(url, stream=True)
     TOTAL_SIZE = len(_request.content)
     _filename = url.split("/")[-1]
     _download_path = data_directory.joinpath("raw/")
@@ -106,73 +86,19 @@ def _download_data(
 
 @dataclass
 class ACS:
-    year: Union[int, str] = 2018
+    year: int = 2018
     state: str = "California"
-    survey: Union[int, str] = "1-Year"
-    person_or_household: str = "person"
-    _BASE_URL: str = field(default=_BASE_URL + "acs/data/pums/", repr=False)
-
-    def _SURVEY_URL_MAKER(self):
-        """
-        Builds url from which to retrieve data from Census FTP server.
-        """
-        _unit = self.person_or_household[0].lower()
-        _state_abbr = us.states.lookup(self.state).abbr.lower()
-
-        if "5" in str(self.survey):
-            _survey = "5-Year"
-        elif "3" in str(self.survey):
-            _survey = "3-Year"
-        else:
-            _survey = "1-Year"
-        __year = _clean_year(self.year)
-
-        def _ONE_THREE_OR_FIVE_YEAR(
-            _survey: str = _survey, __year: int = __year
-        ) -> str:
-            """
-            Fixes URL part for survey. Some years don't have 3-Year surveys.
-            If year <= 2006, _survey == ''.
-            From 2007-2008, _survey can be either 1 or 3 years.
-            From 2009-2013, _survey can be either 1, 3, or 5 years.
-            From 2013 onward, only 1 or 5 years.
-            """
-            if __year <= 2006:
-                if _survey != "1-Year":
-                    print(
-                        "Prior to 2007, only 1-Year ACS are available, defaulting to 1-Year"
-                    )
-                _survey = ""
-            elif __year >= 2007 and __year <= 2008:
-                if _survey == "5-Year":
-                    print(
-                        f"There is no 5-Year ACS for {__year}, defaulting to 3-Year"
-                    )
-                    _survey = "3-Year"
-            elif __year >= 2014:
-                if _survey == "3-Year":
-                    print(
-                        f"There is no 3-Year ACS for {__year}, defaulting to 5-Year"
-                    )
-                    _survey = "5-Year"
-            return _survey
-
-        self._survey = _ONE_THREE_OR_FIVE_YEAR(_survey, __year)
-
-        self._SURVEY_URL = (
-            self._BASE_URL
-            + str(__year)
-            + "/"
-            + self._survey
-            + "/"
-            + f"csv_{_unit}{_state_abbr}"
-            + ".zip"
-        ).replace("//csv", "/csv")
-        return None
+    survey: str = "1-Year"
+    sample_unit: str = "person"
 
     def __post_init__(self):
-        self._SURVEY_URL_MAKER()
+        self._survey = _ONE_THREE_OR_FIVE_YEAR(self.survey, self.year)
         self._year = _clean_year(self.year)
+        self._sample_unit = self.sample_unit[0].lower()
+        self._state_abbr = us.states.lookup(self.state).abbr.lower()
+        self._SURVEY_URL = build_acs_url(
+            self._year, self._survey, self._sample_unit, self._state_abbr
+        )
         self.NAME = "ACS"
 
     def download_data(
@@ -194,13 +120,11 @@ class ACS:
         """
         Retrieves ACS PUMS csv file and returns a Pandas dataframe.
         """
-        _GET_DATA_REQUEST = requests.get(self._SURVEY_URL)
+        _GET_DATA_REQUEST = httpx.get(self._SURVEY_URL)
 
         with ZipFile(io.BytesIO(_GET_DATA_REQUEST.content)) as thezip:
             csv_files = [
-                file
-                for file in thezip.infolist()
-                if file.filename.endswith(".csv")
+                file for file in thezip.infolist() if file.filename.endswith(".csv")
             ]
             # should be only 1
             assert len(csv_files) == 1
