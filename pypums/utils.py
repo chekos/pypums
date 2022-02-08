@@ -16,6 +16,29 @@ def _clean_year(year: int) -> int:
         raise ValueError("Year must be between 2000 and 2018.")
     return year
 
+def _ONE_THREE_OR_FIVE_YEAR(_survey: str, _year: int) -> str:
+        """
+        Fixes URL part for survey. Some years don't have 3-Year surveys.
+        If year <= 2006, _survey == ''.
+        From 2007-2008, _survey can be either 1 or 3 years.
+        From 2009-2013, _survey can be either 1, 3, or 5 years.
+        From 2013 onward, only 1 or 5 years.
+        """
+        if _year <= 2006:
+            if _survey != "1-Year":
+                print(
+                    "Prior to 2007, only 1-Year ACS are available, defaulting to 1-Year"
+                )
+            return ""
+        elif _year >= 2007 and _year <= 2008:
+            if _survey == "5-Year":
+                print(f"There is no 5-Year ACS for {_year}, defaulting to 3-Year")
+                return "3-Year/"
+        elif _year >= 2014:
+            if _survey == "3-Year":
+                print(f"There is no 3-Year ACS for {_year}, defaulting to 5-Year")
+                return "5-Year/"
+        return f"{_survey}/"
 
 def build_acs_url(
     year: int = 2018,
@@ -54,30 +77,6 @@ def build_acs_url(
         SURVEY = "1-Year"
 
     YEAR = _clean_year(year)
-
-    def _ONE_THREE_OR_FIVE_YEAR(_survey: str = SURVEY, _year: int = YEAR) -> str:
-        """
-        Fixes URL part for survey. Some years don't have 3-Year surveys.
-        If year <= 2006, _survey == ''.
-        From 2007-2008, _survey can be either 1 or 3 years.
-        From 2009-2013, _survey can be either 1, 3, or 5 years.
-        From 2013 onward, only 1 or 5 years.
-        """
-        if _year <= 2006:
-            if _survey != "1-Year":
-                print(
-                    "Prior to 2007, only 1-Year ACS are available, defaulting to 1-Year"
-                )
-            return ""
-        elif _year >= 2007 and _year <= 2008:
-            if _survey == "5-Year":
-                print(f"There is no 5-Year ACS for {_year}, defaulting to 3-Year")
-                return "3-Year/"
-        elif _year >= 2014:
-            if _survey == "3-Year":
-                print(f"There is no 3-Year ACS for {_year}, defaulting to 5-Year")
-                return "5-Year/"
-        return f"{_survey}/"
 
     SURVEY = f"{_ONE_THREE_OR_FIVE_YEAR(SURVEY, YEAR)}"
 
