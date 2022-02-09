@@ -32,18 +32,19 @@ def _ONE_THREE_OR_FIVE_YEAR(_survey: str, _year: int) -> str:
     From 2009-2013, _survey can be either 1, 3, or 5 years.
     From 2013 onward, only 1 or 5 years.
     """
+    _survey = _survey.lower()
     if _year <= 2006:
-        if _survey != "1-Year":
+        if _survey != "1-year":
             print("Prior to 2007, only 1-Year ACS are available, defaulting to 1-Year")
         return ""
     elif _year >= 2007 and _year <= 2008:
-        if _survey == "5-Year":
+        if _survey == "5-year":
             print(f"There is no 5-Year ACS for {_year}, defaulting to 3-Year")
-            return "3-Year/"
+            return "3-year/"
     elif _year >= 2014:
-        if _survey == "3-Year":
+        if _survey == "3-year":
             print(f"There is no 3-Year ACS for {_year}, defaulting to 5-Year")
-            return "5-Year/"
+            return "5-year/"
     return f"{_survey}/"
 
 
