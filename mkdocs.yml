@@ -1,1 +1,21 @@
 site_name: PyPUMS
+theme: readthedocs
+plugins:
+  - search
+  - include-markdown
+
+markdown_extensions:
+    - smarty
+    - toc:
+        permalink: True
+    - sane_lists
+    - admonition
+    - codehilite
+    - mkautodoc
+    - pymdownx.superfences:
+        custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format ''
+    - pymdownx.tabbed:
+        alternate_style: true
