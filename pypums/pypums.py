@@ -1,6 +1,6 @@
 """Main PyPUMS module."""
 
-from pypums.utils import build_acs_url, download_acs_data
+from pypums.utils import _download_data, build_acs_url
 
 
 def get_data(
@@ -8,12 +8,11 @@ def get_data(
     survey: str = "1-Year",
     sample_unit: str = "person",
     state: str = "California",
-    download_path: str = "../data/raw/",
+    data_directory: str = "../data/",
     extract: bool = True,
-    extract_path: str = "../data/interim/",
 ) -> None:
     """
-    Builds URL and downloads ACS 1-Year or 5-Year state PUMS estimates into a specified folder (defaults to ../data/raw/).
+    Downloads ACS 1-Year or 5-Year state PUMS estimates into a specified folder (defaults to `../data/`).
     """
 
     # builds URL
@@ -25,11 +24,13 @@ def get_data(
     )
 
     # download data
-    download_acs_data(
+    _download_data(
         url=URL,
-        download_path=download_path,
+        year=year,
+        name="ACS",
+        state=state,
         extract=extract,
-        extract_path=extract_path,
+        data_directory=data_directory,
     )
 
     return None

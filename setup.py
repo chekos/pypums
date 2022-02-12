@@ -27,7 +27,12 @@ setup(
     license="Apache License, Version 2.0",
     version=VERSION,
     packages=["pypums"],
-    install_requires=["us>=2.0.2", "tqdm>=4.62.3", "httpx>=0.22.0", "pandas>=1.4.0"],
+    install_requires=[
+        "us>=2.0.2",
+        "httpx>=0.22.0",
+        "pandas>=1.4.0",
+        "rich>=11.0.0",
+    ],
     extras_require={"test": ["pytest"]},
     python_requires=">=3.6",
 )
