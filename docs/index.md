@@ -1,11 +1,7 @@
 # Welcome to `PyPUMS`'s documentation!
 
-{% include-markdown "../README.md" %}
-```{include} ../README.md
-```
+{!./README.md[ln:2-]!}
 
-
-```
 # Indices and tables
 
-* {ref}`genindex`
+- [API documentation](about/api.md)
