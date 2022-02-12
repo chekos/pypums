@@ -33,6 +33,6 @@ setup(
         "pandas>=1.1.0",
         "rich>=11.0.0",
     ],
-    extras_require={"test": ["pytest"], "docs": ["mkdocs"]},
+    extras_require={"test": ["pytest"], "docs": ["mkdocs", "mdx_include", "mkautodoc", "pymdown-extensions"]},
     python_requires=">=3.6",
 )
