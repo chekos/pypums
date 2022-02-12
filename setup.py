@@ -30,7 +30,7 @@ setup(
     install_requires=[
         "us>=2.0.2",
         "httpx>=0.22.0",
-        "pandas>=1.4.0",
+        "pandas>=1.1.0",
         "rich>=11.0.0",
     ],
     extras_require={"test": ["pytest"]},
