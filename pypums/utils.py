@@ -1,9 +1,11 @@
 """Utility functions."""
+import io
 import us
-import time
 import httpx
+import pandas as pd
+import rich.progress
+from rich import print
 from zipfile import ZipFile
-from tqdm.auto import tqdm
 
 from pathlib import Path
 
@@ -32,33 +34,123 @@ def _ONE_THREE_OR_FIVE_YEAR(_survey: str, _year: int) -> str:
     From 2009-2013, _survey can be either 1, 3, or 5 years.
     From 2013 onward, only 1 or 5 years.
     """
-    _survey = _survey.lower()
+    _survey = _survey.title()
     if _year <= 2006:
-        if _survey != "1-year":
+        if _survey != "1-Year":
             print("Prior to 2007, only 1-Year ACS are available, defaulting to 1-Year")
         return ""
     elif _year >= 2007 and _year <= 2008:
-        if _survey == "5-year":
+        if _survey == "5-Year":
             print(f"There is no 5-Year ACS for {_year}, defaulting to 3-Year")
-            return "3-year/"
+            return "3-Year/"
     elif _year >= 2014:
-        if _survey == "3-year":
+        if _survey == "3-Year":
             print(f"There is no 3-Year ACS for {_year}, defaulting to 5-Year")
-            return "5-year/"
+            return "5-Year/"
     return f"{_survey}/"
 
 
-def _check_data_folder(
-    path: str = "../data/raw/",
-    extract_path: str = None,
-) -> None:
-    path = Path(path)
-    path.mkdir(parents=True, exist_ok=True)
-    if extract_path is not None:
-        extract_path = Path(extract_path)
-        extract_path.mkdir(parents=True, exist_ok=True)
+def _check_data_dirs(data_directory: Path = Path("../data/")) -> Path:
+    """
+    Validates data directory exists. If it doesn't exists, it creates it and creates 'raw/' and 'interim/' directories.
+    """
+    # set directory's values
+    _data_directory = Path(data_directory)
+    _raw_data_directory = _data_directory.joinpath("raw/")
+    _interim_data_directory = _data_directory.joinpath("interim/")
 
-    return None
+    # make sure they exists
+    if not _data_directory.exists():
+        _data_directory.mkdir()
+    if not _raw_data_directory.exists():
+        _raw_data_directory.mkdir()
+    if not _interim_data_directory.exists():
+        _interim_data_directory.mkdir()
+
+    return _data_directory
+
+
+def _download_data(
+    url: str,
+    year: int,
+    name: str,
+    state: str,
+    data_directory: Path = Path("../data/"),
+    extract: bool = True,
+) -> None:
+    """
+    Downloads a file from Census FTP server.
+    """
+
+    data_directory = _check_data_dirs(data_directory=data_directory)
+    _filename = url.split("/")[-1]
+    _download_path = data_directory.joinpath("raw/")
+    _extract_path = data_directory.joinpath("interim/")
+    _full_download_path = _download_path / _filename
+
+    with open(_full_download_path, "wb") as file:
+        with httpx.stream("GET", url) as response:
+            total = int(response.headers["Content-Length"])
+
+            with rich.progress.Progress(
+                "[progress.percentage]{task.percentage:>3.0f}%",
+                rich.progress.BarColumn(bar_width=None),
+                rich.progress.DownloadColumn(),
+                rich.progress.TransferSpeedColumn(),
+            ) as progress:
+                download_task = progress.add_task("Download", total=total)
+                for chunk in response.iter_bytes():
+                    file.write(chunk)
+                    progress.update(
+                        download_task, completed=response.num_bytes_downloaded
+                    )
+            print("Download complete!")
+
+    if extract:
+        _year = str(year)[-2:]
+        _state = us.states.lookup(state).abbr.upper()
+        _extract__folder = f"{name}_{_year}/"
+        _extract_path_and_folder = _extract_path.joinpath(_extract__folder)
+        if not _extract_path_and_folder.exists():
+            _extract_path_and_folder.mkdir()
+        _full_extract_path = _extract_path_and_folder.joinpath(_state)
+        if not _full_extract_path.exists():
+            _full_extract_path.mkdir()
+        CONTENT_FILE = ZipFile(_full_download_path)
+
+        for file in rich.progress.track(
+            CONTENT_FILE.filelist,
+            description="Extracting...",
+        ):
+            CONTENT_FILE.extract(file, str(_full_extract_path))
+
+        print(f"Files extracted successfully at {_full_extract_path}")
+
+
+def _as_dataframe(URL: str) -> pd.DataFrame:
+    """Downloads zip file from URL containing one CSV file and returns it as a pandas.DataFrame
+
+    Parameters
+    ----------
+    URL : str
+        URL to retrieve zip file from
+
+    Returns
+    -------
+    pd.DataFrame
+        DataFrame containing data from CSV
+    """
+    _GET_DATA_REQUEST = httpx.get(URL)
+
+    with ZipFile(io.BytesIO(_GET_DATA_REQUEST.content)) as thezip:
+        csv_files = [
+            file for file in thezip.infolist() if file.filename.endswith(".csv")
+        ]
+        # should be only 1
+        assert len(csv_files) == 1
+        with thezip.open(csv_files[0]) as thefile:
+            data = pd.read_csv(thefile)
+    return data
 
 
 def build_acs_url(
@@ -103,118 +195,3 @@ def build_acs_url(
 
     SURVEY_URL = f"{BASE_URL}{YEAR}/{SURVEY}csv_{UNIT}{STATE_ABBR}.zip"
     return SURVEY_URL
-
-
-def download_acs_data(
-    url: str,
-    download_path: str = "../data/raw/",
-    extract: bool = True,
-    extract_path: str = "../data/interim/",
-) -> None:
-    """
-    Downloads ACS 1-, 3-, or 5- estimates from a US Census Bureau's FTP-server URL.
-    """
-
-    # Checks download_path and extract_path exists
-    _check_data_folder(
-        path=download_path, extract_path=extract_path if extract else None
-    )
-
-    # Downloads Data
-    BASE_URL = "https://www2.census.gov/programs-surveys/acs/data/pums/"
-    if url[:55] != BASE_URL:
-        raise ValueError(
-            "Census FPT-server url's start with 'https://www2.census.gov/programs-surveys/acs/data/pums/'"
-        )
-
-    state = url.split("/")[-1].split(".")[0][-2:]
-
-    r = httpx.get(url, stream=True)
-
-    # content-lenght was dropped from their headers so try or use default 40 mb
-    total_size = int(r.headers.get("content-length", 40000000))
-
-    ### Checks
-    download_path = Path(download_path)
-    extract_path = Path(extract_path)
-
-    if download_path.is_file():
-        raise ValueError(
-            "You provided a path to a file. You need to provide a path to a directory."
-        )
-    # if not download_path.is_dir():
-    #     raise ValueError("You need to provide a path to a directory.")
-    if not download_path.exists():
-        download_path.mkdir()
-
-    ### downloads data
-    filename = url.split("/")[-1]
-
-    with open(download_path / filename, "wb") as f:
-        print(f"Downloading at {download_path / filename}.")
-        chunk_size = 1024
-
-        for data in tqdm(
-            iterable=r.iter_content(chunk_size=chunk_size),
-            total=total_size / chunk_size,
-            unit="KB",
-        ):
-            f.write(data)
-
-    print("Download complete!")
-
-    ## Extract file
-    if extract:
-        year = url.split("/")[7]
-        extract_folder = f"ACS_{year}"
-
-        final_extraction_folder = extract_path / extract_folder.upper() / state
-
-        if extract_path.is_file():
-            raise ValueError(
-                "You provided a path to a file. You need to provide a path to a directory."
-            )
-        # if not extract_path.is_dir():
-        #     raise ValueError("You need to provide a path to a directory.")
-        if not extract_path.exists():
-            extract_path.mkdir()
-
-        # remove dir if it exists
-        if final_extraction_folder.exists():
-            for item in final_extraction_folder.glob("*"):
-                item.unlink()
-            final_extraction_folder.rmdir()
-
-        # create dir
-        if not Path(extract_path / extract_folder.upper()).exists():
-            Path(extract_path / extract_folder.upper()).mkdir()
-        final_extraction_folder.mkdir()
-
-        # extracts data
-        content_file = ZipFile(download_path / filename)
-
-        ## for progress bar
-        file_size = 0
-        for file_info in content_file.infolist():
-            file_size += int(file_info.file_size)
-
-        extract_folder_size = sum(
-            item.stat().st_size for item in final_extraction_folder.iterdir()
-        )
-        expected_final_size = extract_folder_size + file_size
-
-        ## Start extraction:
-        print(f"Extracting to {final_extraction_folder}")
-        content_file.extractall(final_extraction_folder)
-        while extract_folder_size < expected_final_size:
-            extract_folder_size = sum(
-                item.stat().st_size for item in final_extraction_folder.iterdir()
-            )
-            print(
-                f"Extracting files to {final_extraction_folder}: {(extract_folder_size / file_size) :.2%}",
-                end="\r",
-            )
-            time.sleep(0.5)
-            break
-
-        print(f"Files extracted successfully at {final_extraction_folder}")
