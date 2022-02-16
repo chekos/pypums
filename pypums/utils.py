@@ -1,14 +1,19 @@
 """Utility functions."""
 import io
-import us
+from pathlib import Path
+from zipfile import ZipFile
+
 import httpx
 import pandas as pd
 import rich.progress
+import us
 from rich import print
-from zipfile import ZipFile
+from typer import get_app_dir
 
-from pathlib import Path
+from . import __app_name__
 
+app_dir = get_app_dir(__app_name__)
+data_dir = Path(app_dir).joinpath("data")
 
 SURVEYS_BASE_URL = "https://www2.census.gov/programs-surveys/"
 
@@ -50,32 +55,51 @@ def _ONE_THREE_OR_FIVE_YEAR(_survey: str, _year: int) -> str:
     return f"{_survey}/"
 
 
-def _check_data_dirs(data_directory: Path = Path("../data/")) -> Path:
+def _check_data_dirs(data_directory: data_dir) -> Path:
     """
     Validates data directory exists. If it doesn't exists, it creates it and creates 'raw/' and 'interim/' directories.
     """
     # set directory's values
-    _data_directory = Path(data_directory)
-    _raw_data_directory = _data_directory.joinpath("raw/")
-    _interim_data_directory = _data_directory.joinpath("interim/")
+    _raw_data_directory = data_directory.joinpath("raw/")
+    _interim_data_directory = data_directory.joinpath("interim/")
 
     # make sure they exists
-    if not _data_directory.exists():
-        _data_directory.mkdir()
+    if not data_directory.exists():
+        data_directory.mkdir()
     if not _raw_data_directory.exists():
         _raw_data_directory.mkdir()
     if not _interim_data_directory.exists():
         _interim_data_directory.mkdir()
 
-    return _data_directory
+    return data_directory
+
+
+def _extract_data(downloaded_file: Path, extract_dir: Path):
+    """Extract survey data downloaded from Census server."""
+    *_, survey_year, _ = downloaded_file.parts
+    state = downloaded_file.stem[-2:]
+
+    full_extract_dir_path = extract_dir.joinpath(survey_year)
+    if not full_extract_dir_path.exists():
+        full_extract_dir_path.mkdir()
+    full_extract_path = full_extract_dir_path.joinpath(state)
+    if not full_extract_path.exists():
+        full_extract_path.mkdir()
+    CONTENT_FILE = ZipFile(downloaded_file)
+
+    for file in rich.progress.track(
+        CONTENT_FILE.filelist,
+        description="Extracting...",
+    ):
+        CONTENT_FILE.extract(file, str(full_extract_path))
+
+    print(f"Files extracted successfully at [magenta]{full_extract_path}[/magenta]")
 
 
 def _download_data(
     url: str,
-    year: int,
     name: str,
-    state: str,
-    data_directory: Path = Path("../data/"),
+    data_directory: data_dir,
     extract: bool = True,
 ) -> None:
     """
@@ -83,10 +107,17 @@ def _download_data(
     """
 
     data_directory = _check_data_dirs(data_directory=data_directory)
-    _filename = url.split("/")[-1]
     _download_path = data_directory.joinpath("raw/")
     _extract_path = data_directory.joinpath("interim/")
-    _full_download_path = _download_path / _filename
+
+    *_, year, _, _filename = url.split("/")
+    year = year[-2:]
+    _survey_dir = _download_path.joinpath(f"{name}_{year}/")
+
+    if not _survey_dir.exists():
+        _survey_dir.mkdir()
+
+    _full_download_path = _survey_dir.joinpath(_filename)
 
     with open(_full_download_path, "wb") as file:
         with httpx.stream("GET", url) as response:
@@ -104,27 +135,12 @@ def _download_data(
                     progress.update(
                         download_task, completed=response.num_bytes_downloaded
                     )
-            print("Download complete!")
+            print(
+                f"File downloaded successfully at [magenta]{_full_download_path}[/magenta]"
+            )
 
     if extract:
-        _year = str(year)[-2:]
-        _state = us.states.lookup(state).abbr.upper()
-        _extract__folder = f"{name}_{_year}/"
-        _extract_path_and_folder = _extract_path.joinpath(_extract__folder)
-        if not _extract_path_and_folder.exists():
-            _extract_path_and_folder.mkdir()
-        _full_extract_path = _extract_path_and_folder.joinpath(_state)
-        if not _full_extract_path.exists():
-            _full_extract_path.mkdir()
-        CONTENT_FILE = ZipFile(_full_download_path)
-
-        for file in rich.progress.track(
-            CONTENT_FILE.filelist,
-            description="Extracting...",
-        ):
-            CONTENT_FILE.extract(file, str(_full_extract_path))
-
-        print(f"Files extracted successfully at {_full_extract_path}")
+        _extract_data(_full_download_path, _extract_path)
 
 
 def _as_dataframe(URL: str) -> pd.DataFrame:

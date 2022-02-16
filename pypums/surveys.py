@@ -4,11 +4,12 @@ from dataclasses import dataclass
 import us
 
 from pypums.utils import (
+    _ONE_THREE_OR_FIVE_YEAR,
     _as_dataframe,
     _clean_year,
-    _ONE_THREE_OR_FIVE_YEAR,
-    build_acs_url,
     _download_data,
+    build_acs_url,
+    data_dir,
 )
 
 
@@ -29,17 +30,13 @@ class ACS:
         )
         self.NAME = "ACS"
 
-    def download_data(
-        self, data_directory: str = "../data/", extract: bool = True
-    ) -> None:
+    def download_data(self, data_directory: data_dir, extract: bool = True) -> None:
         """
         Downloads PUMS file from Census FTP server.
         """
         _download_data(
             url=self._SURVEY_URL,
-            year=self._year,
             name=self.NAME,
-            state=self.state,
             data_directory=data_directory,
             extract=extract,
         )
