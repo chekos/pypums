@@ -3,7 +3,8 @@ import pytest
 
 from pypums import __app_name__, __version__, cli
 
-runner  = CliRunner()
+runner = CliRunner()
+
 
 @pytest.mark.parametrize(
     "options",
@@ -17,11 +18,10 @@ def test_version(options):
     assert result.exit_code == 0
     assert f"{__app_name__} v{__version__}" in result.output
 
+
 @pytest.mark.parametrize(
     "options",
-    (
-        ["--help"],
-    ),
+    (["--help"],),
 )
 def test_help(options):
     result = CliRunner().invoke(cli.cli, options)
