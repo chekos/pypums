@@ -143,7 +143,7 @@ def _download_data(
         _extract_data(_full_download_path, _extract_path)
 
 
-def _as_dataframe(URL: str) -> pd.DataFrame:
+def _download_as_dataframe(URL: str) -> pd.DataFrame:
     """Downloads zip file from URL containing one CSV file and returns it as a pandas.DataFrame
 
     Parameters
