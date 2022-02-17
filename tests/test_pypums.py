@@ -1,4 +1,4 @@
-from pypums.utils import build_acs_url
+from pypums.utils import build_acs_url, data_dir
 from pypums import ACS
 
 from pandas import DataFrame
@@ -55,3 +55,18 @@ def test_acs_class_attributes():
 
 def test_acs_class_as_df():
     assert isinstance(ACS(state="alaska").as_dataframe(), DataFrame)
+
+
+def test_instantiated_acs():
+    instantiated_ACS = ACS()
+    instantiated_ACS.download_data()
+    instantiated_df = instantiated_ACS.as_dataframe()
+    assert instantiated_ACS._extracted == True
+    assert instantiated_ACS._data_dir == data_dir
+    assert instantiated_ACS._extract_folder == data_dir.joinpath(
+        f"interim/acs_{str(instantiated_ACS._year)[-2:]}/{instantiated_ACS._state_abbr}/"
+    )
+    assert instantiated_ACS._download_folder == data_dir.joinpath(
+        f"raw/acs_{str(instantiated_ACS._year)[-2:]}/"
+    )
+    assert isinstance(instantiated_df, DataFrame)
