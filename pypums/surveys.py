@@ -1,11 +1,13 @@
 """Surveys module."""
 from dataclasses import dataclass
+from pathlib import Path
 
 import us
+from pandas import read_csv
 
 from pypums.utils import (
     _ONE_THREE_OR_FIVE_YEAR,
-    _as_dataframe,
+    _download_as_dataframe,
     _clean_year,
     _download_data,
     build_acs_url,
@@ -29,20 +31,57 @@ class ACS:
             self._year, self._survey, self._sample_unit, self._state_abbr
         )
         self.NAME = "ACS"
+        self._data_dir = None
+        self._extracted = None
+        self._extract_folder = None
+        self._download_folder = None
 
-    def download_data(self, data_directory: data_dir, extract: bool = True) -> None:
+    def download_data(
+        self,
+        data_directory: Path = data_dir,
+        extract: bool = True,
+        overwrite: bool = False,
+    ) -> None:
         """
         Downloads PUMS file from Census FTP server.
         """
-        _download_data(
-            url=self._SURVEY_URL,
-            name=self.NAME,
-            data_directory=data_directory,
-            extract=extract,
+        self._data_dir = data_directory
+        self._extracted = extract
+        self._extract_folder = data_directory.joinpath(
+            f"interim/acs_{str(self._year)[-2:]}/{self._state_abbr}/"
         )
+        self._download_folder = data_directory.joinpath(
+            f"raw/acs_{str(self._year)[-2:]}/"
+        )
+
+        if self._download_folder.joinpath(
+            f"csv_{self._sample_unit}{self._state_abbr}.zip"
+        ).exists():
+            if overwrite:
+                _download_data(
+                    url=self._SURVEY_URL,
+                    name=self.NAME,
+                    data_directory=data_directory,
+                    extract=extract,
+                )
+            else:
+                print(
+                    "This was previously downloaded, to read it as a dataframe use `.as_dataframe()` or set `overwrite` to True."
+                )
+        else:
+            _download_data(
+                url=self._SURVEY_URL,
+                name=self.NAME,
+                data_directory=data_directory,
+                extract=extract,
+            )
 
     def as_dataframe(self):
         """
         Retrieves ACS PUMS csv file and returns a Pandas dataframe.
         """
-        return _as_dataframe(self._SURVEY_URL)
+        if self._extracted == True:
+            extracted_file = list(self._extract_folder.glob("*.csv"))[0]
+            return read_csv(extracted_file)
+        else:
+            return _download_as_dataframe(self._SURVEY_URL)
