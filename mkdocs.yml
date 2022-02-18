@@ -19,3 +19,7 @@ markdown_extensions:
     - pymdownx.tabbed:
         alternate_style: true
     - mdx_include
+
+
+extra_css:
+  - css/custom.css

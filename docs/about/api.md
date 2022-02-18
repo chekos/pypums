@@ -1,7 +1,12 @@
 # API documentation
 
-::: pypums.get_data
+::: pypums.ACS
     :docstring:
 
-::: pypums.ACS
+## CLI
+
+::: pypums.cli.acs_url
+    :docstring:
+
+::: pypums.cli.download_acs
     :docstring:
