@@ -37,7 +37,7 @@ setup(
     ],
     extras_require={
         "test": ["pytest"],
-        "docs": ["mkdocs", "mdx_include", "mkautodoc", "pymdown-extensions"],
+        "docs": ["mkdocs", "mdx_include", "mkdocstrings", "mkdocs-typer", "pymdown-extensions"],
     },
     python_requires=">=3.6",
     entry_points="""
