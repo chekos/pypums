@@ -14,7 +14,7 @@ from . import __app_name__
 
 app_dir = Path(get_app_dir(__app_name__))
 data_dir = app_dir.joinpath("data")
-data_dir.mkdir(parents = True)
+data_dir.mkdir(parents = True, exist_ok=True)
 
 SURVEYS_BASE_URL = "https://www2.census.gov/programs-surveys/"
 
