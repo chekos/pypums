@@ -12,8 +12,10 @@ from typer import get_app_dir
 
 from . import __app_name__
 
-app_dir = get_app_dir(__app_name__)
-data_dir = Path(app_dir).joinpath("data")
+app_dir = Path(get_app_dir(__app_name__))
+if not app_dir.exists():
+    app_dir.mkdir()
+data_dir = app_dir.joinpath("data")
 
 SURVEYS_BASE_URL = "https://www2.census.gov/programs-surveys/"
 
