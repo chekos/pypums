@@ -38,7 +38,7 @@ class ACS:
         self._extract_folder = None
         self._download_folder = None
 
-    def download_data(
+    def download(
         self,
         data_directory: Path = data_dir,
         extract: bool = True,
