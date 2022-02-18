@@ -1,11 +1,6 @@
 import os
-
 from setuptools import setup
 
-from pypums.utils import app_dir
-
-if not app_dir.exists():
-    app_dir.mkdir()
 
 VERSION = "0.1rc1"
 
