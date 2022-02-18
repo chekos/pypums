@@ -17,8 +17,8 @@ from pypums.utils import (
 
 @dataclass
 class ACS:
-    """American Community Survey base class. 
-    """
+    """American Community Survey base class."""
+
     year: int = 2018
     state: str = "California"
     survey: str = "1-Year"
