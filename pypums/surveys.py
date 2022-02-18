@@ -62,7 +62,7 @@ class ACS:
             if overwrite:
                 _download_data(
                     url=self._SURVEY_URL,
-                    name=self.NAME,
+                    name=self.NAME.lower(),
                     data_directory=data_directory,
                     extract=extract,
                 )
@@ -73,7 +73,7 @@ class ACS:
         else:
             _download_data(
                 url=self._SURVEY_URL,
-                name=self.NAME,
+                name=self.NAME.lower(),
                 data_directory=data_directory,
                 extract=extract,
             )
