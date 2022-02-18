@@ -7,7 +7,7 @@ Stable release
 To install PyPUMS, run this command in your terminal:
 
 ```shell
-$ pip install pypums
+pip install pypums
 ```
 
 This is the preferred method to install pypums, as it will always
@@ -23,18 +23,18 @@ The sources for pypums can be downloaded from the [Github repo](https://github.c
 You can either clone the public repository:
 
 ```shell
-$ git clone git://github.com/chekos/pypums
+git clone git://github.com/chekos/pypums
 ```
 
 Or download the
-[tarball](https://github.com/chekos/pypums/tarball/master):
+[tarball](https://github.com/chekos/pypums/tarball/main):
 
 ```shell
-$ curl  -OL https://github.com/chekos/pypums/tarball/master
+curl  -OL https://github.com/chekos/pypums/tarball/main
 ```
 
 Once you have a copy of the source, you can install it with:
 
 ```shell
-$ python setup.py install
+python setup.py install
 ```
