@@ -7,8 +7,8 @@ from pandas import read_csv
 
 from pypums.utils import (
     _ONE_THREE_OR_FIVE_YEAR,
-    _download_as_dataframe,
     _clean_year,
+    _download_as_dataframe,
     _download_data,
     build_acs_url,
     data_dir,

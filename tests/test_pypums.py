@@ -1,7 +1,7 @@
-from pypums.utils import build_acs_url, data_dir
-from pypums import ACS
-
 from pandas import DataFrame
+
+from pypums import ACS
+from pypums.utils import build_acs_url, data_dir
 
 
 def test_build_acs_url():
