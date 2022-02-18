@@ -21,7 +21,7 @@ or as a CLI
 
 Install this library using `pip`:
 
-    $ pip install pypums
+    pip install pypums
 
 ## Usage
 

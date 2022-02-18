@@ -82,3 +82,20 @@ Options:
                                   extract]
   --help                          Show this message and exit.
 ```
+
+## As a package
+You can `import pypums` on your jupyter notebooks or scripts, instantiate the `ACS()` class and retrieve its data using the `.download()` method. You can also use `.as_dataframe()` to return the data as a pandas DataFrame.
+
+If you've previously downloaded the data, `pypums` will try to search for it on the default folder.
+
+```python
+from pypums import ACS
+
+ca_2018 = ACS(year=2018, state='California')
+
+# to download the data on a specified folder you can run
+ca_2018.download(data_directory="./data/")
+
+# to use it as a dataframe
+ca_2018_df = ca_2018.as_dataframe()
+```
