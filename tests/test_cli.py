@@ -1,5 +1,5 @@
-from typer.testing import CliRunner
 import pytest
+from typer.testing import CliRunner
 
 from pypums import __app_name__, __version__, cli
 
