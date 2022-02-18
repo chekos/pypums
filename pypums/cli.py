@@ -20,15 +20,18 @@ cli = typer.Typer()
 
 @cli.command()
 def acs_url(
-    year: int = typer.Argument(
+    year: int = typer.Option(
         ...,
+        "--year",
         help="Year of survey (2000 - 2019)",
     ),
-    state: str = typer.Argument(
-        ..., help="One of the 50 US States or District of Columbia"
+    state: str = typer.Option(
+        ..., "--state", help="One of the 50 US States or District of Columbia"
     ),
-    survey: str = typer.Argument("1-year", help="One of '1-', '3-' or '5-year'"),
-    sample_unit: str = typer.Argument(
+    survey: str = typer.Option(
+        "1-year", "--survey", help="One of '1-', '3-' or '5-year'"
+    ),
+    sample_unit: str = typer.Option(
         "person", help="Unit of observation (person or household)"
     ),
 ):
@@ -42,15 +45,15 @@ def acs_url(
 
 @cli.command()
 def download_acs(
-    year: int = typer.Argument(
+    year: int = typer.Option(
         ...,
         help="Year of survey (2000 - 2019)",
     ),
-    state: str = typer.Argument(
+    state: str = typer.Option(
         ..., help="One of the 50 US States or District of Columbia"
     ),
-    survey: str = typer.Argument("1-year", help="One of '1-', '3-' or '5-year'"),
-    sample_unit: str = typer.Argument(
+    survey: str = typer.Option("1-year", help="One of '1-', '3-' or '5-year'"),
+    sample_unit: str = typer.Option(
         "person", help="Unit of observation (person or household)"
     ),
     data_directory: Path = typer.Option(data_dir, file_okay=False, dir_okay=True),
