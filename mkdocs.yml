@@ -1,7 +1,29 @@
 site_name: PyPUMS
 theme: readthedocs
+
+nav:
+  - PyPUMS: index.md
+  - User guide:
+    - Installation: user-guide/installation.md
+    - Usage: user-guide/usage.md
+  - API reference: 
+    - Surveys (ACS): reference/surveys.md
+    - CLI: reference/cli.md
+  - About:
+    - Authors: about/authors.md
+    - Contributing: about/contributing.md
+    - Changelog: about/history.md
+
 plugins:
   - search
+  - autorefs
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          rendering:
+            show_source: false
+            show_root_heading: true
   
 markdown_extensions:
     - smarty
@@ -10,7 +32,6 @@ markdown_extensions:
     - sane_lists
     - admonition
     - codehilite
-    - mkautodoc
     - pymdownx.superfences:
         custom_fences:
         - name: mermaid
@@ -19,7 +40,4 @@ markdown_extensions:
     - pymdownx.tabbed:
         alternate_style: true
     - mdx_include
-
-
-extra_css:
-  - css/custom.css
+    - mkdocs-typer
