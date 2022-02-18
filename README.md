@@ -1,3 +1,5 @@
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/chekos/pypums/HEAD?labpath=binder%2Fexample.ipynb)
+
 # pypums
 
 [![Build status](https://github.com/chekos/pypums/workflows/build/badge.svg?branch=master&event=push)](https://github.com/chekos/pypums/actions?query=workflow%3Abuild)
@@ -7,7 +9,6 @@
 Download Public Use Micro Sample (PUMS) data files from the US Census Bureau's FTP server.
 
 ## Usage
-
 
 To use PyPUMS in a project:
 
