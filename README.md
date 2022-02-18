@@ -1,4 +1,4 @@
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/chekos/pypums/HEAD?labpath=binder%2Fexample.ipynb)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/chekos/pypums/HEAD?labpath=examples%2Fnb-example.ipynb)
 
 # pypums
 
