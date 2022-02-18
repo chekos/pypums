@@ -59,7 +59,7 @@ def test_acs_class_as_df():
 
 def test_instantiated_acs():
     instantiated_ACS = ACS()
-    instantiated_ACS.download_data()
+    instantiated_ACS.download()
     instantiated_df = instantiated_ACS.as_dataframe()
     assert instantiated_ACS._extracted == True
     assert instantiated_ACS._data_dir == data_dir
