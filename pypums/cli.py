@@ -77,7 +77,7 @@ def download_acs(
     data_directory = _check_data_dirs(data_directory)
     state_abbr = us.states.lookup(state).abbr.lower()
     full_download_path = data_directory.joinpath(
-        f"raw/csv_{sample_unit[0]}{state_abbr}.zip"
+        f"raw/acs_{str(year)[-2:]}/csv_{sample_unit[0]}{state_abbr}.zip"
     )
 
     if full_download_path.exists():
