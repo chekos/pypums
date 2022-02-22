@@ -121,7 +121,7 @@ def _download_data(
     _full_download_path = _survey_dir.joinpath(_filename)
 
     with open(_full_download_path, "wb") as file:
-        with httpx.stream("GET", url) as response:
+        with httpx.stream("GET", url, timeout=None) as response:
             total = int(response.headers["Content-Length"])
 
             with rich.progress.Progress(
@@ -157,7 +157,7 @@ def _download_as_dataframe(URL: str) -> pd.DataFrame:
     pd.DataFrame
         DataFrame containing data from CSV
     """
-    _GET_DATA_REQUEST = httpx.get(URL)
+    _GET_DATA_REQUEST = httpx.get(URL, timeout=None)
 
     with ZipFile(io.BytesIO(_GET_DATA_REQUEST.content)) as thezip:
         csv_files = [
