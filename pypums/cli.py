@@ -101,7 +101,7 @@ def _version_callback(value: bool) -> None:
 
 
 @cli.callback()
-def main(
+def pypums(
     version: bool = typer.Option(
         None,
         "--version",
