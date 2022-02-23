@@ -8,19 +8,8 @@ import pandas as pd
 import rich.progress
 import us
 from rich import print
-from typer import get_app_dir
 
-from . import __app_name__
-
-app_dir = Path(get_app_dir(__app_name__))
-data_dir = app_dir.joinpath("data")
-data_dir.mkdir(parents=True, exist_ok=True)
-
-SURVEYS_BASE_URL = "https://www2.census.gov/programs-surveys/"
-
-ONE_OR_THREE_YEARS = list(range(2000, 2009))
-ONE_THREE_FIVE_YEARS = list(range(2009, 2014))
-ONE_OR_FIVE = list(range(2014, 2020))
+from .constants import ACS_PUMS_URL, __app_name__, data_dir
 
 
 def _clean_year(year: int) -> int:
@@ -198,7 +187,6 @@ def build_acs_url(
         URL to retrieve data from.
     """
 
-    BASE_URL = SURVEYS_BASE_URL + "acs/data/pums/"
     UNIT = sample_unit[0].lower()
     STATE_ABBR = us.states.lookup(state).abbr.lower()
 
@@ -213,5 +201,5 @@ def build_acs_url(
 
     SURVEY = f"{_clean_survey(SURVEY, YEAR)}"
 
-    SURVEY_URL = f"{BASE_URL}{YEAR}/{SURVEY}csv_{UNIT}{STATE_ABBR}.zip"
+    SURVEY_URL = f"{ACS_PUMS_URL}{YEAR}/{SURVEY}csv_{UNIT}{STATE_ABBR}.zip"
     return SURVEY_URL

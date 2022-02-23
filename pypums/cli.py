@@ -4,7 +4,7 @@ import typer
 import us
 from rich.console import Console
 
-from . import __app_name__, __version__
+from .constants import __app_name__, __version__
 from .utils import (
     _check_data_dirs,
     _download_data,

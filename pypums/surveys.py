@@ -5,7 +5,7 @@ from pathlib import Path
 import us
 from pandas import read_csv
 
-from pypums.utils import (
+from .utils import (
     _clean_survey,
     _clean_year,
     _download_as_dataframe,
