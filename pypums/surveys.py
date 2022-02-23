@@ -29,10 +29,10 @@ class ACS:
         self._survey = _clean_survey(self.survey, self._year)
         self._sample_unit = self.sample_unit[0].lower()
         self._state_abbr = us.states.lookup(self.state).abbr.lower()
-        self._SURVEY_URL = build_acs_url(
+        self._survey_url = build_acs_url(
             self._year, self._survey, self._sample_unit, self._state_abbr
         )
-        self.NAME = "ACS"
+        self.name = "ACS"
         self._data_dir = None
         self._extracted = None
         self._extract_folder = None
@@ -61,8 +61,8 @@ class ACS:
         ).exists():
             if overwrite:
                 _download_data(
-                    url=self._SURVEY_URL,
-                    name=self.NAME.lower(),
+                    url=self._survey_url,
+                    name=self.name.lower(),
                     data_directory=data_directory,
                     extract=extract,
                 )
@@ -72,8 +72,8 @@ class ACS:
                 )
         else:
             _download_data(
-                url=self._SURVEY_URL,
-                name=self.NAME.lower(),
+                url=self._survey_url,
+                name=self.name.lower(),
                 data_directory=data_directory,
                 extract=extract,
             )
@@ -86,4 +86,4 @@ class ACS:
             extracted_file = list(self._extract_folder.glob("*.csv"))[0]
             return read_csv(extracted_file)
         else:
-            return _download_as_dataframe(self._SURVEY_URL)
+            return _download_as_dataframe(self._survey_url)

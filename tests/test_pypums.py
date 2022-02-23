@@ -29,19 +29,19 @@ def test_build_acs_url():
 
 def test_acs_class_urls():
     assert (
-        ACS()._SURVEY_URL
+        ACS()._survey_url
         == "https://www2.census.gov/programs-surveys/acs/data/pums/2018/1-Year/csv_pca.zip"
     )
     assert (
-        ACS(2005, "arkansas", "1-year", "household")._SURVEY_URL
+        ACS(2005, "arkansas", "1-year", "household")._survey_url
         == "https://www2.census.gov/programs-surveys/acs/data/pums/2005/csv_har.zip"
     )
     assert (
-        ACS(2012, "Delaware", "3-year", "person")._SURVEY_URL
+        ACS(2012, "Delaware", "3-year", "person")._survey_url
         == "https://www2.census.gov/programs-surveys/acs/data/pums/2012/3-Year/csv_pde.zip"
     )
     assert (
-        ACS(2018, "colorado", "3-year", "household")._SURVEY_URL
+        ACS(2018, "colorado", "3-year", "household")._survey_url
         == "https://www2.census.gov/programs-surveys/acs/data/pums/2018/5-Year/csv_hco.zip"
     )
 

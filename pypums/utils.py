@@ -75,13 +75,13 @@ def _extract_data(downloaded_file: Path, extract_dir: Path):
     full_extract_path = full_extract_dir_path.joinpath(state)
     if not full_extract_path.exists():
         full_extract_path.mkdir()
-    CONTENT_FILE = ZipFile(downloaded_file)
+    content_file = ZipFile(downloaded_file)
 
     for file in rich.progress.track(
-        CONTENT_FILE.filelist,
+        content_file.filelist,
         description="Extracting...",
     ):
-        CONTENT_FILE.extract(file, str(full_extract_path))
+        content_file.extract(file, str(full_extract_path))
 
     print(f"Files extracted successfully at [magenta]{full_extract_path}[/magenta]")
 
@@ -149,9 +149,9 @@ def _download_as_dataframe(URL: str) -> pd.DataFrame:
     pd.DataFrame
         DataFrame containing data from CSV
     """
-    _GET_DATA_REQUEST = httpx.get(URL, timeout=None)
+    response = httpx.get(URL, timeout=None)
 
-    with ZipFile(io.BytesIO(_GET_DATA_REQUEST.content)) as thezip:
+    with ZipFile(io.BytesIO(response.content)) as thezip:
         csv_files = [
             file for file in thezip.infolist() if file.filename.endswith(".csv")
         ]
@@ -187,19 +187,19 @@ def build_acs_url(
         URL to retrieve data from.
     """
 
-    UNIT = sample_unit[0].lower()
-    STATE_ABBR = us.states.lookup(state).abbr.lower()
+    unit = sample_unit[0].lower()
+    state_abbr = us.states.lookup(state).abbr.lower()
 
     if "5" in survey:
-        SURVEY = "5-Year"
+        survey = "5-Year"
     elif "3" in survey:
-        SURVEY = "3-Year"
+        survey = "3-Year"
     else:
-        SURVEY = "1-Year"
+        survey = "1-Year"
 
-    YEAR = _clean_year(year)
+    year = _clean_year(year)
 
-    SURVEY = f"{_clean_survey(SURVEY, YEAR)}"
+    survey = f"{_clean_survey(survey, year)}"
 
-    SURVEY_URL = f"{ACS_PUMS_URL}{YEAR}/{SURVEY}csv_{UNIT}{STATE_ABBR}.zip"
-    return SURVEY_URL
+    survey_url = f"{ACS_PUMS_URL}{year}/{survey}csv_{unit}{state_abbr}.zip"
+    return survey_url
