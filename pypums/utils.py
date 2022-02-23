@@ -32,7 +32,7 @@ def _clean_year(year: int) -> int:
     return year
 
 
-def _ONE_THREE_OR_FIVE_YEAR(_survey: str, _year: int) -> str:
+def _clean_survey(_survey: str, _year: int) -> str:
     """
     Fixes URL part for survey. Some years don't have 3-Year surveys.
     If year <= 2006, _survey == ''.
@@ -122,7 +122,7 @@ def _download_data(
 
     with open(_full_download_path, "wb") as file:
         with httpx.stream("GET", url, timeout=None) as response:
-            total = int(response.headers["Content-Length"])
+            total = response.headers.get("Content-Length")
 
             with rich.progress.Progress(
                 "[progress.percentage]{task.percentage:>3.0f}%",
@@ -130,7 +130,10 @@ def _download_data(
                 rich.progress.DownloadColumn(),
                 rich.progress.TransferSpeedColumn(),
             ) as progress:
-                download_task = progress.add_task("Download", total=total)
+                if total:
+                    download_task = progress.add_task("Download", total=int(total))
+                else:
+                    download_task = progress.add_task("Download")
                 for chunk in response.iter_bytes():
                     file.write(chunk)
                     progress.update(
