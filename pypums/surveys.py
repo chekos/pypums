@@ -6,7 +6,7 @@ import us
 from pandas import read_csv
 
 from pypums.utils import (
-    _ONE_THREE_OR_FIVE_YEAR,
+    _clean_survey,
     _clean_year,
     _download_as_dataframe,
     _download_data,
@@ -26,7 +26,7 @@ class ACS:
 
     def __post_init__(self):
         self._year = _clean_year(self.year)
-        self._survey = _ONE_THREE_OR_FIVE_YEAR(self.survey, self._year)
+        self._survey = _clean_survey(self.survey, self._year)
         self._sample_unit = self.sample_unit[0].lower()
         self._state_abbr = us.states.lookup(self.state).abbr.lower()
         self._SURVEY_URL = build_acs_url(

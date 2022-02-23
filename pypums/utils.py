@@ -211,7 +211,7 @@ def build_acs_url(
 
     YEAR = _clean_year(year)
 
-    SURVEY = f"{_ONE_THREE_OR_FIVE_YEAR(SURVEY, YEAR)}"
+    SURVEY = f"{_clean_survey(SURVEY, YEAR)}"
 
     SURVEY_URL = f"{BASE_URL}{YEAR}/{SURVEY}csv_{UNIT}{STATE_ABBR}.zip"
     return SURVEY_URL
