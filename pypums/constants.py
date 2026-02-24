@@ -1,11 +1,7 @@
-from typer import get_app_dir
+from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 
-try:
-    from importlib.metadata import PackageNotFoundError, version
-except ImportError:  # pragma: no cover
-    from importlib_metadata import PackageNotFoundError, version
-
+from typer import get_app_dir
 
 try:
     __version__ = version(__name__)

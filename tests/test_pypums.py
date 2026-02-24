@@ -61,7 +61,7 @@ def test_instantiated_acs():
     instantiated_ACS = ACS()
     instantiated_ACS.download()
     instantiated_df = instantiated_ACS.as_dataframe()
-    assert instantiated_ACS._extracted == True
+    assert instantiated_ACS._extracted is True
     assert instantiated_ACS._data_dir == data_dir
     assert instantiated_ACS._extract_folder == data_dir.joinpath(
         f"interim/acs_{str(instantiated_ACS._year)[-2:]}/{instantiated_ACS._state_abbr}/"

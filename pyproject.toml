@@ -1,0 +1,63 @@
+[build-system]
+requires = ["uv_build>=0.10.5,<0.11"]
+build-backend = "uv_build"
+
+[project]
+name = "pypums"
+version = "0.1"
+description = "Download Public Use Micro Sample (PUMS) data files from the US Census Bureau's FTP server."
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.10"
+authors = [{ name = "Sergio Sanchez" }]
+dependencies = [
+    "us>=2.0.2",
+    "httpx>=0.22.0",
+    "pandas>=1.1.0",
+    "rich>=11.0.0",
+    "typer>=0.4.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/chekos/pypums"
+Issues = "https://github.com/chekos/pypums/issues"
+CI = "https://github.com/chekos/pypums/actions"
+Changelog = "https://github.com/chekos/pypums/releases"
+
+[project.scripts]
+pypums = "pypums.cli:cli"
+
+[project.optional-dependencies]
+test = ["pytest"]
+docs = [
+    "mkdocs",
+    "mdx_include",
+    "mkdocstrings",
+    "mkdocs-typer",
+    "pymdown-extensions",
+]
+
+[tool.uv.build-backend]
+module-root = ""
+
+[tool.pytest.ini_options]
+norecursedirs = ["*.egg", ".eggs", "dist", "build", "docs", ".tox", ".git", "__pycache__"]
+doctest_optionflags = ["NUMBER", "NORMALIZE_WHITESPACE", "IGNORE_EXCEPTION_DETAIL"]
+addopts = "--strict-markers --tb=short --doctest-modules --doctest-continue-on-failure"
+
+[tool.ruff]
+target-version = "py310"
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "SIM", # flake8-simplify
+]
+
+[tool.ruff.lint.per-file-ignores]
+"pypums/cli.py" = ["B008"]  # typer requires function calls in defaults

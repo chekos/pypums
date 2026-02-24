@@ -88,7 +88,9 @@ def download_acs(
             _download_data(url, "acs", data_directory, extract)
         else:
             console.print(
-                "File has been previously downloaded! If you want to download again make sure to include [yellow]--overwrite-download[/yellow]"
+                "File has been previously downloaded!"
+                " If you want to download again make sure to include"
+                " [yellow]--overwrite-download[/yellow]"
             )
     else:
         _download_data(url, "acs", data_directory, extract)
@@ -109,6 +111,6 @@ def pypums(
         help="Show the application's version and exit.",
         callback=_version_callback,
         is_eager=True,
-    )
+    ),
 ) -> None:
     return

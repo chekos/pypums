@@ -1,22 +1,17 @@
-# Configuration: https://dependabot.com/docs/config-file/
-# Docs: https://docs.github.com/en/github/administering-a-repository/keeping-your-dependencies-updated-automatically
+# Docs: https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
 
 version: 2
 
 updates:
-  - package-ecosystem: "pip"
+  - package-ecosystem: "uv"
     directory: "/"
     schedule:
-      interval: "daily"
-    allow:
-      - dependency-type: "all"
+      interval: "weekly"
     commit-message:
       prefix: ":arrow_up:"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "daily"
-    allow:
-      - dependency-type: "all"
+      interval: "weekly"
     commit-message:
       prefix: ":arrow_up:"

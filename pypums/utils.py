@@ -1,4 +1,5 @@
 """Utility functions."""
+
 import io
 from pathlib import Path
 from zipfile import ZipFile
@@ -9,14 +10,14 @@ import rich.progress
 import us
 from rich import print
 
-from .constants import ACS_PUMS_URL, __app_name__, data_dir
+from .constants import ACS_PUMS_URL, data_dir
 
 
 def _clean_year(year: int) -> int:
-    if (year >= 0) & (year <= 19):
+    if 0 <= year <= 19:
         year += 2000
 
-    if not (year >= 2000) & (year <= 2019):
+    if not (2000 <= year <= 2019):
         raise ValueError("Year must be between 2000 and 2018.")
     return year
 
@@ -34,7 +35,7 @@ def _clean_survey(_survey: str, _year: int) -> str:
         if _survey != "1-Year":
             print("Prior to 2007, only 1-Year ACS are available, defaulting to 1-Year")
         return ""
-    elif _year >= 2007 and _year <= 2008:
+    elif 2007 <= _year <= 2008:
         if _survey == "5-Year":
             print(f"There is no 5-Year ACS for {_year}, defaulting to 3-Year")
             return "3-Year/"
@@ -46,9 +47,7 @@ def _clean_survey(_survey: str, _year: int) -> str:
 
 
 def _check_data_dirs(data_directory: data_dir) -> Path:
-    """
-    Validates data directory exists. If it doesn't exists, it creates it and creates 'raw/' and 'interim/' directories.
-    """
+    """Validate data directory exists, creating 'raw/' and 'interim/' if needed."""
     # set directory's values
     _raw_data_directory = data_directory.joinpath("raw/")
     _interim_data_directory = data_directory.joinpath("interim/")
@@ -109,35 +108,35 @@ def _download_data(
 
     _full_download_path = _survey_dir.joinpath(_filename)
 
-    with open(_full_download_path, "wb") as file:
-        with httpx.stream("GET", url, timeout=None) as response:
-            total = response.headers.get("Content-Length")
+    with (
+        open(_full_download_path, "wb") as file,
+        httpx.stream("GET", url, timeout=None) as response,
+    ):
+        total = response.headers.get("Content-Length")
 
-            with rich.progress.Progress(
-                "[progress.percentage]{task.percentage:>3.0f}%",
-                rich.progress.BarColumn(bar_width=None),
-                rich.progress.DownloadColumn(),
-                rich.progress.TransferSpeedColumn(),
-            ) as progress:
-                if total:
-                    download_task = progress.add_task("Download", total=int(total))
-                else:
-                    download_task = progress.add_task("Download")
-                for chunk in response.iter_bytes():
-                    file.write(chunk)
-                    progress.update(
-                        download_task, completed=response.num_bytes_downloaded
-                    )
-            print(
-                f"File downloaded successfully at [magenta]{_full_download_path}[/magenta]"
-            )
+        with rich.progress.Progress(
+            "[progress.percentage]{task.percentage:>3.0f}%",
+            rich.progress.BarColumn(bar_width=None),
+            rich.progress.DownloadColumn(),
+            rich.progress.TransferSpeedColumn(),
+        ) as progress:
+            if total:
+                download_task = progress.add_task("Download", total=int(total))
+            else:
+                download_task = progress.add_task("Download")
+            for chunk in response.iter_bytes():
+                file.write(chunk)
+                progress.update(download_task, completed=response.num_bytes_downloaded)
+        print(
+            f"File downloaded successfully at [magenta]{_full_download_path}[/magenta]"
+        )
 
     if extract:
         _extract_data(_full_download_path, _extract_path)
 
 
 def _download_as_dataframe(URL: str) -> pd.DataFrame:
-    """Downloads zip file from URL containing one CSV file and returns it as a pandas.DataFrame
+    """Download a zip file from URL and return the CSV inside as a DataFrame.
 
     Parameters
     ----------
@@ -155,8 +154,10 @@ def _download_as_dataframe(URL: str) -> pd.DataFrame:
         csv_files = [
             file for file in thezip.infolist() if file.filename.endswith(".csv")
         ]
-        # should be only 1
-        assert len(csv_files) == 1
+        if len(csv_files) != 1:
+            raise ValueError(
+                f"Expected exactly 1 CSV file in zip archive, found {len(csv_files)}"
+            )
         with thezip.open(csv_files[0]) as thefile:
             data = pd.read_csv(thefile)
     return data
@@ -168,7 +169,7 @@ def build_acs_url(
     sample_unit: str = "person",
     state: str = "California",
 ) -> str:
-    """Builds Census FTP server URL where you can download ACS 1-, 3-, or 5-year estimates.
+    """Build Census FTP server URL for ACS 1-, 3-, or 5-year estimates.
 
     Parameters
     ----------
