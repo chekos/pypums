@@ -32,7 +32,7 @@ test = ["pytest"]
 docs = [
     "mkdocs",
     "mdx_include",
-    "mkdocstrings",
+    "mkdocstrings[python]",
     "mkdocs-typer",
     "pymdown-extensions",
 ]
