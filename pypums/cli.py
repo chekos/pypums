@@ -23,7 +23,7 @@ def acs_url(
     year: int = typer.Option(
         ...,
         "--year",
-        help="Year of survey (2000 - 2019)",
+        help="Year of survey (2000 - 2024)",
     ),
     state: str = typer.Option(
         ..., "--state", help="One of the 50 US States or District of Columbia"
@@ -47,7 +47,7 @@ def acs_url(
 def download_acs(
     year: int = typer.Option(
         ...,
-        help="Year of survey (2000 - 2019)",
+        help="Year of survey (2000 - 2024)",
     ),
     state: str = typer.Option(
         ..., help="One of the 50 US States or District of Columbia"
@@ -88,7 +88,9 @@ def download_acs(
             _download_data(url, "acs", data_directory, extract)
         else:
             console.print(
-                "File has been previously downloaded! If you want to download again make sure to include [yellow]--overwrite-download[/yellow]"
+                "File has been previously downloaded!"
+                " If you want to download again make sure to include"
+                " [yellow]--overwrite-download[/yellow]"
             )
     else:
         _download_data(url, "acs", data_directory, extract)
@@ -109,6 +111,6 @@ def pypums(
         help="Show the application's version and exit.",
         callback=_version_callback,
         is_eager=True,
-    )
+    ),
 ) -> None:
     return

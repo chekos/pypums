@@ -30,23 +30,19 @@ Usage instructions go here.
 
 ## Development
 
-To contribute to this library, first checkout the code. Then create a new virtual environment:
+To contribute to this library, first checkout the code. Then install [uv](https://docs.astral.sh/uv/) and set up the project:
 
     cd pypums
-    python -m venv venv
-    source venv/bin/activate
-
-Or if you are using `pipenv`:
-
-    pipenv shell
-
-Now install the dependencies and test dependencies:
-
-    pip install -e '.[test]'
+    uv sync --extra test
 
 To run the tests:
 
-    pytest
+    uv run pytest
+
+To run the linter:
+
+    uvx ruff check .
+    uvx ruff format --check .
 
 ## 📃 Citation
 

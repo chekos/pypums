@@ -17,8 +17,8 @@ The `pypums` CLI has 2 commands `acs-url` and `download-acs`.
 The `acs-url` command will return the URL pointing to the zip file in the Census server containing the data you're looking for. It takes in _at least_ two arguments: `year` and `state`.
 
 ```shell
-pypums acs-url --year 2018 --state california
->>>> https://www2.census.gov/programs-surveys/acs/data/pums/2018/1-Year/csv_pca.zip
+pypums acs-url --year 2023 --state california
+>>>> https://www2.census.gov/programs-surveys/acs/data/pums/2023/1-Year/csv_pca.zip
 ```
 
 Use `pypums acs-url --help` for more information.
@@ -29,7 +29,7 @@ Usage: pypums acs-url [OPTIONS]
   containing the data for the desired ACS.
 
 Options:
-  --year INTEGER      Year of survey (2000 - 2019)  [required]
+  --year INTEGER      Year of survey (2000 - 2024)  [required]
   --state TEXT        One of the 50 US States or District of
                       Columbia  [required]
   --survey TEXT       One of '1-', '3-' or '5-year'  [default:
@@ -45,7 +45,7 @@ You can use the `download-acs` command to download the zip file containing the d
 This command requires at least the `year` and `state` of the survey to download.
 
 ```shell
-pypums download-acs --year 2018 --state california
+pypums download-acs --year 2023 --state california
 ```
 
 Use `pypums download-acs --help` for more information.
@@ -56,7 +56,7 @@ Usage: pypums download-acs [OPTIONS]
   specified ACS into a specified directory.
 
 Options:
-  --year INTEGER                  Year of survey (2000 - 2019)
+  --year INTEGER                  Year of survey (2000 - 2024)
                                   [required]
   --state TEXT                    One of the 50 US States or
                                   District of Columbia
@@ -91,11 +91,11 @@ If you've previously downloaded the data, `pypums` will try to search for it on 
 ```python
 from pypums import ACS
 
-ca_2018 = ACS(year=2018, state='California')
+ca_2023 = ACS(year=2023, state='California')
 
 # to download the data on a specified folder you can run
-ca_2018.download(data_directory="./data/")
+ca_2023.download(data_directory="./data/")
 
 # to use it as a dataframe
-ca_2018_df = ca_2018.as_dataframe()
+ca_2023_df = ca_2023.as_dataframe()
 ```

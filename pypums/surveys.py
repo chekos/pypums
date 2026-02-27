@@ -1,4 +1,5 @@
 """Surveys module."""
+
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -19,7 +20,7 @@ from .utils import (
 class ACS:
     """American Community Survey base class."""
 
-    year: int = 2018
+    year: int = 2023
     state: str = "California"
     survey: str = "1-Year"
     sample_unit: str = "person"
@@ -68,7 +69,9 @@ class ACS:
                 )
             else:
                 print(
-                    "This was previously downloaded, to read it as a dataframe use `.as_dataframe()` or set `overwrite` to True."
+                    "This was previously downloaded, to read it"
+                    " as a dataframe use `.as_dataframe()` or"
+                    " set `overwrite` to True."
                 )
         else:
             _download_data(
@@ -82,7 +85,7 @@ class ACS:
         """
         Retrieves ACS PUMS csv file and returns a Pandas dataframe.
         """
-        if self._extracted == True:
+        if self._extracted:
             extracted_file = list(self._extract_folder.glob("*.csv"))[0]
             return read_csv(extracted_file)
         else:
