@@ -14,11 +14,11 @@ from .constants import ACS_PUMS_URL, data_dir
 
 
 def _clean_year(year: int) -> int:
-    if 0 <= year <= 19:
+    if 0 <= year <= 24:
         year += 2000
 
-    if not (2000 <= year <= 2019):
-        raise ValueError("Year must be between 2000 and 2018.")
+    if not (2000 <= year <= 2024):
+        raise ValueError("Year must be between 2000 and 2024.")
     return year
 
 
@@ -28,7 +28,7 @@ def _clean_survey(_survey: str, _year: int) -> str:
     If year <= 2006, _survey == ''.
     From 2007-2008, _survey can be either 1 or 3 years.
     From 2009-2013, _survey can be either 1, 3, or 5 years.
-    From 2013 onward, only 1 or 5 years.
+    From 2014 onward, only 1 or 5 years (except 2020: 5-Year only).
     """
     _survey = _survey.title()
     if _year <= 2006:
@@ -39,6 +39,13 @@ def _clean_survey(_survey: str, _year: int) -> str:
         if _survey == "5-Year":
             print(f"There is no 5-Year ACS for {_year}, defaulting to 3-Year")
             return "3-Year/"
+    elif _year == 2020:
+        if _survey != "5-Year":
+            print(
+                f"The standard 1-Year ACS PUMS for {_year} was not released"
+                " due to COVID-19, defaulting to 5-Year"
+            )
+        return "5-Year/"
     elif _year >= 2014:
         if _survey == "3-Year":
             print(f"There is no 3-Year ACS for {_year}, defaulting to 5-Year")
@@ -164,7 +171,7 @@ def _download_as_dataframe(URL: str) -> pd.DataFrame:
 
 
 def build_acs_url(
-    year: int = 2018,
+    year: int = 2023,
     survey: str = "1-year",
     sample_unit: str = "person",
     state: str = "California",
@@ -174,7 +181,7 @@ def build_acs_url(
     Parameters
     ----------
     year : int, optional
-        Year of survey, by default 2018
+        Year of survey, by default 2023
     survey : str, optional
         One of '1-year', '3-year', or '5-year', by default '1-year'
     sample_unit : str, optional

@@ -20,7 +20,7 @@ from .utils import (
 class ACS:
     """American Community Survey base class."""
 
-    year: int = 2018
+    year: int = 2023
     state: str = "California"
     survey: str = "1-Year"
     sample_unit: str = "person"

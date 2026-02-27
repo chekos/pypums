@@ -23,7 +23,7 @@ def acs_url(
     year: int = typer.Option(
         ...,
         "--year",
-        help="Year of survey (2000 - 2019)",
+        help="Year of survey (2000 - 2024)",
     ),
     state: str = typer.Option(
         ..., "--state", help="One of the 50 US States or District of Columbia"
@@ -47,7 +47,7 @@ def acs_url(
 def download_acs(
     year: int = typer.Option(
         ...,
-        help="Year of survey (2000 - 2019)",
+        help="Year of survey (2000 - 2024)",
     ),
     state: str = typer.Option(
         ..., help="One of the 50 US States or District of Columbia"

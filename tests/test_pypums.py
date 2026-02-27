@@ -1,13 +1,14 @@
+import pytest
 from pandas import DataFrame
 
 from pypums import ACS
-from pypums.utils import build_acs_url, data_dir
+from pypums.utils import _clean_year, build_acs_url, data_dir
 
 
 def test_build_acs_url():
     assert (
         build_acs_url()
-        == "https://www2.census.gov/programs-surveys/acs/data/pums/2018/1-Year/csv_pca.zip"
+        == "https://www2.census.gov/programs-surveys/acs/data/pums/2023/1-Year/csv_pca.zip"
     )
     assert (
         build_acs_url(
@@ -27,10 +28,50 @@ def test_build_acs_url():
     )
 
 
+def test_build_acs_url_2020():
+    """2020 only has 5-Year data due to COVID-19."""
+    assert (
+        build_acs_url(year=2020, survey="1-year", sample_unit="person", state="Ohio")
+        == "https://www2.census.gov/programs-surveys/acs/data/pums/2020/5-Year/csv_poh.zip"
+    )
+    assert (
+        build_acs_url(year=2020, survey="5-year", sample_unit="person", state="Ohio")
+        == "https://www2.census.gov/programs-surveys/acs/data/pums/2020/5-Year/csv_poh.zip"
+    )
+
+
+def test_build_acs_url_post_2019():
+    """Years 2021-2024 should work with 1-Year and 5-Year surveys."""
+    assert (
+        build_acs_url(year=2022, survey="1-year", sample_unit="person", state="Texas")
+        == "https://www2.census.gov/programs-surveys/acs/data/pums/2022/1-Year/csv_ptx.zip"
+    )
+    assert (
+        build_acs_url(
+            year=2024, survey="5-year", sample_unit="household", state="New York"
+        )
+        == "https://www2.census.gov/programs-surveys/acs/data/pums/2024/5-Year/csv_hny.zip"
+    )
+
+
+def test_clean_year_range():
+    """_clean_year accepts 2000-2024 and two-digit shortcuts 0-24."""
+    assert _clean_year(2000) == 2000
+    assert _clean_year(2024) == 2024
+    assert _clean_year(0) == 2000
+    assert _clean_year(24) == 2024
+    assert _clean_year(23) == 2023
+
+    with pytest.raises(ValueError, match="2000 and 2024"):
+        _clean_year(2025)
+    with pytest.raises(ValueError, match="2000 and 2024"):
+        _clean_year(1999)
+
+
 def test_acs_class_urls():
     assert (
         ACS()._survey_url
-        == "https://www2.census.gov/programs-surveys/acs/data/pums/2018/1-Year/csv_pca.zip"
+        == "https://www2.census.gov/programs-surveys/acs/data/pums/2023/1-Year/csv_pca.zip"
     )
     assert (
         ACS(2005, "arkansas", "1-year", "household")._survey_url
@@ -46,11 +87,22 @@ def test_acs_class_urls():
     )
 
 
+def test_acs_class_2020():
+    """ACS for 2020 should always use 5-Year survey."""
+    acs_2020 = ACS(2020, "Ohio", "1-Year")
+    assert acs_2020._survey == "5-Year/"
+    assert (
+        acs_2020._survey_url
+        == "https://www2.census.gov/programs-surveys/acs/data/pums/2020/5-Year/csv_poh.zip"
+    )
+
+
 def test_acs_class_attributes():
     assert ACS()._sample_unit == ACS().sample_unit[0].lower()
     assert ACS(sample_unit="household")._sample_unit == "h"
     assert ACS(2018, survey="3-Year")._survey == "5-Year/"
     assert ACS(state="cloroado")._state_abbr == "co"
+    assert ACS(2020, survey="1-Year")._survey == "5-Year/"
 
 
 def test_acs_class_as_df():
