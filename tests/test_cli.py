@@ -1,9 +1,15 @@
+import re
+
 import pytest
 from typer.testing import CliRunner
 
 from pypums import __app_name__, __version__, cli
 
 runner = CliRunner()
+
+
+def strip_ansi(text: str) -> str:
+    return re.sub(r"\x1b\[[0-9;]*m", "", text)
 
 
 @pytest.mark.parametrize(
@@ -24,7 +30,8 @@ def test_version(options):
     (["--help"],),
 )
 def test_help(options):
-    result = CliRunner(env={"NO_COLOR": "1"}).invoke(cli.cli, options)
+    result = CliRunner().invoke(cli.cli, options)
+    output = strip_ansi(result.output)
     assert result.exit_code == 0
-    assert "Usage:" in result.output
-    assert "--help" in result.output
+    assert "Usage:" in output
+    assert "--help" in output
