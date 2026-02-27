@@ -4,7 +4,7 @@ build-backend = "uv_build"
 
 [project]
 name = "pypums"
-version = "0.1"
+version = "0.2"
 description = "Download Public Use Micro Sample (PUMS) data files from the US Census Bureau's FTP server."
 readme = "README.md"
 license = "Apache-2.0"
