@@ -24,7 +24,7 @@ def test_version(options):
     (["--help"],),
 )
 def test_help(options):
-    result = CliRunner().invoke(cli.cli, options)
+    result = CliRunner(env={"NO_COLOR": "1"}).invoke(cli.cli, options)
     assert result.exit_code == 0
     assert "Usage:" in result.output
     assert "--help" in result.output
