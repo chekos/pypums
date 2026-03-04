@@ -771,3 +771,52 @@ This is Pythonic and matches the pandas ecosystem.
 | `get_pop_groups()` | `get_pop_groups()` | 3 | Planned |
 | `check_ddhca_groups()` | deferred | — | Low priority |
 | `shift_geo` (deprecated) | not implementing | — | Skip |
+
+---
+
+## 12. Test-Driven Development Approach
+
+All features are developed **test-first**. Failing tests have been written for every
+planned feature, organized by phase. Each test file imports the not-yet-existing
+module and calls its expected public API, so tests fail immediately with
+`ImportError` until the module is implemented.
+
+### Test Files by Phase
+
+| Phase | Test File | Tests | What They Verify |
+|-------|-----------|-------|-----------------|
+| 0 | `tests/test_api_key.py` | 3 | `census_api_key()` set/get/env/missing |
+| 0 | `tests/test_geography.py` | 5 | Geography hierarchy, validation, query building |
+| 0 | `tests/test_fips.py` | 4 | `fips_codes` dataset structure and lookups |
+| 0 | `tests/test_cache.py` | 4 | Cache store/retrieve, TTL, clearing |
+| 1 | `tests/test_get_acs.py` | 8 | `get_acs()` return type, tidy/wide, MOE, summary_var |
+| 1 | `tests/test_get_decennial.py` | 6 | `get_decennial()` return type, tidy/wide, sumfile defaults |
+| 1 | `tests/test_load_variables.py` | 7 | `load_variables()` return type, columns, datasets, cache |
+| 2 | `tests/test_moe.py` | 10 | `moe_sum/prop/ratio/product`, `significance` |
+| 2 | `tests/test_spatial.py` | 3 | `geometry=True` GeoDataFrame, CRS, `as_dot_density` |
+| 2 | `tests/test_get_pums_api.py` | 5 | `get_pums()` API, filter, recode, rep_weights |
+| 3 | `tests/test_get_estimates.py` | 5 | `get_estimates()` products, breakdown, time_series |
+| 3 | `tests/test_get_flows.py` | 3 | `get_flows()` columns, county-to-county |
+
+### Running Tests by Phase
+
+```bash
+uv run pytest -m phase0      # Foundation tests only
+uv run pytest -m phase1      # Core data function tests
+uv run pytest -m phase2      # MOE + spatial + PUMS tests
+uv run pytest -m phase3      # Estimates + flows tests
+uv run pytest -m spatial      # Spatial tests only (need geopandas)
+uv run pytest -m integration  # Real API tests (need CENSUS_API_KEY)
+```
+
+### Shared Fixtures
+
+`tests/conftest.py` provides mock Census API responses for all test files:
+- `fake_api_key` — a fake API key string
+- `cache_dir` — a `tmp_path`-based cache directory
+- `acs_api_response_tidy` — sample ACS API JSON (2 vars, 2 counties)
+- `decennial_api_response` — sample Decennial JSON (2 vars, 2 states)
+- `variables_api_response` — sample variables endpoint JSON
+- `pums_api_response` — sample PUMS person-level records
+- `estimates_api_response` — sample PEP JSON
+- `flows_api_response` — sample Migration Flows JSON

@@ -44,6 +44,14 @@ module-root = ""
 norecursedirs = ["*.egg", ".eggs", "dist", "build", "docs", ".tox", ".git", "__pycache__"]
 doctest_optionflags = ["NUMBER", "NORMALIZE_WHITESPACE", "IGNORE_EXCEPTION_DETAIL"]
 addopts = "--strict-markers --tb=short --doctest-modules --doctest-continue-on-failure"
+markers = [
+    "phase0: Foundation (API infra, geography, FIPS, cache)",
+    "phase1: Core data functions (get_acs, get_decennial, load_variables)",
+    "phase2: MOE, spatial, enhanced PUMS",
+    "phase3: Estimates, flows, survey",
+    "integration: Requires real Census API key and network",
+    "spatial: Requires geopandas",
+]
 
 [tool.ruff]
 target-version = "py310"
