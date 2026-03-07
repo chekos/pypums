@@ -12,12 +12,12 @@ _YEAR_DATASETS: dict[int, str] = {
     2000: "dec/sf1",
 }
 
-# Geography columns that appear in Census API responses.
-_GEO_COLUMNS = frozenset({
-    "state", "county", "tract", "block group", "block",
-    "place", "congressional district",
-    "us", "region", "division", "county subdivision",
-})
+# Geography columns in FIPS concatenation order.
+_GEO_COL_ORDER = [
+    "us", "region", "division", "state", "county", "county subdivision",
+    "tract", "block group", "block", "place", "congressional district",
+]
+_GEO_COLUMNS = frozenset(_GEO_COL_ORDER)
 
 
 def _call_census_api(url: str, params: dict) -> list[list[str]]:
@@ -103,8 +103,8 @@ def get_decennial(
     headers = data[0]
     df = pd.DataFrame(data[1:], columns=headers)
 
-    # Build GEOID from FIPS columns.
-    geo_cols = [c for c in df.columns if c in _GEO_COLUMNS]
+    # Build GEOID from FIPS columns in canonical order.
+    geo_cols = [c for c in _GEO_COL_ORDER if c in df.columns]
     if geo_cols:
         df["GEOID"] = df[geo_cols].apply(lambda row: "".join(row), axis=1)
 

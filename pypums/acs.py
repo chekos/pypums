@@ -12,22 +12,21 @@ _Z_SCORES: dict[int, float] = {
     99: 2.576,
 }
 
-# Geography columns that appear in Census API responses.
-_GEO_COLUMNS = frozenset({
-    "state", "county", "tract", "block group", "block",
-    "place", "congressional district",
+# Geography columns in FIPS concatenation order.  The order matters because
+# GEOID is built by joining these columns (e.g. state+county+tract).
+_GEO_COL_ORDER = [
+    "us", "region", "division", "state", "county", "county subdivision",
+    "tract", "block group", "block", "place", "congressional district",
     "state legislative district (upper chamber)",
     "state legislative district (lower chamber)",
     "zip code tabulation area",
-    "school district (unified)",
-    "school district (elementary)",
+    "school district (unified)", "school district (elementary)",
     "school district (secondary)",
     "metropolitan statistical area/micropolitan statistical area",
-    "combined statistical area",
-    "public use microdata area",
+    "combined statistical area", "public use microdata area",
     "american indian area/alaska native area/hawaiian home land",
-    "us", "region", "division", "county subdivision",
-})
+]
+_GEO_COLUMNS = frozenset(_GEO_COL_ORDER)
 
 
 def _call_census_api(url: str, params: dict) -> list[list[str]]:
@@ -42,6 +41,7 @@ def get_acs(
     state: str | None = None,
     county: str | None = None,
     year: int = 2023,
+    survey: str = "acs5",
     output: str = "tidy",
     moe_level: int = 90,
     summary_var: str | None = None,
@@ -64,6 +64,8 @@ def get_acs(
         County FIPS code.
     year
         Data year (default 2023).
+    survey
+        ``"acs5"`` (default) or ``"acs1"``.
     output
         ``"tidy"`` (default) or ``"wide"``.
     moe_level
@@ -107,7 +109,7 @@ def get_acs(
         api_vars.append(f"{summary_var}E")
         api_vars.append(f"{summary_var}M")
 
-    url = f"{CENSUS_API_BASE}/{year}/acs/acs5"
+    url = f"{CENSUS_API_BASE}/{year}/acs/{survey}"
     params: dict[str, str] = {
         "get": f"NAME,{','.join(api_vars)}",
         "for": for_clause,
@@ -122,8 +124,8 @@ def get_acs(
     headers = data[0]
     df = pd.DataFrame(data[1:], columns=headers)
 
-    # Build GEOID from FIPS columns.
-    geo_cols = [c for c in df.columns if c in _GEO_COLUMNS]
+    # Build GEOID from FIPS columns in canonical order.
+    geo_cols = [c for c in _GEO_COL_ORDER if c in df.columns]
     if geo_cols:
         df["GEOID"] = df[geo_cols].apply(lambda row: "".join(row), axis=1)
 

@@ -73,7 +73,8 @@ def _fetch_tiger_shapes(
 
         state_fips = _resolve_state_fips(state)
 
-    congress = str(118 if year >= 2023 else 117)
+    # Congress number changes every 2 years starting from the 113th (2013).
+    congress = str(113 + (year - 2013) // 2) if year >= 2013 else "113"
 
     filename = template.format(
         year=year,
@@ -120,6 +121,12 @@ def attach_geometry(
     shapes = _fetch_tiger_shapes(
         geography, state=state, year=year, resolution=resolution,
     )
+
+    if "GEOID" not in df.columns:
+        raise ValueError(
+            "DataFrame has no GEOID column. geometry=True requires a "
+            "geography level that produces GEOID (e.g. 'state', 'county')."
+        )
 
     # Merge on GEOID.
     merged = shapes[["GEOID", "geometry"]].merge(df, on="GEOID", how="right")
@@ -174,11 +181,14 @@ def as_dot_density(
             n_dots = max(count // dots_per_value, 0)
 
             dots_placed = 0
-            while dots_placed < n_dots:
+            attempts = 0
+            max_attempts = max(n_dots * 200, 1000)
+            while dots_placed < n_dots and attempts < max_attempts:
                 # Generate candidate points within the bounding box.
                 batch = max(n_dots - dots_placed, 10)
                 xs = rng.uniform(minx, maxx, size=batch)
                 ys = rng.uniform(miny, maxy, size=batch)
+                attempts += batch
 
                 for x, y in zip(xs, ys):
                     pt = Point(x, y)

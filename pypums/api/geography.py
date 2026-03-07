@@ -59,9 +59,9 @@ GEOGRAPHY_HIERARCHY: dict[str, dict] = {
 
 def _resolve_state_fips(state: str) -> str:
     """Convert a state name or abbreviation to a 2-digit FIPS code."""
-    # Already a FIPS code (2 digits)
-    if state.isdigit() and len(state) == 2:
-        return state
+    # Already a numeric FIPS code — normalize to 2 digits.
+    if state.isdigit():
+        return state.zfill(2)
 
     result = us.states.lookup(state)
     if result is None:

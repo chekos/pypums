@@ -68,6 +68,8 @@ def moe_ratio(
     float
         Margin of error for the ratio.
     """
+    if denom == 0:
+        raise ValueError("denom must be non-zero for moe_ratio.")
     r = num / denom
     return math.sqrt(moe_num**2 + r**2 * moe_denom**2) / denom
 
@@ -101,6 +103,8 @@ def moe_prop(
     float
         Margin of error for the proportion.
     """
+    if denom == 0:
+        raise ValueError("denom must be non-zero for moe_prop.")
     p = num / denom
     radicand = moe_num**2 - p**2 * moe_denom**2
 
@@ -164,15 +168,24 @@ def significance(
     moe2
         MOE of the second estimate (at 90 % confidence).
     clevel
-        Confidence level for the test (default 0.90).
+        Confidence level for the test: 0.90, 0.95, or 0.99 (default 0.90).
 
     Returns
     -------
     bool
         True if the difference is statistically significant.
+
+    Raises
+    ------
+    ValueError
+        If *clevel* is not one of the supported confidence levels.
     """
+    if clevel not in _Z_SCORES:
+        raise ValueError(
+            f"clevel must be one of {sorted(_Z_SCORES)}, got {clevel!r}"
+        )
     z_90 = _Z_SCORES[0.90]
-    z = _Z_SCORES.get(clevel, clevel)  # fall through to raw value if custom
+    z = _Z_SCORES[clevel]
 
     # Convert 90 % MOEs to standard errors.
     se1 = moe1 / z_90

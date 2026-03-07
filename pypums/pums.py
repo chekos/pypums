@@ -14,7 +14,8 @@ _PERSON_REP_WEIGHTS = [f"PWGTP{i}" for i in range(1, 81)]
 # Housing replicate weight columns (WGTP1..WGTP80).
 _HOUSING_REP_WEIGHTS = [f"WGTP{i}" for i in range(1, 81)]
 
-# Common PUMS variable recode labels.
+# Common PUMS variable recode labels.  These are representative subsets;
+# unmapped codes will produce NaN in the *_label column.
 _PUMS_RECODES: dict[str, dict[str, str]] = {
     "SEX": {"1": "Male", "2": "Female"},
     "MAR": {
@@ -132,39 +133,47 @@ def get_pums(
     if rep_weights in ("housing", "both"):
         all_vars.extend(_HOUSING_REP_WEIGHTS)
 
-    # Resolve state FIPS.
+    # Resolve state FIPS — support single string or list of states.
     if isinstance(state, str):
-        state_fips = _resolve_state_fips(state)
+        state_fips_list = [_resolve_state_fips(state)]
     else:
-        state_fips = _resolve_state_fips(state[0])
+        state_fips_list = [_resolve_state_fips(s) for s in state]
 
-    url = f"{CENSUS_API_BASE}/{year}/acs/{survey}/pums"
-    params: dict[str, str] = {
-        "get": ",".join(all_vars),
-        "for": f"state:{state_fips}",
-        "key": api_key,
-    }
+    frames = []
+    for state_fips in state_fips_list:
+        url = f"{CENSUS_API_BASE}/{year}/acs/{survey}/pums"
+        params: dict[str, str] = {
+            "get": ",".join(all_vars),
+            "for": f"state:{state_fips}",
+            "key": api_key,
+        }
 
-    # Add server-side filters.
-    if variables_filter is not None:
-        for var, val in variables_filter.items():
-            if isinstance(val, list):
-                params[var] = ",".join(str(v) for v in val)
+        # Add server-side filters.
+        if variables_filter is not None:
+            for var, val in variables_filter.items():
+                if isinstance(val, list):
+                    params[var] = ",".join(str(v) for v in val)
+                else:
+                    params[var] = str(val)
+
+        # Add PUMA filter.
+        if puma is not None:
+            if isinstance(puma, str):
+                params["PUMA"] = puma
             else:
-                params[var] = str(val)
+                params["PUMA"] = ",".join(puma)
 
-    # Add PUMA filter.
-    if puma is not None:
-        if isinstance(puma, str):
-            params["PUMA"] = puma
-        else:
-            params["PUMA"] = ",".join(puma)
+        if show_call:
+            print(f"Census API call: {url}")
+            print(f"  Parameters: {params}")
 
-    data = _call_census_api(url, params)
+        data = _call_census_api(url, params)
 
-    # Convert JSON rows to DataFrame.
-    headers = data[0]
-    df = pd.DataFrame(data[1:], columns=headers)
+        # Convert JSON rows to DataFrame.
+        headers = data[0]
+        frames.append(pd.DataFrame(data[1:], columns=headers))
+
+    df = pd.concat(frames, ignore_index=True) if len(frames) > 1 else frames[0]
 
     # Convert numeric columns.
     numeric_candidates = ["PWGTP", "AGEP", "SPORDER"] + user_vars
