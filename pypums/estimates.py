@@ -81,7 +81,6 @@ def get_estimates(
         compatibility but currently has no effect.
     output
         ``"tidy"`` (default) or ``"wide"``.
-        Not yet implemented — currently returns wide format only.
     geometry
         If True, return a GeoDataFrame with shapes.
     cache_table
@@ -144,7 +143,7 @@ def get_estimates(
     breakdown_str = ",".join(breakdown) if breakdown is not None else ""
     cache_key = (
         f"est_{vintage}_{resolved_product}_{geography}_{state}_{county}"
-        f"_{year}_{vars_str}_{breakdown_str}"
+        f"_{year}_{vars_str}_{breakdown_str}_{output}"
     )
 
     # Check cache before calling API.

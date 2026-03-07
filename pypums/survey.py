@@ -58,7 +58,14 @@ def get_survey_metadata(
             }
         )
 
-    df = pd.DataFrame(rows)
+    _COLUMNS = [
+        "title",
+        "description",
+        "vintage",
+        "dataset_name",
+        "distribution_url",
+    ]
+    df = pd.DataFrame(rows, columns=_COLUMNS)
 
     if year is not None:
         df = df[df["vintage"] == year].reset_index(drop=True)

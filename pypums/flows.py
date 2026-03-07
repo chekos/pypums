@@ -163,7 +163,9 @@ def get_flows(
     vars_str = ",".join(variables) if variables is not None else ""
     breakdown_str = ",".join(breakdown) if breakdown is not None else ""
     cache_key = (
-        f"flows_{year}_{geography}_{state}_{county}_{msa}_{vars_str}_{breakdown_str}"
+        f"flows_{year}_{geography}_{state}_{county}"
+        f"_{msa}_{vars_str}_{breakdown_str}"
+        f"_{output}_{moe_level}"
     )
 
     # Check cache before calling API.
@@ -236,7 +238,11 @@ def get_flows(
     if geometry:
         from pypums.spatial import attach_geometry
 
-        df = attach_geometry(df, geography, state=state, year=year)
+        # Map flows geography names to spatial module names.
+        geo_name = geography
+        if geography == "metropolitan statistical area":
+            geo_name = "cbsa"
+        df = attach_geometry(df, geo_name, state=state, year=year)
 
     if disk_cache is not None:
         disk_cache.set(cache_key, df, ttl_seconds=86400)
