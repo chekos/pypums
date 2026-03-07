@@ -160,8 +160,8 @@ def get_flows(
     )
 
     # Check cache before calling API.
-    if cache_table:
-        disk_cache = CensusCache(_DEFAULT_CACHE_DIR)
+    disk_cache = CensusCache(_DEFAULT_CACHE_DIR) if cache_table else None
+    if disk_cache is not None:
         cached = disk_cache.get(cache_key)
         if cached is not None:
             return cached
@@ -181,8 +181,7 @@ def get_flows(
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors="coerce")
 
-    if cache_table:
-        disk_cache = CensusCache(_DEFAULT_CACHE_DIR)
+    if disk_cache is not None:
         disk_cache.set(cache_key, df, ttl_seconds=86400)
 
     return df

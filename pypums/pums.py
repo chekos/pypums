@@ -138,8 +138,8 @@ def get_pums(
     )
 
     # Check cache before calling API.
-    if cache_table:
-        disk_cache = CensusCache(_DEFAULT_CACHE_DIR)
+    disk_cache = CensusCache(_DEFAULT_CACHE_DIR) if cache_table else None
+    if disk_cache is not None:
         cached = disk_cache.get(cache_key)
         if cached is not None:
             return cached
@@ -216,8 +216,7 @@ def get_pums(
             if var in _PUMS_RECODES and var in df.columns:
                 df[f"{var}_label"] = df[var].astype(str).map(_PUMS_RECODES[var])
 
-    if cache_table:
-        disk_cache = CensusCache(_DEFAULT_CACHE_DIR)
+    if disk_cache is not None:
         disk_cache.set(cache_key, df, ttl_seconds=86400)
 
     return df
