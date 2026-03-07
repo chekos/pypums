@@ -1,6 +1,7 @@
 # type: ignore[attr-defined]
 """Download PUMS data files from the US Census Bureau's FTP server."""
 
+from pypums.api.key import census_api_key as census_api_key
 from pypums.surveys import ACS as ACS
 
 from .constants import __app_name__ as __app_name__

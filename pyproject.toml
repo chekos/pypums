@@ -28,6 +28,7 @@ Changelog = "https://github.com/chekos/pypums/releases"
 pypums = "pypums.cli:cli"
 
 [project.optional-dependencies]
+spatial = ["geopandas>=0.12"]
 test = ["pytest"]
 docs = [
     "mkdocs",
