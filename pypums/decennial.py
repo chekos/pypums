@@ -75,16 +75,13 @@ def get_decennial(
     api_key = census_api_key(key) if key else census_api_key()
     for_clause, in_clause = build_geography_query(geography, state=state, county=county)
 
-    # Select dataset.
-    if pop_group is not None:
-        dataset = "dec/dhc-a"
-    elif year not in _YEAR_DATASETS:
+    # Validate year and select dataset.
+    if year not in _YEAR_DATASETS:
         raise ValueError(
             f"Unsupported decennial year: {year}. "
             f"Supported years: {sorted(_YEAR_DATASETS)}"
         )
-    else:
-        dataset = _YEAR_DATASETS[year]
+    dataset = "dec/dhc-a" if pop_group is not None else _YEAR_DATASETS[year]
 
     # Build the variable list.
     if variables is not None:

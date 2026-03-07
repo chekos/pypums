@@ -95,8 +95,8 @@ class TestGetDecennialSumfileDefaults:
                 key=fake_api_key,
             )
         # The internal API call should reference the DHC dataset
-        call_args = mock_call.call_args
-        assert call_args is not None
+        url_called = mock_call.call_args[0][0]
+        assert "dec/dhc" in url_called
 
     def test_year_2010_defaults_to_sf1(self, decennial_api_response, fake_api_key):
         with _mock_get_decennial(decennial_api_response) as mock_call:
@@ -106,8 +106,8 @@ class TestGetDecennialSumfileDefaults:
                 year=2010,
                 key=fake_api_key,
             )
-        call_args = mock_call.call_args
-        assert call_args is not None
+        url_called = mock_call.call_args[0][0]
+        assert "dec/sf1" in url_called
 
 
 class TestGetDecennialPopGroup:
