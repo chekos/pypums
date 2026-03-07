@@ -9,6 +9,9 @@ from pypums.api.geography import build_geography_query
 from pypums.api.key import census_api_key
 from pypums.cache import CensusCache
 
+# Valid output formats.
+_VALID_OUTPUTS = frozenset({"tidy", "wide"})
+
 # Product-to-dataset mapping for PEP.
 _PRODUCT_DATASETS: dict[str, str] = {
     "population": "pep/population",
@@ -78,7 +81,6 @@ def get_estimates(
         compatibility but currently has no effect.
     output
         ``"tidy"`` (default) or ``"wide"``.
-        Not yet implemented — currently returns wide format only.
     geometry
         If True, return a GeoDataFrame with shapes.
     cache_table
@@ -93,6 +95,9 @@ def get_estimates(
     pd.DataFrame
         Population estimates data.
     """
+    if output not in _VALID_OUTPUTS:
+        raise ValueError(f"output must be 'tidy' or 'wide', got {output!r}")
+
     api_key = census_api_key(key) if key else census_api_key()
     for_clause, in_clause = build_geography_query(geography, state=state, county=county)
 
@@ -138,7 +143,7 @@ def get_estimates(
     breakdown_str = ",".join(breakdown) if breakdown is not None else ""
     cache_key = (
         f"est_{vintage}_{resolved_product}_{geography}_{state}_{county}"
-        f"_{year}_{vars_str}_{breakdown_str}"
+        f"_{year}_{vars_str}_{breakdown_str}_{output}"
     )
 
     # Check cache before calling API.
@@ -170,6 +175,23 @@ def get_estimates(
     ]
     for col in numeric_cols:
         df[col] = pd.to_numeric(df[col], errors="coerce")
+
+    # Format output.
+    if output == "tidy":
+        id_cols = ["GEOID", "NAME"] if "GEOID" in df.columns else ["NAME"]
+        # Include any breakdown columns in id_cols.
+        excluded = geo_set | set(id_cols) | set(numeric_cols)
+        breakdown_cols = [c for c in df.columns if c not in excluded]
+        id_cols = id_cols + breakdown_cols
+
+        value_cols = [c for c in numeric_cols if c in df.columns]
+        if value_cols:
+            df = df.melt(
+                id_vars=id_cols,
+                value_vars=value_cols,
+                var_name="variable",
+                value_name="value",
+            )
 
     if geometry:
         from pypums.spatial import attach_geometry

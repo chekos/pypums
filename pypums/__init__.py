@@ -16,4 +16,5 @@ from .moe import moe_ratio as moe_ratio
 from .moe import moe_sum as moe_sum
 from .moe import significance as significance
 from .pums import get_pums as get_pums
+from .survey import get_survey_metadata as get_survey_metadata
 from .variables import load_variables as load_variables

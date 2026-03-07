@@ -9,15 +9,12 @@ from pypums.api.geography import _resolve_state_fips
 from pypums.api.key import census_api_key
 from pypums.cache import CensusCache
 
-# Core flow columns that should be numeric.
-_FLOW_NUMERIC_COLS = [
-    "MOVEDIN",
-    "MOVEDIN_M",
-    "MOVEDOUT",
-    "MOVEDOUT_M",
-    "MOVEDNET",
-    "MOVEDNET_M",
-]
+# Core flow estimate columns and their MOE counterparts.
+_FLOW_ESTIMATE_COLS = ["MOVEDIN", "MOVEDOUT", "MOVEDNET"]
+_FLOW_MOE_COLS = ["MOVEDIN_M", "MOVEDOUT_M", "MOVEDNET_M"]
+
+# All numeric flow columns.
+_FLOW_NUMERIC_COLS = _FLOW_ESTIMATE_COLS + _FLOW_MOE_COLS
 
 # Valid geography levels for migration flows.
 _VALID_GEOGRAPHIES = frozenset(
@@ -26,6 +23,13 @@ _VALID_GEOGRAPHIES = frozenset(
         "metropolitan statistical area",
     }
 )
+
+# Z-scores for MOE confidence levels (same as acs.py).
+_Z_SCORES: dict[int, float] = {
+    90: 1.645,
+    95: 1.960,
+    99: 2.576,
+}
 
 _DEFAULT_CACHE_DIR = Path.home() / ".pypums" / "cache" / "api"
 
@@ -69,7 +73,6 @@ def get_flows(
         Data year (default 2019).
     output
         ``"tidy"`` (default) or ``"wide"``.
-        Not yet implemented — currently returns wide format only.
     state
         State FIPS code or abbreviation.
     county
@@ -77,11 +80,9 @@ def get_flows(
     msa
         Metropolitan Statistical Area code.
     geometry
-        If True, return a GeoDataFrame with shapes.
-        Not yet implemented for flows.
+        If True, return a GeoDataFrame with shapes for the origin geography.
     moe_level
         Confidence level for MOE: 90, 95, or 99 (default 90).
-        Not yet implemented — MOE columns are returned as-is at 90%.
     cache_table
         If True, cache the API response locally to avoid redundant calls.
     show_call
@@ -97,6 +98,12 @@ def get_flows(
     if geography not in _VALID_GEOGRAPHIES:
         raise ValueError(
             f"geography must be one of {sorted(_VALID_GEOGRAPHIES)}, got {geography!r}"
+        )
+    if output not in ("tidy", "wide"):
+        raise ValueError(f"output must be 'tidy' or 'wide', got {output!r}")
+    if moe_level not in _Z_SCORES:
+        raise ValueError(
+            f"moe_level must be one of {sorted(_Z_SCORES)}, got {moe_level!r}"
         )
 
     api_key = census_api_key(key) if key else census_api_key()
@@ -156,7 +163,9 @@ def get_flows(
     vars_str = ",".join(variables) if variables is not None else ""
     breakdown_str = ",".join(breakdown) if breakdown is not None else ""
     cache_key = (
-        f"flows_{year}_{geography}_{state}_{county}_{msa}_{vars_str}_{breakdown_str}"
+        f"flows_{year}_{geography}_{state}_{county}"
+        f"_{msa}_{vars_str}_{breakdown_str}"
+        f"_{output}_{moe_level}"
     )
 
     # Check cache before calling API.
@@ -180,6 +189,60 @@ def get_flows(
     for col in _FLOW_NUMERIC_COLS:
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors="coerce")
+
+    # Scale MOE if needed (Census API returns MOE at 90% confidence).
+    if moe_level != 90:
+        scale_factor = _Z_SCORES[moe_level] / _Z_SCORES[90]
+        moe_cols_present = [c for c in _FLOW_MOE_COLS if c in df.columns]
+        df[moe_cols_present] = df[moe_cols_present] * scale_factor
+
+    # Build GEOID for origin geography (state1 + county1).
+    geo_cols = [c for c in ("state1", "county1") if c in df.columns]
+    if geo_cols:
+        df["GEOID"] = df[geo_cols].apply(lambda row: "".join(row), axis=1)
+
+    # Format output.
+    if output == "tidy":
+        # Identify id columns (non-numeric, non-geo FIPS columns).
+        fips_cols = {"state1", "county1", "state2", "county2"}
+        id_cols = [
+            c for c in df.columns if c not in _FLOW_NUMERIC_COLS and c not in fips_cols
+        ]
+
+        est_cols = [c for c in _FLOW_ESTIMATE_COLS if c in df.columns]
+        moe_cols = [c for c in _FLOW_MOE_COLS if c in df.columns]
+
+        if est_cols:
+            est_long = df.melt(
+                id_vars=id_cols,
+                value_vars=est_cols,
+                var_name="variable",
+                value_name="estimate",
+            )
+            moe_long = df.melt(
+                id_vars=id_cols,
+                value_vars=moe_cols,
+                var_name="_moe_var",
+                value_name="moe",
+            )
+            # Map MOE variable back to estimate variable name.
+            moe_long["variable"] = moe_long["_moe_var"].str.replace(
+                "_M$", "", regex=True
+            )
+
+            df = est_long.merge(
+                moe_long[id_cols + ["variable", "moe"]],
+                on=id_cols + ["variable"],
+            )
+
+    if geometry:
+        from pypums.spatial import attach_geometry
+
+        # Map flows geography names to spatial module names.
+        geo_name = geography
+        if geography == "metropolitan statistical area":
+            geo_name = "cbsa"
+        df = attach_geometry(df, geo_name, state=state, year=year)
 
     if disk_cache is not None:
         disk_cache.set(cache_key, df, ttl_seconds=86400)
