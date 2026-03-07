@@ -4,7 +4,7 @@ You can use `pypums` as a CLI on your terminal or in your scripts or notebooks.
 
 ## As a CLI
 
-On your terminal `pypums --help` or `pypums --version` to make sure it's installed 
+On your terminal `pypums --help` or `pypums --version` to make sure it's installed
 
 ```shell
 pypums --version
@@ -40,7 +40,7 @@ Options:
 ```
 
 ### `pypums download-acs`
-You can use the `download-acs` command to download the zip file containing the data for the specified ACS. It will extract it by default. 
+You can use the `download-acs` command to download the zip file containing the data for the specified ACS. It will extract it by default.
 
 This command requires at least the `year` and `state` of the survey to download.
 

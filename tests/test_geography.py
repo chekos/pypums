@@ -70,9 +70,7 @@ def test_build_geography_query_state():
 
 def test_build_geography_query_county_in_state():
     """County-level query returns a 'for' and an 'in' clause."""
-    for_clause, in_clause = build_geography_query(
-        "county", state="06"
-    )
+    for_clause, in_clause = build_geography_query("county", state="06")
     assert "county" in for_clause
     assert in_clause is not None
     assert "state:06" in in_clause

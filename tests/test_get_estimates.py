@@ -28,7 +28,6 @@ def _mock_get_estimates(estimates_api_response):
 
 
 class TestGetEstimatesReturnType:
-
     def test_returns_dataframe(self, estimates_api_response, fake_api_key):
         with _mock_get_estimates(estimates_api_response):
             df = get_estimates(
@@ -41,7 +40,6 @@ class TestGetEstimatesReturnType:
 
 
 class TestGetEstimatesProducts:
-
     def test_population_product(self, estimates_api_response, fake_api_key):
         with _mock_get_estimates(estimates_api_response):
             df = get_estimates(
@@ -71,7 +69,6 @@ class TestGetEstimatesProducts:
 
 
 class TestGetEstimatesBreakdown:
-
     def test_breakdown_parameter(self, estimates_api_response, fake_api_key):
         """breakdown splits characteristics by demographic dimensions."""
         with _mock_get_estimates(estimates_api_response):
@@ -86,7 +83,6 @@ class TestGetEstimatesBreakdown:
 
 
 class TestGetEstimatesTimeSeries:
-
     def test_time_series(self, estimates_api_response, fake_api_key):
         """time_series=True should return data across multiple years."""
         # Mock a multi-year response

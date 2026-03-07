@@ -3,6 +3,7 @@
 from pathlib import Path
 
 import pandas as pd
+
 from pypums.api.client import CENSUS_API_BASE, fetch_json
 from pypums.cache import CensusCache
 

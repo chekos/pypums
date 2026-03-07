@@ -3,6 +3,7 @@
 from pathlib import Path
 
 import pandas as pd
+
 from pypums.api.client import CENSUS_API_BASE, call_census_api
 from pypums.api.geography import _resolve_state_fips
 from pypums.api.key import census_api_key
@@ -201,7 +202,8 @@ def get_pums(
     numeric_candidates = ["PWGTP", "AGEP", "SPORDER"] + user_vars
     if rep_weights:
         numeric_candidates.extend(
-            col for col in df.columns
+            col
+            for col in df.columns
             if col.startswith(("PWGTP", "WGTP")) and col not in numeric_candidates
         )
     for col in numeric_candidates:

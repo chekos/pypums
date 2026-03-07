@@ -64,7 +64,9 @@ def _fetch_tiger_shapes(
     # Build the shapefile URL.
     template = _GEO_TO_TIGER.get(geo)
     if template is None:
-        raise ValueError(f"No TIGER/Line shapefile mapping for geography: {geography!r}")
+        raise ValueError(
+            f"No TIGER/Line shapefile mapping for geography: {geography!r}"
+        )
 
     # Resolve state FIPS if needed.
     state_fips = state or "us"
@@ -119,7 +121,10 @@ def attach_geometry(
     import geopandas as _gpd
 
     shapes = _fetch_tiger_shapes(
-        geography, state=state, year=year, resolution=resolution,
+        geography,
+        state=state,
+        year=year,
+        resolution=resolution,
     )
 
     if "GEOID" not in df.columns:
@@ -190,13 +195,15 @@ def as_dot_density(
                 ys = rng.uniform(miny, maxy, size=batch)
                 attempts += batch
 
-                for x, y in zip(xs, ys):
+                for x, y in zip(xs, ys, strict=True):
                     pt = Point(x, y)
                     if polygon.contains(pt):
-                        rows.append({
-                            "geometry": pt,
-                            "value": label,
-                        })
+                        rows.append(
+                            {
+                                "geometry": pt,
+                                "value": label,
+                            }
+                        )
                         dots_placed += 1
                         if dots_placed >= n_dots:
                             break

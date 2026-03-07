@@ -29,7 +29,6 @@ def _mock_get_decennial(decennial_api_response):
 
 
 class TestGetDecennialReturnType:
-
     def test_returns_dataframe(self, decennial_api_response, fake_api_key):
         with _mock_get_decennial(decennial_api_response):
             df = get_decennial(
@@ -43,7 +42,6 @@ class TestGetDecennialReturnType:
 
 
 class TestGetDecennialTidyFormat:
-
     def test_tidy_columns(self, decennial_api_response, fake_api_key):
         with _mock_get_decennial(decennial_api_response):
             df = get_decennial(
@@ -68,7 +66,6 @@ class TestGetDecennialTidyFormat:
 
 
 class TestGetDecennialWideFormat:
-
     def test_wide_columns(self, decennial_api_response, fake_api_key):
         with _mock_get_decennial(decennial_api_response):
             df = get_decennial(

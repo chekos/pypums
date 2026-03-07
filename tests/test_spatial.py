@@ -11,13 +11,12 @@ These tests are skipped if ``geopandas`` is not installed.  They verify:
 
 from unittest.mock import patch
 
-import pandas as pd
 import pytest
 
 gpd = pytest.importorskip("geopandas", reason="geopandas required for spatial tests")
 
-from pypums import get_acs
-from pypums.spatial import as_dot_density
+from pypums import get_acs  # noqa: E402
+from pypums.spatial import as_dot_density  # noqa: E402
 
 pytestmark = [pytest.mark.phase2, pytest.mark.spatial]
 
@@ -49,10 +48,7 @@ def mock_acs_with_geometry(acs_api_response_tidy):
 
 
 class TestGetAcsGeometry:
-
-    def test_returns_geodataframe(
-        self, mock_acs_with_geometry, fake_api_key
-    ):
+    def test_returns_geodataframe(self, mock_acs_with_geometry, fake_api_key):
         api_mock, geo_mock = mock_acs_with_geometry
         with api_mock, geo_mock:
             gdf = get_acs(
@@ -80,7 +76,6 @@ class TestGetAcsGeometry:
 
 
 class TestAsDotDensity:
-
     def test_converts_polygons_to_points(self):
         from shapely.geometry import box
 

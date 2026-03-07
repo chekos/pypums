@@ -3,6 +3,7 @@
 from pathlib import Path
 
 import pandas as pd
+
 from pypums.api.client import CENSUS_API_BASE, call_census_api
 from pypums.api.geography import build_geography_query
 from pypums.api.key import census_api_key
@@ -19,8 +20,17 @@ _YEAR_DATASETS: dict[int, str] = {
 
 # Geography columns in FIPS concatenation order.
 _GEO_COL_ORDER = [
-    "us", "region", "division", "state", "county", "county subdivision",
-    "tract", "block group", "block", "place", "congressional district",
+    "us",
+    "region",
+    "division",
+    "state",
+    "county",
+    "county subdivision",
+    "tract",
+    "block group",
+    "block",
+    "place",
+    "congressional district",
 ]
 _GEO_COLUMNS = frozenset(_GEO_COL_ORDER)
 
@@ -82,7 +92,9 @@ def get_decennial(
     for_clause, in_clause = build_geography_query(geography, state=state, county=county)
 
     # Select dataset.
-    dataset = "dec/dhc-a" if pop_group is not None else _YEAR_DATASETS.get(year, "dec/dhc")
+    dataset = (
+        "dec/dhc-a" if pop_group is not None else _YEAR_DATASETS.get(year, "dec/dhc")
+    )
 
     # Build the variable list.
     if variables is not None:
@@ -130,7 +142,9 @@ def get_decennial(
         df["GEOID"] = df[geo_cols].apply(lambda row: "".join(row), axis=1)
 
     # Identify variable columns (everything except NAME and geo columns).
-    var_cols = [c for c in df.columns if c not in _GEO_COLUMNS and c not in ("NAME", "GEOID")]
+    var_cols = [
+        c for c in df.columns if c not in _GEO_COLUMNS and c not in ("NAME", "GEOID")
+    ]
 
     # Convert to numeric.
     for col in var_cols:

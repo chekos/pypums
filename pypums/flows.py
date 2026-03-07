@@ -3,6 +3,7 @@
 from pathlib import Path
 
 import pandas as pd
+
 from pypums.api.client import CENSUS_API_BASE, call_census_api
 from pypums.api.geography import _resolve_state_fips
 from pypums.api.key import census_api_key
@@ -10,15 +11,21 @@ from pypums.cache import CensusCache
 
 # Core flow columns that should be numeric.
 _FLOW_NUMERIC_COLS = [
-    "MOVEDIN", "MOVEDIN_M",
-    "MOVEDOUT", "MOVEDOUT_M",
-    "MOVEDNET", "MOVEDNET_M",
+    "MOVEDIN",
+    "MOVEDIN_M",
+    "MOVEDOUT",
+    "MOVEDOUT_M",
+    "MOVEDNET",
+    "MOVEDNET_M",
 ]
 
 # Valid geography levels for migration flows.
-_VALID_GEOGRAPHIES = frozenset({
-    "county", "metropolitan statistical area",
-})
+_VALID_GEOGRAPHIES = frozenset(
+    {
+        "county",
+        "metropolitan statistical area",
+    }
+)
 
 _DEFAULT_CACHE_DIR = Path.home() / ".pypums" / "cache" / "api"
 
@@ -98,10 +105,14 @@ def get_flows(
 
     # Default flow variables.
     get_vars = [
-        "FULL1_NAME", "FULL2_NAME",
-        "MOVEDIN", "MOVEDIN_M",
-        "MOVEDOUT", "MOVEDOUT_M",
-        "MOVEDNET", "MOVEDNET_M",
+        "FULL1_NAME",
+        "FULL2_NAME",
+        "MOVEDIN",
+        "MOVEDIN_M",
+        "MOVEDOUT",
+        "MOVEDOUT_M",
+        "MOVEDNET",
+        "MOVEDNET_M",
     ]
 
     # Add user-requested variables.
@@ -145,8 +156,7 @@ def get_flows(
     vars_str = ",".join(variables) if variables is not None else ""
     breakdown_str = ",".join(breakdown) if breakdown is not None else ""
     cache_key = (
-        f"flows_{year}_{geography}_{state}_{county}_{msa}"
-        f"_{vars_str}_{breakdown_str}"
+        f"flows_{year}_{geography}_{state}_{county}_{msa}_{vars_str}_{breakdown_str}"
     )
 
     # Check cache before calling API.

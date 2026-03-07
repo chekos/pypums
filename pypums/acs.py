@@ -3,6 +3,7 @@
 from pathlib import Path
 
 import pandas as pd
+
 from pypums.api.client import CENSUS_API_BASE, call_census_api
 from pypums.api.geography import build_geography_query
 from pypums.api.key import census_api_key
@@ -20,15 +21,26 @@ _Z_SCORES: dict[int, float] = {
 # Geography columns in FIPS concatenation order.  The order matters because
 # GEOID is built by joining these columns (e.g. state+county+tract).
 _GEO_COL_ORDER = [
-    "us", "region", "division", "state", "county", "county subdivision",
-    "tract", "block group", "block", "place", "congressional district",
+    "us",
+    "region",
+    "division",
+    "state",
+    "county",
+    "county subdivision",
+    "tract",
+    "block group",
+    "block",
+    "place",
+    "congressional district",
     "state legislative district (upper chamber)",
     "state legislative district (lower chamber)",
     "zip code tabulation area",
-    "school district (unified)", "school district (elementary)",
+    "school district (unified)",
+    "school district (elementary)",
     "school district (secondary)",
     "metropolitan statistical area/micropolitan statistical area",
-    "combined statistical area", "public use microdata area",
+    "combined statistical area",
+    "public use microdata area",
     "american indian area/alaska native area/hawaiian home land",
 ]
 _GEO_COLUMNS = frozenset(_GEO_COL_ORDER)
@@ -93,7 +105,9 @@ def get_acs(
     if output not in ("tidy", "wide"):
         raise ValueError(f"output must be 'tidy' or 'wide', got {output!r}")
     if moe_level not in _Z_SCORES:
-        raise ValueError(f"moe_level must be one of {sorted(_Z_SCORES)}, got {moe_level!r}")
+        raise ValueError(
+            f"moe_level must be one of {sorted(_Z_SCORES)}, got {moe_level!r}"
+        )
 
     api_key = census_api_key(key) if key else census_api_key()
     for_clause, in_clause = build_geography_query(geography, state=state, county=county)
@@ -200,7 +214,10 @@ def get_acs(
         # Add summary variable columns if requested.
         if summary_var is not None and summary_est_col in df.columns:
             summary_df = df[id_cols + [summary_est_col, summary_moe_col]].rename(
-                columns={summary_est_col: "summary_est", summary_moe_col: "summary_moe"},
+                columns={
+                    summary_est_col: "summary_est",
+                    summary_moe_col: "summary_moe",
+                },
             )
             result = result.merge(summary_df, on=id_cols)
 

@@ -8,8 +8,6 @@ These tests define the contract for ``census_api_key()``:
 * Raise a clear error when no key is configured.
 """
 
-import os
-
 import pytest
 
 from pypums import census_api_key

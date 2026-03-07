@@ -6,7 +6,7 @@ nav:
   - User guide:
     - Installation: user-guide/installation.md
     - Usage: user-guide/usage.md
-  - API reference: 
+  - API reference:
     - Surveys (ACS): reference/surveys.md
     - CLI: reference/cli.md
   - About:
@@ -24,7 +24,7 @@ plugins:
           options:
             show_source: false
             show_root_heading: true
-  
+
 markdown_extensions:
     - smarty
     - toc:

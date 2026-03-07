@@ -10,10 +10,10 @@
 - Bug fixes (some url's at the census website didn't have `content-size`, switched to default dict to move past that case)
 
 ## 0.0.5 (2019-05-11)
-- Add `.as_dataframe()` to ACS class. 
+- Add `.as_dataframe()` to ACS class.
 
 ## 0.0.4 (2019-05-10)
-- Add `.download_data()` to ACS class. 
+- Add `.download_data()` to ACS class.
 
 ## 0.0.3 (2019-05-09)
 - Accidentally released lol

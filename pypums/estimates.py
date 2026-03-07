@@ -3,6 +3,7 @@
 from pathlib import Path
 
 import pandas as pd
+
 from pypums.api.client import CENSUS_API_BASE, call_census_api
 from pypums.api.geography import build_geography_query
 from pypums.api.key import census_api_key
@@ -99,7 +100,8 @@ def get_estimates(
     resolved_product = product or "population"
     if resolved_product not in _VALID_PRODUCTS:
         raise ValueError(
-            f"product must be one of {sorted(_VALID_PRODUCTS)}, got {resolved_product!r}"
+            f"product must be one of {sorted(_VALID_PRODUCTS)},"
+            f" got {resolved_product!r}"
         )
     dataset = _PRODUCT_DATASETS[resolved_product]
 
@@ -163,7 +165,9 @@ def get_estimates(
 
     # Convert numeric columns (everything except NAME and geo columns).
     geo_set = frozenset(_GEO_COL_ORDER)
-    numeric_cols = [c for c in df.columns if c not in geo_set and c not in ("NAME", "GEOID")]
+    numeric_cols = [
+        c for c in df.columns if c not in geo_set and c not in ("NAME", "GEOID")
+    ]
     for col in numeric_cols:
         df[col] = pd.to_numeric(df[col], errors="coerce")
 
