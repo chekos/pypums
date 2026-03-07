@@ -118,7 +118,10 @@ def get_acs(
         api_vars.append(f"{summary_var}M")
 
     # Build a cache key from request parameters.
-    cache_key = f"acs_{year}_{survey}_{geography}_{state}_{county}_{','.join(api_vars)}"
+    cache_key = (
+        f"acs_{year}_{survey}_{geography}_{state}_{county}"
+        f"_{output}_{moe_level}_{summary_var}_{','.join(api_vars)}"
+    )
 
     # Check cache before calling API.
     if cache_table:

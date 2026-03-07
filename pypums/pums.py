@@ -129,7 +129,12 @@ def get_pums(
 
     # Build a cache key from request parameters.
     state_str = state if isinstance(state, str) else ",".join(state) if state else ""
-    cache_key = f"pums_{year}_{survey}_{state_str}_{','.join(user_vars)}"
+    puma_str = puma if isinstance(puma, str) else ",".join(puma) if puma else ""
+    filter_str = str(sorted(variables_filter.items())) if variables_filter else ""
+    cache_key = (
+        f"pums_{year}_{survey}_{state_str}_{puma_str}"
+        f"_{rep_weights}_{recode}_{filter_str}_{','.join(user_vars)}"
+    )
 
     # Check cache before calling API.
     if cache_table:

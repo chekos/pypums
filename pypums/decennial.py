@@ -95,7 +95,10 @@ def get_decennial(
         raise ValueError("Must provide either 'variables' or 'table'.")
 
     # Build a cache key from request parameters.
-    cache_key = f"dec_{year}_{dataset}_{geography}_{state}_{county}_{','.join(api_vars)}"
+    cache_key = (
+        f"dec_{year}_{dataset}_{geography}_{state}_{county}"
+        f"_{output}_{pop_group}_{','.join(api_vars)}"
+    )
 
     # Check cache before calling API.
     if cache_table:

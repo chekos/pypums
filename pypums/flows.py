@@ -1,9 +1,12 @@
 """ACS Migration Flows data retrieval via the Census API."""
 
+from pathlib import Path
+
 import pandas as pd
 from pypums.api.client import CENSUS_API_BASE, call_census_api
 from pypums.api.geography import _resolve_state_fips
 from pypums.api.key import census_api_key
+from pypums.cache import CensusCache
 
 # Core flow columns that should be numeric.
 _FLOW_NUMERIC_COLS = [
@@ -11,6 +14,13 @@ _FLOW_NUMERIC_COLS = [
     "MOVEDOUT", "MOVEDOUT_M",
     "MOVEDNET", "MOVEDNET_M",
 ]
+
+# Valid geography levels for migration flows.
+_VALID_GEOGRAPHIES = frozenset({
+    "county", "metropolitan statistical area",
+})
+
+_DEFAULT_CACHE_DIR = Path.home() / ".pypums" / "cache" / "api"
 
 
 def _call_census_api(url: str, params: dict) -> list[list[str]]:
@@ -31,6 +41,7 @@ def get_flows(
     msa: str | None = None,
     geometry: bool = False,
     moe_level: int = 90,
+    cache_table: bool = False,
     show_call: bool = False,
     key: str | None = None,
 ) -> pd.DataFrame:
@@ -46,10 +57,12 @@ def get_flows(
         Breakdown dimensions for flow characteristics.
     breakdown_labels
         If True, include human-readable breakdown labels.
+        Not yet implemented.
     year
         Data year (default 2019).
     output
         ``"tidy"`` (default) or ``"wide"``.
+        Not yet implemented — currently returns wide format only.
     state
         State FIPS code or abbreviation.
     county
@@ -58,8 +71,12 @@ def get_flows(
         Metropolitan Statistical Area code.
     geometry
         If True, return a GeoDataFrame with shapes.
+        Not yet implemented for flows.
     moe_level
         Confidence level for MOE: 90, 95, or 99 (default 90).
+        Not yet implemented — MOE columns are returned as-is at 90%.
+    cache_table
+        If True, cache the API response locally to avoid redundant calls.
     show_call
         If True, print the API URL.
     key
@@ -70,6 +87,11 @@ def get_flows(
     pd.DataFrame
         Migration flows data with MOVEDIN, MOVEDOUT, MOVEDNET columns.
     """
+    if geography not in _VALID_GEOGRAPHIES:
+        raise ValueError(
+            f"geography must be one of {sorted(_VALID_GEOGRAPHIES)}, got {geography!r}"
+        )
+
     api_key = census_api_key(key) if key else census_api_key()
 
     url = f"{CENSUS_API_BASE}/{year}/acs/flows"
@@ -133,5 +155,10 @@ def get_flows(
     for col in _FLOW_NUMERIC_COLS:
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors="coerce")
+
+    if cache_table:
+        cache_key = f"flows_{year}_{geography}_{state}_{county}_{msa}"
+        disk_cache = CensusCache(_DEFAULT_CACHE_DIR)
+        disk_cache.set(cache_key, df, ttl_seconds=86400)
 
     return df

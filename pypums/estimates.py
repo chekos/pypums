@@ -1,9 +1,12 @@
 """Population Estimates Program data retrieval via the Census API."""
 
+from pathlib import Path
+
 import pandas as pd
 from pypums.api.client import CENSUS_API_BASE, call_census_api
 from pypums.api.geography import build_geography_query
 from pypums.api.key import census_api_key
+from pypums.cache import CensusCache
 
 # Product-to-dataset mapping for PEP.
 _PRODUCT_DATASETS: dict[str, str] = {
@@ -13,8 +16,12 @@ _PRODUCT_DATASETS: dict[str, str] = {
     "characteristics": "pep/charagegroups",
 }
 
+_VALID_PRODUCTS = frozenset(_PRODUCT_DATASETS)
+
 # Geography columns for GEOID construction.
 _GEO_COL_ORDER = ["state", "county"]
+
+_DEFAULT_CACHE_DIR = Path.home() / ".pypums" / "cache" / "api"
 
 
 def _call_census_api(url: str, params: dict) -> list[list[str]]:
@@ -36,6 +43,7 @@ def get_estimates(
     time_series: bool = False,
     output: str = "tidy",
     geometry: bool = False,
+    cache_table: bool = False,
     show_call: bool = False,
     key: str | None = None,
 ) -> pd.DataFrame:
@@ -54,6 +62,7 @@ def get_estimates(
         Breakdown dimensions (e.g. ``"AGEGROUP"``, ``"SEX"``).
     breakdown_labels
         If True, include human-readable breakdown labels.
+        Not yet implemented.
     vintage
         Vintage year for the estimates (default 2023).
     year
@@ -64,10 +73,15 @@ def get_estimates(
         County FIPS code.
     time_series
         If True, return data across multiple years.
+        Not yet implemented — the parameter is accepted for forward
+        compatibility but currently has no effect.
     output
         ``"tidy"`` (default) or ``"wide"``.
+        Not yet implemented — currently returns wide format only.
     geometry
         If True, return a GeoDataFrame with shapes.
+    cache_table
+        If True, cache the API response locally to avoid redundant calls.
     show_call
         If True, print the API URL.
     key
@@ -81,8 +95,13 @@ def get_estimates(
     api_key = census_api_key(key) if key else census_api_key()
     for_clause, in_clause = build_geography_query(geography, state=state, county=county)
 
-    # Determine the dataset path.
-    dataset = _PRODUCT_DATASETS.get(product or "population", "pep/population")
+    # Validate product.
+    resolved_product = product or "population"
+    if resolved_product not in _VALID_PRODUCTS:
+        raise ValueError(
+            f"product must be one of {sorted(_VALID_PRODUCTS)}, got {resolved_product!r}"
+        )
+    dataset = _PRODUCT_DATASETS[resolved_product]
 
     url = f"{CENSUS_API_BASE}/{vintage}/{dataset}"
 
@@ -137,5 +156,10 @@ def get_estimates(
         from pypums.spatial import attach_geometry
 
         df = attach_geometry(df, geography, state=state, year=vintage)
+
+    if cache_table:
+        cache_key = f"est_{vintage}_{resolved_product}_{geography}_{state}_{county}"
+        disk_cache = CensusCache(_DEFAULT_CACHE_DIR)
+        disk_cache.set(cache_key, df, ttl_seconds=86400)
 
     return df

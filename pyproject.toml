@@ -14,6 +14,7 @@ dependencies = [
     "us>=2.0.2",
     "httpx>=0.22.0",
     "pandas>=1.1.0",
+    "pyarrow>=10.0.0",
     "rich>=11.0.0",
     "typer>=0.4.0",
 ]

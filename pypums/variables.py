@@ -54,8 +54,8 @@ def load_variables(
         return _cache[cache_key]
 
     # 2. Check persistent disk cache.
-    if cache:
-        persistent = _get_persistent_cache()
+    persistent = _get_persistent_cache() if cache else None
+    if persistent is not None:
         cached_df = persistent.get(disk_key)
         if cached_df is not None:
             _cache[cache_key] = cached_df
@@ -80,7 +80,6 @@ def load_variables(
     # 4. Store in caches.
     if cache:
         _cache[cache_key] = df
-        persistent = _get_persistent_cache()
         persistent.set(disk_key, df)
 
     return df
