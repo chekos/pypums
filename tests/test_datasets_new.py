@@ -85,9 +85,15 @@ class TestPumsVariables:
 class TestAcs5Geography:
     """Tests for the acs5_geography dataset function."""
 
-    def test_returns_dataframe(self):
-        from pypums.datasets.acs5_geography import acs5_geography
+    def _get_module(self):
+        import sys
 
+        return sys.modules["pypums.datasets.acs5_geography"]
+
+    def test_returns_dataframe(self):
+        import pypums.datasets.acs5_geography  # noqa: F401
+
+        mod = self._get_module()
         mock_response = {
             "fips": [
                 {
@@ -102,17 +108,19 @@ class TestAcs5Geography:
                 },
             ]
         }
-        with patch(
-            "pypums.datasets.acs5_geography._fetch_geography_json",
+        with patch.object(
+            mod,
+            "_fetch_geography_json",
             return_value=mock_response,
         ):
-            df = acs5_geography(cache=False)
+            df = mod.acs5_geography(cache=False)
         assert isinstance(df, pd.DataFrame)
         assert len(df) == 2
 
     def test_has_expected_columns(self):
-        from pypums.datasets.acs5_geography import acs5_geography
+        import pypums.datasets.acs5_geography  # noqa: F401
 
+        mod = self._get_module()
         mock_response = {
             "fips": [
                 {
@@ -122,10 +130,11 @@ class TestAcs5Geography:
                 },
             ]
         }
-        with patch(
-            "pypums.datasets.acs5_geography._fetch_geography_json",
+        with patch.object(
+            mod,
+            "_fetch_geography_json",
             return_value=mock_response,
         ):
-            df = acs5_geography(cache=False)
+            df = mod.acs5_geography(cache=False)
         for col in ("name", "hierarchy", "requires"):
             assert col in df.columns
