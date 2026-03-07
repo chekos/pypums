@@ -1,14 +1,9 @@
 """PUMS microdata retrieval via the Census API."""
 
-from __future__ import annotations
-
-import httpx
 import pandas as pd
-
+from pypums.api.client import CENSUS_API_BASE, call_census_api
 from pypums.api.geography import _resolve_state_fips
 from pypums.api.key import census_api_key
-
-_CENSUS_API_BASE = "https://api.census.gov/data"
 
 # Standard PUMS weight and ID columns always requested.
 _PUMS_BASE_VARS = ["SERIALNO", "SPORDER", "PWGTP", "ST", "PUMA"]
@@ -57,10 +52,8 @@ _PUMS_RECODES: dict[str, dict[str, str]] = {
 
 
 def _call_census_api(url: str, params: dict) -> list[list[str]]:
-    """Make an HTTP request to the Census API and return JSON rows."""
-    response = httpx.get(url, params=params, timeout=30)
-    response.raise_for_status()
-    return response.json()
+    """Thin wrapper so tests can mock ``pypums.pums._call_census_api``."""
+    return call_census_api(url, params)
 
 
 def get_pums(
@@ -145,7 +138,7 @@ def get_pums(
     else:
         state_fips = _resolve_state_fips(state[0])
 
-    url = f"{_CENSUS_API_BASE}/{year}/acs/{survey}/pums"
+    url = f"{CENSUS_API_BASE}/{year}/acs/{survey}/pums"
     params: dict[str, str] = {
         "get": ",".join(all_vars),
         "for": f"state:{state_fips}",

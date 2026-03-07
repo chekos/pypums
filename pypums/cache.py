@@ -1,7 +1,5 @@
 """File-based caching for Census API responses and variable tables."""
 
-from __future__ import annotations
-
 import hashlib
 import json
 import pickle

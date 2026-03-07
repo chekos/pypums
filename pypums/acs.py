@@ -1,14 +1,9 @@
 """American Community Survey data retrieval via the Census API."""
 
-from __future__ import annotations
-
-import httpx
 import pandas as pd
-
+from pypums.api.client import CENSUS_API_BASE, call_census_api
 from pypums.api.geography import build_geography_query
 from pypums.api.key import census_api_key
-
-_CENSUS_API_BASE = "https://api.census.gov/data"
 
 # Z-scores for MOE confidence levels.
 _Z_SCORES: dict[int, float] = {
@@ -36,10 +31,8 @@ _GEO_COLUMNS = frozenset({
 
 
 def _call_census_api(url: str, params: dict) -> list[list[str]]:
-    """Make an HTTP request to the Census API and return JSON rows."""
-    response = httpx.get(url, params=params, timeout=30)
-    response.raise_for_status()
-    return response.json()
+    """Thin wrapper so tests can mock ``pypums.acs._call_census_api``."""
+    return call_census_api(url, params)
 
 
 def get_acs(
@@ -87,17 +80,20 @@ def get_acs(
     pd.DataFrame
         Census data in tidy or wide format.
     """
+    if output not in ("tidy", "wide"):
+        raise ValueError(f"output must be 'tidy' or 'wide', got {output!r}")
+    if moe_level not in _Z_SCORES:
+        raise ValueError(f"moe_level must be one of {sorted(_Z_SCORES)}, got {moe_level!r}")
+
     api_key = census_api_key(key) if key else census_api_key()
-    for_clause, in_clause = build_geography_query(
-        geography, state=state, county=county,
-    )
+    for_clause, in_clause = build_geography_query(geography, state=state, county=county)
 
     # Build the variable list for the API request.
     if variables is not None:
         if isinstance(variables, str):
             variables = [variables]
         # Census API needs E/M suffixes for ACS.
-        api_vars: list[str] = []
+        api_vars = []
         for v in variables:
             api_vars.append(f"{v}E")
             api_vars.append(f"{v}M")
@@ -111,7 +107,7 @@ def get_acs(
         api_vars.append(f"{summary_var}E")
         api_vars.append(f"{summary_var}M")
 
-    url = f"{_CENSUS_API_BASE}/{year}/acs/acs5"
+    url = f"{CENSUS_API_BASE}/{year}/acs/acs5"
     params: dict[str, str] = {
         "get": f"NAME,{','.join(api_vars)}",
         "for": for_clause,
@@ -140,35 +136,50 @@ def get_acs(
         df[col] = pd.to_numeric(df[col], errors="coerce")
 
     # Scale MOE if needed.
-    if moe_level != 90 and moe_level in _Z_SCORES:
+    if moe_level != 90:
         scale_factor = _Z_SCORES[moe_level] / _Z_SCORES[90]
-        for col in moe_cols:
-            df[col] = df[col] * scale_factor
+        df[moe_cols] = df[moe_cols] * scale_factor
 
     if output == "wide":
         keep_cols = ["GEOID", "NAME"] + estimate_cols + moe_cols
         result = df[[c for c in keep_cols if c in df.columns]]
     else:
-        # Tidy format: melt to one row per geography x variable.
-        base_vars = list(dict.fromkeys(c[:-1] for c in estimate_cols))
-        tidy_rows = []
-        for _, row in df.iterrows():
-            for var in base_vars:
-                est_col = f"{var}E"
-                moe_col = f"{var}M"
-                tidy_row: dict = {
-                    "GEOID": row.get("GEOID", ""),
-                    "NAME": row["NAME"],
-                    "variable": var,
-                    "estimate": row.get(est_col),
-                    "moe": row.get(moe_col),
-                }
-                if summary_var is not None:
-                    tidy_row["summary_est"] = row.get(f"{summary_var}E")
-                    tidy_row["summary_moe"] = row.get(f"{summary_var}M")
-                tidy_rows.append(tidy_row)
+        # Tidy format: melt estimate and MOE columns separately, then merge.
+        id_cols = ["GEOID", "NAME"] if "GEOID" in df.columns else ["NAME"]
 
-        result = pd.DataFrame(tidy_rows)
+        # Exclude summary_var columns from the main melt.
+        summary_est_col = f"{summary_var}E" if summary_var else None
+        summary_moe_col = f"{summary_var}M" if summary_var else None
+        main_est_cols = [c for c in estimate_cols if c != summary_est_col]
+        main_moe_cols = [c for c in moe_cols if c != summary_moe_col]
+
+        est_long = df.melt(
+            id_vars=id_cols,
+            value_vars=main_est_cols,
+            var_name="_est_var",
+            value_name="estimate",
+        )
+        est_long["variable"] = est_long["_est_var"].str[:-1]
+
+        moe_long = df.melt(
+            id_vars=id_cols,
+            value_vars=main_moe_cols,
+            var_name="_moe_var",
+            value_name="moe",
+        )
+        moe_long["variable"] = moe_long["_moe_var"].str[:-1]
+
+        result = est_long[id_cols + ["variable", "estimate"]].merge(
+            moe_long[id_cols + ["variable", "moe"]],
+            on=id_cols + ["variable"],
+        )
+
+        # Add summary variable columns if requested.
+        if summary_var is not None and summary_est_col in df.columns:
+            summary_df = df[id_cols + [summary_est_col, summary_moe_col]].rename(
+                columns={summary_est_col: "summary_est", summary_moe_col: "summary_moe"},
+            )
+            result = result.merge(summary_df, on=id_cols)
 
     if geometry:
         from pypums.spatial import attach_geometry

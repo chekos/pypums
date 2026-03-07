@@ -1,14 +1,9 @@
 """Decennial Census data retrieval via the Census API."""
 
-from __future__ import annotations
-
-import httpx
 import pandas as pd
-
+from pypums.api.client import CENSUS_API_BASE, call_census_api
 from pypums.api.geography import build_geography_query
 from pypums.api.key import census_api_key
-
-_CENSUS_API_BASE = "https://api.census.gov/data"
 
 # Default dataset by census year.
 _YEAR_DATASETS: dict[int, str] = {
@@ -26,10 +21,8 @@ _GEO_COLUMNS = frozenset({
 
 
 def _call_census_api(url: str, params: dict) -> list[list[str]]:
-    """Make an HTTP request to the Census API and return JSON rows."""
-    response = httpx.get(url, params=params, timeout=30)
-    response.raise_for_status()
-    return response.json()
+    """Thin wrapper so tests can mock ``pypums.decennial._call_census_api``."""
+    return call_census_api(url, params)
 
 
 def get_decennial(
@@ -74,16 +67,14 @@ def get_decennial(
     pd.DataFrame
         Census data in tidy or wide format.
     """
+    if output not in ("tidy", "wide"):
+        raise ValueError(f"output must be 'tidy' or 'wide', got {output!r}")
+
     api_key = census_api_key(key) if key else census_api_key()
-    for_clause, in_clause = build_geography_query(
-        geography, state=state, county=county,
-    )
+    for_clause, in_clause = build_geography_query(geography, state=state, county=county)
 
     # Select dataset.
-    if pop_group is not None:
-        dataset = "dec/dhc-a"
-    else:
-        dataset = _YEAR_DATASETS.get(year, "dec/dhc")
+    dataset = "dec/dhc-a" if pop_group is not None else _YEAR_DATASETS.get(year, "dec/dhc")
 
     # Build the variable list.
     if variables is not None:
@@ -95,7 +86,7 @@ def get_decennial(
     else:
         raise ValueError("Must provide either 'variables' or 'table'.")
 
-    url = f"{_CENSUS_API_BASE}/{year}/{dataset}"
+    url = f"{CENSUS_API_BASE}/{year}/{dataset}"
     params: dict[str, str] = {
         "get": f"NAME,{','.join(api_vars)}",
         "for": for_clause,
@@ -118,10 +109,7 @@ def get_decennial(
         df["GEOID"] = df[geo_cols].apply(lambda row: "".join(row), axis=1)
 
     # Identify variable columns (everything except NAME and geo columns).
-    var_cols = [
-        c for c in df.columns
-        if c not in _GEO_COLUMNS and c not in ("NAME", "GEOID")
-    ]
+    var_cols = [c for c in df.columns if c not in _GEO_COLUMNS and c not in ("NAME", "GEOID")]
 
     # Convert to numeric.
     for col in var_cols:
@@ -132,17 +120,13 @@ def get_decennial(
         result = df[[c for c in keep_cols if c in df.columns]]
     else:
         # Tidy format: melt to one row per geography x variable.
-        tidy_rows = []
-        for _, row in df.iterrows():
-            for var in var_cols:
-                tidy_rows.append({
-                    "GEOID": row.get("GEOID", ""),
-                    "NAME": row["NAME"],
-                    "variable": var,
-                    "value": row[var],
-                })
-
-        result = pd.DataFrame(tidy_rows)
+        id_cols = ["GEOID", "NAME"] if "GEOID" in df.columns else ["NAME"]
+        result = df.melt(
+            id_vars=id_cols,
+            value_vars=var_cols,
+            var_name="variable",
+            value_name="value",
+        )
 
     if geometry:
         from pypums.spatial import attach_geometry
