@@ -3,22 +3,13 @@
 import os
 
 
-def census_api_key(
-    key: str | None = None,
-    *,
-    install: bool = False,
-    overwrite: bool = False,
-) -> str:
-    """Get, set, or install a Census API key.
+def census_api_key(key: str | None = None) -> str:
+    """Get or set a Census API key for the current session.
 
     Parameters
     ----------
     key
         If provided, sets this key for the current session via env var.
-    install
-        If True, persists the key to ``~/.pypums/config.toml``.
-    overwrite
-        If True, overwrites an existing installed key.
 
     Returns
     -------

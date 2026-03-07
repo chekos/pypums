@@ -1,12 +1,15 @@
 """File-based caching for Census API responses and variable tables."""
 
+import hashlib
 import json
 import pickle
-import shutil
 import time
 from pathlib import Path
 
 import pandas as pd
+
+_CACHE_DATA_SUFFIX = ".pkl"
+_CACHE_META_SUFFIX = ".meta.json"
 
 
 class CensusCache:
@@ -22,11 +25,16 @@ class CensusCache:
         self._dir = Path(cache_dir)
         self._dir.mkdir(parents=True, exist_ok=True)
 
+    @staticmethod
+    def _safe_name(key: str) -> str:
+        """Hash the key to produce a safe, fixed-length filename."""
+        return hashlib.sha256(key.encode()).hexdigest()
+
     def _data_path(self, key: str) -> Path:
-        return self._dir / f"{key}.pkl"
+        return self._dir / f"{self._safe_name(key)}{_CACHE_DATA_SUFFIX}"
 
     def _meta_path(self, key: str) -> Path:
-        return self._dir / f"{key}.meta.json"
+        return self._dir / f"{self._safe_name(key)}{_CACHE_META_SUFFIX}"
 
     def set(
         self,
@@ -73,8 +81,7 @@ class CensusCache:
 
     def clear(self) -> None:
         """Remove all cached entries."""
-        for path in self._dir.iterdir():
-            if path.is_file():
-                path.unlink()
-            elif path.is_dir():
-                shutil.rmtree(path)
+        for path in self._dir.glob(f"*{_CACHE_DATA_SUFFIX}"):
+            path.unlink()
+        for path in self._dir.glob(f"*{_CACHE_META_SUFFIX}"):
+            path.unlink()

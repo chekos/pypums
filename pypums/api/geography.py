@@ -111,6 +111,6 @@ def build_geography_query(
     if "county" in required and county is not None:
         in_parts.append(f"county:{county}")
 
-    in_clause = "+".join(in_parts) if in_parts else None
+    in_clause = " ".join(in_parts) if in_parts else None
 
     return for_clause, in_clause
