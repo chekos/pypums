@@ -39,6 +39,7 @@ def _mock_get_acs(acs_api_response_tidy, **overrides):
 # Contract tests
 # ---------------------------------------------------------------------------
 
+
 class TestGetAcsReturnType:
     """get_acs() must always return a DataFrame."""
 

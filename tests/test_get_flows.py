@@ -27,7 +27,6 @@ def _mock_get_flows(flows_api_response):
 
 
 class TestGetFlowsReturnType:
-
     def test_returns_dataframe(self, flows_api_response, fake_api_key):
         with _mock_get_flows(flows_api_response):
             df = get_flows(
@@ -41,7 +40,6 @@ class TestGetFlowsReturnType:
 
 
 class TestGetFlowsColumns:
-
     def test_has_flow_columns(self, flows_api_response, fake_api_key):
         """Output must include the three core migration flow columns."""
         with _mock_get_flows(flows_api_response):
@@ -68,7 +66,6 @@ class TestGetFlowsColumns:
 
 
 class TestGetFlowsCountyLevel:
-
     def test_county_to_county(self, flows_api_response, fake_api_key):
         """County-level flows require state + county specification."""
         with _mock_get_flows(flows_api_response):

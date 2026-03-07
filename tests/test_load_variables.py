@@ -27,7 +27,6 @@ def _mock_load_variables(variables_api_response):
 
 
 class TestLoadVariablesReturnType:
-
     def test_returns_dataframe(self, variables_api_response, fake_api_key):
         with _mock_load_variables(variables_api_response):
             df = load_variables(year=2023, dataset="acs5")
@@ -36,7 +35,6 @@ class TestLoadVariablesReturnType:
 
 
 class TestLoadVariablesColumns:
-
     def test_has_expected_columns(self, variables_api_response, fake_api_key):
         with _mock_load_variables(variables_api_response):
             df = load_variables(year=2023, dataset="acs5")

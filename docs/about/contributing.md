@@ -73,7 +73,7 @@ local development.
     Or if you are using `pipenv`:
 
         pipenv shell
-    
+
     Now install the dependencies and test dependencies:
 
         pip install -e '.[test]'
@@ -82,7 +82,7 @@ local development.
 
         git checkout -b name-of-your-bugfix-or-feature
 
-    Now you can make your changes locally.  
+    Now you can make your changes locally.
     <br>
 
 5.  When you're done making changes, check that your changes pass
@@ -111,4 +111,3 @@ Before you submit a pull request, check that it meets these guidelines:
 3.  The pull request should work for Python 3.6 - 3.9.
     Check <https://travis-ci.org/chekos/pypums/pull_requests>
     and make sure that the tests pass for all supported Python versions.
-

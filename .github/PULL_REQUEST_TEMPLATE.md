@@ -24,4 +24,3 @@
 - [ ] I've read the [`CODE_OF_CONDUCT.md`](https://github.com/chekos/pypums/blob/master/CODE_OF_CONDUCT.md) document.
 - [ ] I've read the [`CONTRIBUTING.md`](https://github.com/chekos/pypums/blob/master/CONTRIBUTING.md) guide.
 - [ ] I've written tests for all new methods and classes that I created.
-

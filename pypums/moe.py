@@ -181,9 +181,7 @@ def significance(
         If *clevel* is not one of the supported confidence levels.
     """
     if clevel not in _Z_SCORES:
-        raise ValueError(
-            f"clevel must be one of {sorted(_Z_SCORES)}, got {clevel!r}"
-        )
+        raise ValueError(f"clevel must be one of {sorted(_Z_SCORES)}, got {clevel!r}")
     z_90 = _Z_SCORES[0.90]
     z = _Z_SCORES[clevel]
 

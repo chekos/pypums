@@ -27,12 +27,29 @@ def cache_dir(tmp_path):
 # calls and still test DataFrame construction, column naming, etc.
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture()
 def acs_api_response_tidy():
     """Sample ACS API response (JSON rows) for 2 variables, 2 counties."""
     return [
-        ["NAME", "B01001_001E", "B01001_001M", "B02001_002E", "B02001_002M", "state", "county"],
-        ["Los Angeles County, California", "10014009", "0", "2786755", "9012", "06", "037"],
+        [
+            "NAME",
+            "B01001_001E",
+            "B01001_001M",
+            "B02001_002E",
+            "B02001_002M",
+            "state",
+            "county",
+        ],
+        [
+            "Los Angeles County, California",
+            "10014009",
+            "0",
+            "2786755",
+            "9012",
+            "06",
+            "037",
+        ],
         ["Orange County, California", "3186989", "0", "1298431", "6234", "06", "059"],
     ]
 
@@ -94,16 +111,31 @@ def flows_api_response():
     """Sample ACS Migration Flows API response."""
     return [
         [
-            "FULL1_NAME", "FULL2_NAME",
-            "MOVEDIN", "MOVEDIN_M",
-            "MOVEDOUT", "MOVEDOUT_M",
-            "MOVEDNET", "MOVEDNET_M",
-            "state1", "county1", "state2", "county2",
+            "FULL1_NAME",
+            "FULL2_NAME",
+            "MOVEDIN",
+            "MOVEDIN_M",
+            "MOVEDOUT",
+            "MOVEDOUT_M",
+            "MOVEDNET",
+            "MOVEDNET_M",
+            "state1",
+            "county1",
+            "state2",
+            "county2",
         ],
         [
             "Los Angeles County, California",
             "Maricopa County, Arizona",
-            "15234", "1200", "22456", "1500", "-7222", "1921",
-            "06", "037", "04", "013",
+            "15234",
+            "1200",
+            "22456",
+            "1500",
+            "-7222",
+            "1921",
+            "06",
+            "037",
+            "04",
+            "013",
         ],
     ]

@@ -2,18 +2,20 @@
 
 import hashlib
 import json
-import pickle
 import time
 from pathlib import Path
 
 import pandas as pd
 
-_CACHE_DATA_SUFFIX = ".pkl"
+_CACHE_DATA_SUFFIX = ".parquet"
 _CACHE_META_SUFFIX = ".meta.json"
 
 
 class CensusCache:
     """Cache Census API responses with optional TTL.
+
+    Uses Parquet for DataFrame serialization (safe to deserialize from
+    untrusted sources, unlike pickle).
 
     Parameters
     ----------
@@ -53,8 +55,7 @@ class CensusCache:
         ttl_seconds
             Time-to-live in seconds. ``None`` means no expiration.
         """
-        with open(self._data_path(key), "wb") as f:
-            pickle.dump(df, f)
+        df.to_parquet(self._data_path(key))
         meta = {"created_at": time.time(), "ttl_seconds": ttl_seconds}
         self._meta_path(key).write_text(json.dumps(meta))
 
@@ -76,8 +77,7 @@ class CensusCache:
                 meta_path.unlink(missing_ok=True)
                 return None
 
-        with open(data_path, "rb") as f:
-            return pickle.load(f)  # noqa: S301
+        return pd.read_parquet(data_path)
 
     def clear(self) -> None:
         """Remove all cached entries."""

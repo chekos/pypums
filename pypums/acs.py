@@ -1,9 +1,15 @@
 """American Community Survey data retrieval via the Census API."""
 
+from pathlib import Path
+
 import pandas as pd
+
 from pypums.api.client import CENSUS_API_BASE, call_census_api
 from pypums.api.geography import build_geography_query
 from pypums.api.key import census_api_key
+from pypums.cache import CensusCache
+
+_DEFAULT_CACHE_DIR = Path.home() / ".pypums" / "cache" / "api"
 
 # Z-scores for MOE confidence levels.
 _Z_SCORES: dict[int, float] = {
@@ -15,15 +21,26 @@ _Z_SCORES: dict[int, float] = {
 # Geography columns in FIPS concatenation order.  The order matters because
 # GEOID is built by joining these columns (e.g. state+county+tract).
 _GEO_COL_ORDER = [
-    "us", "region", "division", "state", "county", "county subdivision",
-    "tract", "block group", "block", "place", "congressional district",
+    "us",
+    "region",
+    "division",
+    "state",
+    "county",
+    "county subdivision",
+    "tract",
+    "block group",
+    "block",
+    "place",
+    "congressional district",
     "state legislative district (upper chamber)",
     "state legislative district (lower chamber)",
     "zip code tabulation area",
-    "school district (unified)", "school district (elementary)",
+    "school district (unified)",
+    "school district (elementary)",
     "school district (secondary)",
     "metropolitan statistical area/micropolitan statistical area",
-    "combined statistical area", "public use microdata area",
+    "combined statistical area",
+    "public use microdata area",
     "american indian area/alaska native area/hawaiian home land",
 ]
 _GEO_COLUMNS = frozenset(_GEO_COL_ORDER)
@@ -46,6 +63,7 @@ def get_acs(
     moe_level: int = 90,
     summary_var: str | None = None,
     geometry: bool = False,
+    cache_table: bool = False,
     key: str | None = None,
 ) -> pd.DataFrame:
     """Retrieve American Community Survey data from the Census API.
@@ -74,6 +92,8 @@ def get_acs(
         Variable ID to include as denominator columns.
     geometry
         If True, return a GeoDataFrame with shapes.
+    cache_table
+        If True, cache the API response locally to avoid redundant calls.
     key
         Census API key. Falls back to ``census_api_key()``.
 
@@ -85,7 +105,9 @@ def get_acs(
     if output not in ("tidy", "wide"):
         raise ValueError(f"output must be 'tidy' or 'wide', got {output!r}")
     if moe_level not in _Z_SCORES:
-        raise ValueError(f"moe_level must be one of {sorted(_Z_SCORES)}, got {moe_level!r}")
+        raise ValueError(
+            f"moe_level must be one of {sorted(_Z_SCORES)}, got {moe_level!r}"
+        )
 
     api_key = census_api_key(key) if key else census_api_key()
     for_clause, in_clause = build_geography_query(geography, state=state, county=county)
@@ -108,6 +130,19 @@ def get_acs(
     if summary_var is not None:
         api_vars.append(f"{summary_var}E")
         api_vars.append(f"{summary_var}M")
+
+    # Build a cache key from request parameters.
+    cache_key = (
+        f"acs_{year}_{survey}_{geography}_{state}_{county}"
+        f"_{output}_{moe_level}_{summary_var}_{','.join(api_vars)}"
+    )
+
+    # Check cache before calling API.
+    disk_cache = CensusCache(_DEFAULT_CACHE_DIR) if cache_table else None
+    if disk_cache is not None:
+        cached = disk_cache.get(cache_key)
+        if cached is not None:
+            return cached
 
     url = f"{CENSUS_API_BASE}/{year}/acs/{survey}"
     params: dict[str, str] = {
@@ -179,7 +214,10 @@ def get_acs(
         # Add summary variable columns if requested.
         if summary_var is not None and summary_est_col in df.columns:
             summary_df = df[id_cols + [summary_est_col, summary_moe_col]].rename(
-                columns={summary_est_col: "summary_est", summary_moe_col: "summary_moe"},
+                columns={
+                    summary_est_col: "summary_est",
+                    summary_moe_col: "summary_moe",
+                },
             )
             result = result.merge(summary_df, on=id_cols)
 
@@ -187,5 +225,8 @@ def get_acs(
         from pypums.spatial import attach_geometry
 
         result = attach_geometry(result, geography, state=state, year=year)
+
+    if disk_cache is not None:
+        disk_cache.set(cache_key, result, ttl_seconds=86400)
 
     return result

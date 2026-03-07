@@ -29,7 +29,6 @@ def _mock_get_pums(pums_api_response):
 
 
 class TestGetPumsReturnType:
-
     def test_returns_dataframe(self, pums_api_response, fake_api_key):
         with _mock_get_pums(pums_api_response):
             df = get_pums(
@@ -43,7 +42,6 @@ class TestGetPumsReturnType:
 
 
 class TestGetPumsVariablesFilter:
-
     def test_filter_reduces_rows(self, pums_api_response, fake_api_key):
         """variables_filter should cause the API to return fewer rows."""
         # Without filter
@@ -73,7 +71,6 @@ class TestGetPumsVariablesFilter:
 
 
 class TestGetPumsRecode:
-
     def test_recode_adds_label_columns(self, pums_api_response, fake_api_key):
         """``recode=True`` should add *_label columns for coded variables."""
         with _mock_get_pums(pums_api_response):
@@ -88,7 +85,6 @@ class TestGetPumsRecode:
 
 
 class TestGetPumsRepWeights:
-
     def test_rep_weights_person(self, pums_api_response, fake_api_key):
         """``rep_weights='person'`` should include PWGTP1..PWGTP80 columns."""
         # Mock a response that includes weight columns
@@ -107,7 +103,6 @@ class TestGetPumsRepWeights:
 
 
 class TestGetPumsStateRequired:
-
     def test_state_required(self, fake_api_key):
         """get_pums() should raise when no state is provided."""
         with pytest.raises((ValueError, TypeError)):

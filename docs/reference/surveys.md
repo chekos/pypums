@@ -5,4 +5,3 @@
         members:
             - download
             - as_dataframe
-
