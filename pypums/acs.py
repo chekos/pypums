@@ -12,22 +12,21 @@ _Z_SCORES: dict[int, float] = {
     99: 2.576,
 }
 
-# Geography columns that appear in Census API responses.
-_GEO_COLUMNS = frozenset({
-    "state", "county", "tract", "block group", "block",
-    "place", "congressional district",
+# Geography columns in FIPS concatenation order.  The order matters because
+# GEOID is built by joining these columns (e.g. state+county+tract).
+_GEO_COL_ORDER = [
+    "us", "region", "division", "state", "county", "county subdivision",
+    "tract", "block group", "block", "place", "congressional district",
     "state legislative district (upper chamber)",
     "state legislative district (lower chamber)",
     "zip code tabulation area",
-    "school district (unified)",
-    "school district (elementary)",
+    "school district (unified)", "school district (elementary)",
     "school district (secondary)",
     "metropolitan statistical area/micropolitan statistical area",
-    "combined statistical area",
-    "public use microdata area",
+    "combined statistical area", "public use microdata area",
     "american indian area/alaska native area/hawaiian home land",
-    "us", "region", "division", "county subdivision",
-})
+]
+_GEO_COLUMNS = frozenset(_GEO_COL_ORDER)
 
 
 def _call_census_api(url: str, params: dict) -> list[list[str]]:
@@ -42,6 +41,7 @@ def get_acs(
     state: str | None = None,
     county: str | None = None,
     year: int = 2023,
+    survey: str = "acs5",
     output: str = "tidy",
     moe_level: int = 90,
     summary_var: str | None = None,
@@ -64,6 +64,8 @@ def get_acs(
         County FIPS code.
     year
         Data year (default 2023).
+    survey
+        ``"acs5"`` (default) or ``"acs1"``.
     output
         ``"tidy"`` (default) or ``"wide"``.
     moe_level
@@ -71,7 +73,7 @@ def get_acs(
     summary_var
         Variable ID to include as denominator columns.
     geometry
-        If True, return a GeoDataFrame with shapes (not yet implemented).
+        If True, return a GeoDataFrame with shapes.
     key
         Census API key. Falls back to ``census_api_key()``.
 
@@ -80,8 +82,6 @@ def get_acs(
     pd.DataFrame
         Census data in tidy or wide format.
     """
-    if geometry:
-        raise NotImplementedError("geometry=True is not yet supported.")
     if output not in ("tidy", "wide"):
         raise ValueError(f"output must be 'tidy' or 'wide', got {output!r}")
     if moe_level not in _Z_SCORES:
@@ -109,7 +109,7 @@ def get_acs(
         api_vars.append(f"{summary_var}E")
         api_vars.append(f"{summary_var}M")
 
-    url = f"{CENSUS_API_BASE}/{year}/acs/acs5"
+    url = f"{CENSUS_API_BASE}/{year}/acs/{survey}"
     params: dict[str, str] = {
         "get": f"NAME,{','.join(api_vars)}",
         "for": for_clause,
@@ -124,8 +124,8 @@ def get_acs(
     headers = data[0]
     df = pd.DataFrame(data[1:], columns=headers)
 
-    # Build GEOID from FIPS columns.
-    geo_cols = [c for c in df.columns if c in _GEO_COLUMNS]
+    # Build GEOID from FIPS columns in canonical order.
+    geo_cols = [c for c in _GEO_COL_ORDER if c in df.columns]
     if geo_cols:
         df["GEOID"] = df[geo_cols].apply(lambda row: "".join(row), axis=1)
 
@@ -144,43 +144,48 @@ def get_acs(
 
     if output == "wide":
         keep_cols = ["GEOID", "NAME"] + estimate_cols + moe_cols
-        return df[[c for c in keep_cols if c in df.columns]]
+        result = df[[c for c in keep_cols if c in df.columns]]
+    else:
+        # Tidy format: melt estimate and MOE columns separately, then merge.
+        id_cols = ["GEOID", "NAME"] if "GEOID" in df.columns else ["NAME"]
 
-    # Tidy format: melt estimate and MOE columns separately, then merge.
-    id_cols = ["GEOID", "NAME"] if "GEOID" in df.columns else ["NAME"]
+        # Exclude summary_var columns from the main melt.
+        summary_est_col = f"{summary_var}E" if summary_var else None
+        summary_moe_col = f"{summary_var}M" if summary_var else None
+        main_est_cols = [c for c in estimate_cols if c != summary_est_col]
+        main_moe_cols = [c for c in moe_cols if c != summary_moe_col]
 
-    # Exclude summary_var columns from the main melt.
-    summary_est_col = f"{summary_var}E" if summary_var else None
-    summary_moe_col = f"{summary_var}M" if summary_var else None
-    main_est_cols = [c for c in estimate_cols if c != summary_est_col]
-    main_moe_cols = [c for c in moe_cols if c != summary_moe_col]
-
-    est_long = df.melt(
-        id_vars=id_cols,
-        value_vars=main_est_cols,
-        var_name="_est_var",
-        value_name="estimate",
-    )
-    est_long["variable"] = est_long["_est_var"].str[:-1]
-
-    moe_long = df.melt(
-        id_vars=id_cols,
-        value_vars=main_moe_cols,
-        var_name="_moe_var",
-        value_name="moe",
-    )
-    moe_long["variable"] = moe_long["_moe_var"].str[:-1]
-
-    tidy = est_long[id_cols + ["variable", "estimate"]].merge(
-        moe_long[id_cols + ["variable", "moe"]],
-        on=id_cols + ["variable"],
-    )
-
-    # Add summary variable columns if requested.
-    if summary_var is not None and summary_est_col in df.columns:
-        summary_df = df[id_cols + [summary_est_col, summary_moe_col]].rename(
-            columns={summary_est_col: "summary_est", summary_moe_col: "summary_moe"},
+        est_long = df.melt(
+            id_vars=id_cols,
+            value_vars=main_est_cols,
+            var_name="_est_var",
+            value_name="estimate",
         )
-        tidy = tidy.merge(summary_df, on=id_cols)
+        est_long["variable"] = est_long["_est_var"].str[:-1]
 
-    return tidy
+        moe_long = df.melt(
+            id_vars=id_cols,
+            value_vars=main_moe_cols,
+            var_name="_moe_var",
+            value_name="moe",
+        )
+        moe_long["variable"] = moe_long["_moe_var"].str[:-1]
+
+        result = est_long[id_cols + ["variable", "estimate"]].merge(
+            moe_long[id_cols + ["variable", "moe"]],
+            on=id_cols + ["variable"],
+        )
+
+        # Add summary variable columns if requested.
+        if summary_var is not None and summary_est_col in df.columns:
+            summary_df = df[id_cols + [summary_est_col, summary_moe_col]].rename(
+                columns={summary_est_col: "summary_est", summary_moe_col: "summary_moe"},
+            )
+            result = result.merge(summary_df, on=id_cols)
+
+    if geometry:
+        from pypums.spatial import attach_geometry
+
+        result = attach_geometry(result, geography, state=state, year=year)
+
+    return result

@@ -1,5 +1,7 @@
 """Census geography hierarchy definitions and query building."""
 
+import us
+
 GEOGRAPHY_HIERARCHY: dict[str, dict] = {
     "us": {"for": "us:1", "requires": []},
     "region": {"for": "region:*", "requires": []},
@@ -55,6 +57,22 @@ GEOGRAPHY_HIERARCHY: dict[str, dict] = {
 }
 
 
+def _resolve_state_fips(state: str) -> str:
+    """Convert a state name or abbreviation to a 2-digit FIPS code."""
+    # Already a numeric FIPS code — normalize to 2 digits.
+    if state.isdigit():
+        return state.zfill(2)
+
+    result = us.states.lookup(state)
+    if result is None:
+        raise ValueError(
+            f"Could not resolve state: {state!r}. "
+            "Pass a 2-letter abbreviation (e.g. 'CA'), "
+            "full name (e.g. 'California'), or FIPS code (e.g. '06')."
+        )
+    return result.fips
+
+
 def build_geography_query(
     geography: str,
     state: str | None = None,
@@ -67,7 +85,7 @@ def build_geography_query(
     geography
         Geography level name (e.g. ``"state"``, ``"county"``, ``"tract"``).
     state
-        State FIPS code (e.g. ``"06"`` for California).
+        State FIPS code or name/abbreviation (e.g. ``"06"``, ``"CA"``).
     county
         County FIPS code (e.g. ``"037"`` for Los Angeles County).
 
@@ -91,7 +109,10 @@ def build_geography_query(
     spec = GEOGRAPHY_HIERARCHY[geo]
     required = spec["requires"]
 
-    if "state" in required and state is None:
+    # Resolve state to FIPS if provided.
+    state_fips = _resolve_state_fips(state) if state is not None else None
+
+    if "state" in required and state_fips is None:
         raise ValueError(
             f"Geography {geography!r} requires a state FIPS code. "
             "Pass state='XX' (e.g. state='06' for California)."
@@ -104,10 +125,10 @@ def build_geography_query(
 
     for_clause = spec["for"]
 
-    # Build the "in" clause from required parents
+    # Build the "in" clause from required parents.
     in_parts = []
-    if "state" in required and state is not None:
-        in_parts.append(f"state:{state}")
+    if "state" in required and state_fips is not None:
+        in_parts.append(f"state:{state_fips}")
     if "county" in required and county is not None:
         in_parts.append(f"county:{county}")
 

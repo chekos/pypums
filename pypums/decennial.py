@@ -12,12 +12,12 @@ _YEAR_DATASETS: dict[int, str] = {
     2000: "dec/sf1",
 }
 
-# Geography columns that appear in Census API responses.
-_GEO_COLUMNS = frozenset({
-    "state", "county", "tract", "block group", "block",
-    "place", "congressional district",
-    "us", "region", "division", "county subdivision",
-})
+# Geography columns in FIPS concatenation order.
+_GEO_COL_ORDER = [
+    "us", "region", "division", "state", "county", "county subdivision",
+    "tract", "block group", "block", "place", "congressional district",
+]
+_GEO_COLUMNS = frozenset(_GEO_COL_ORDER)
 
 
 def _call_census_api(url: str, params: dict) -> list[list[str]]:
@@ -58,7 +58,7 @@ def get_decennial(
     pop_group
         Population group code for DHC-A disaggregated data.
     geometry
-        If True, return a GeoDataFrame with shapes (not yet implemented).
+        If True, return a GeoDataFrame with shapes.
     key
         Census API key. Falls back to ``census_api_key()``.
 
@@ -67,21 +67,14 @@ def get_decennial(
     pd.DataFrame
         Census data in tidy or wide format.
     """
-    if geometry:
-        raise NotImplementedError("geometry=True is not yet supported.")
     if output not in ("tidy", "wide"):
         raise ValueError(f"output must be 'tidy' or 'wide', got {output!r}")
 
     api_key = census_api_key(key) if key else census_api_key()
     for_clause, in_clause = build_geography_query(geography, state=state, county=county)
 
-    # Validate year and select dataset.
-    if year not in _YEAR_DATASETS:
-        raise ValueError(
-            f"Unsupported decennial year: {year}. "
-            f"Supported years: {sorted(_YEAR_DATASETS)}"
-        )
-    dataset = "dec/dhc-a" if pop_group is not None else _YEAR_DATASETS[year]
+    # Select dataset.
+    dataset = "dec/dhc-a" if pop_group is not None else _YEAR_DATASETS.get(year, "dec/dhc")
 
     # Build the variable list.
     if variables is not None:
@@ -110,8 +103,8 @@ def get_decennial(
     headers = data[0]
     df = pd.DataFrame(data[1:], columns=headers)
 
-    # Build GEOID from FIPS columns.
-    geo_cols = [c for c in df.columns if c in _GEO_COLUMNS]
+    # Build GEOID from FIPS columns in canonical order.
+    geo_cols = [c for c in _GEO_COL_ORDER if c in df.columns]
     if geo_cols:
         df["GEOID"] = df[geo_cols].apply(lambda row: "".join(row), axis=1)
 
@@ -124,15 +117,20 @@ def get_decennial(
 
     if output == "wide":
         keep_cols = ["GEOID", "NAME"] + var_cols
-        return df[[c for c in keep_cols if c in df.columns]]
+        result = df[[c for c in keep_cols if c in df.columns]]
+    else:
+        # Tidy format: melt to one row per geography x variable.
+        id_cols = ["GEOID", "NAME"] if "GEOID" in df.columns else ["NAME"]
+        result = df.melt(
+            id_vars=id_cols,
+            value_vars=var_cols,
+            var_name="variable",
+            value_name="value",
+        )
 
-    # Tidy format: melt to one row per geography × variable.
-    id_cols = ["GEOID", "NAME"] if "GEOID" in df.columns else ["NAME"]
-    tidy = df.melt(
-        id_vars=id_cols,
-        value_vars=var_cols,
-        var_name="variable",
-        value_name="value",
-    )
+    if geometry:
+        from pypums.spatial import attach_geometry
 
-    return tidy
+        result = attach_geometry(result, geography, state=state, year=year)
+
+    return result
