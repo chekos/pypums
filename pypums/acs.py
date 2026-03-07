@@ -63,6 +63,7 @@ def get_acs(
     moe_level: int = 90,
     summary_var: str | None = None,
     geometry: bool = False,
+    keep_geo_vars: bool = False,
     cache_table: bool = False,
     key: str | None = None,
 ) -> pd.DataFrame:
@@ -92,6 +93,9 @@ def get_acs(
         Variable ID to include as denominator columns.
     geometry
         If True, return a GeoDataFrame with shapes.
+    keep_geo_vars
+        If True, preserve the raw FIPS columns (state, county, tract,
+        etc.) in the output alongside GEOID.
     cache_table
         If True, cache the API response locally to avoid redundant calls.
     key
@@ -177,12 +181,17 @@ def get_acs(
         scale_factor = _Z_SCORES[moe_level] / _Z_SCORES[90]
         df[moe_cols] = df[moe_cols] * scale_factor
 
+    # Determine which geo FIPS columns to keep.
+    geo_cols_present = [c for c in _GEO_COL_ORDER if c in df.columns]
+    extra_geo = geo_cols_present if keep_geo_vars else []
+
     if output == "wide":
-        keep_cols = ["GEOID", "NAME"] + estimate_cols + moe_cols
+        keep_cols = ["GEOID", "NAME"] + extra_geo + estimate_cols + moe_cols
         result = df[[c for c in keep_cols if c in df.columns]]
     else:
         # Tidy format: melt estimate and MOE columns separately, then merge.
         id_cols = ["GEOID", "NAME"] if "GEOID" in df.columns else ["NAME"]
+        id_cols = id_cols + extra_geo
 
         # Exclude summary_var columns from the main melt.
         summary_est_col = f"{summary_var}E" if summary_var else None

@@ -96,6 +96,154 @@ def download_acs(
         _download_data(url, "acs", data_directory, extract)
 
 
+@cli.command("config")
+def config_set_key(
+    key: str = typer.Argument(..., help="Census API key to store"),
+    install: bool = typer.Option(
+        True, "--install/--no-install", help="Save key to environment"
+    ),
+):
+    """Set your Census API key."""
+    import os
+
+    from .api.key import census_api_key
+
+    os.environ["CENSUS_API_KEY"] = key
+    census_api_key(key)
+    console.print("[green]Census API key set successfully.[/green]")
+    if install:
+        console.print(
+            "Key stored in environment variable CENSUS_API_KEY for this session."
+        )
+
+
+@cli.command("acs")
+def acs_data(
+    geography: str = typer.Argument(
+        ..., help="Geography level (e.g. 'state', 'county')"
+    ),
+    variables: str = typer.Option(
+        None, "--variables", "-v", help="Comma-separated variable IDs"
+    ),
+    table: str = typer.Option(None, "--table", "-t", help="Census table ID"),
+    state_opt: str = typer.Option(
+        None, "--state", "-s", help="State FIPS or abbreviation"
+    ),
+    county_opt: str = typer.Option(None, "--county", help="County FIPS code"),
+    year_opt: int = typer.Option(2023, "--year", "-y", help="Data year"),
+    survey_opt: str = typer.Option("acs5", "--survey", help="Survey: acs1 or acs5"),
+    output: str = typer.Option("tidy", "--output", "-o", help="Output: tidy or wide"),
+    key: str = typer.Option(None, "--key", "-k", help="Census API key"),
+):
+    """Fetch ACS data from the Census API."""
+    from .acs import get_acs
+
+    var_list = variables.split(",") if variables else None
+    df = get_acs(
+        geography=geography,
+        variables=var_list,
+        table=table,
+        state=state_opt,
+        county=county_opt,
+        year=year_opt,
+        survey=survey_opt,
+        output=output,
+        key=key,
+    )
+    console.print(df.to_string())
+
+
+@cli.command("decennial")
+def decennial_data(
+    geography: str = typer.Argument(
+        ..., help="Geography level (e.g. 'state', 'county')"
+    ),
+    variables: str = typer.Option(
+        None, "--variables", "-v", help="Comma-separated variable IDs"
+    ),
+    table: str = typer.Option(None, "--table", "-t", help="Census table ID"),
+    state_opt: str = typer.Option(
+        None, "--state", "-s", help="State FIPS or abbreviation"
+    ),
+    county_opt: str = typer.Option(None, "--county", help="County FIPS code"),
+    year_opt: int = typer.Option(2020, "--year", "-y", help="Census year"),
+    output: str = typer.Option("tidy", "--output", "-o", help="Output: tidy or wide"),
+    key: str = typer.Option(None, "--key", "-k", help="Census API key"),
+):
+    """Fetch Decennial Census data from the Census API."""
+    from .decennial import get_decennial
+
+    var_list = variables.split(",") if variables else None
+    df = get_decennial(
+        geography=geography,
+        variables=var_list,
+        table=table,
+        state=state_opt,
+        county=county_opt,
+        year=year_opt,
+        output=output,
+        key=key,
+    )
+    console.print(df.to_string())
+
+
+@cli.command("variables")
+def variables_cmd(
+    year_opt: int = typer.Option(2023, "--year", "-y", help="Data year"),
+    dataset: str = typer.Option("acs5", "--dataset", "-d", help="Dataset identifier"),
+    search: str = typer.Option(None, "--search", help="Filter by name/label/concept"),
+    cache: bool = typer.Option(False, "--cache", help="Cache results"),
+):
+    """Search/browse Census variables."""
+    from .variables import load_variables
+
+    df = load_variables(year=year_opt, dataset=dataset, cache=cache)
+    if search:
+        mask = (
+            df["name"].str.contains(search, case=False, na=False)
+            | df["label"].str.contains(search, case=False, na=False)
+            | df["concept"].str.contains(search, case=False, na=False)
+        )
+        df = df[mask]
+    console.print(df.to_string())
+
+
+@cli.command("estimates")
+def estimates_cmd(
+    geography: str = typer.Argument(
+        ..., help="Geography level (e.g. 'state', 'county')"
+    ),
+    product: str = typer.Option(
+        "population", "--product", "-p", help="Estimates product"
+    ),
+    variables: str = typer.Option(
+        None, "--variables", "-v", help="Comma-separated variable IDs"
+    ),
+    state_opt: str = typer.Option(
+        None, "--state", "-s", help="State FIPS or abbreviation"
+    ),
+    county_opt: str = typer.Option(None, "--county", help="County FIPS code"),
+    vintage: int = typer.Option(2023, "--vintage", help="Vintage year"),
+    output: str = typer.Option("tidy", "--output", "-o", help="Output: tidy or wide"),
+    key: str = typer.Option(None, "--key", "-k", help="Census API key"),
+):
+    """Fetch population estimates from the Census API."""
+    from .estimates import get_estimates
+
+    var_list = variables.split(",") if variables else None
+    df = get_estimates(
+        geography=geography,
+        product=product,
+        variables=var_list,
+        state=state_opt,
+        county=county_opt,
+        vintage=vintage,
+        output=output,
+        key=key,
+    )
+    console.print(df.to_string())
+
+
 def _version_callback(value: bool) -> None:
     if value:
         typer.echo(f"{__app_name__} v{__version__}")

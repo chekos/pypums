@@ -12,6 +12,58 @@ from pypums.cache import CensusCache
 # Valid output formats.
 _VALID_OUTPUTS = frozenset({"tidy", "wide"})
 
+# Human-readable labels for PEP breakdown dimension codes.
+_BREAKDOWN_LABELS: dict[str, dict[str, str]] = {
+    "AGEGROUP": {
+        "0": "All ages",
+        "1": "Age 0 to 4 years",
+        "2": "Age 5 to 13 years",
+        "3": "Age 14 to 17 years",
+        "4": "Age 18 to 24 years",
+        "5": "Age 25 to 44 years",
+        "6": "Age 45 to 64 years",
+        "7": "Age 65 years and over",
+        "8": "Age 85 years and over",
+        "9": "Age 0 to 17 years",
+        "10": "Age 18 to 64 years",
+        "11": "Age 18 years and over",
+        "12": "Age 65 years and over",
+        "13": "Under 18 years",
+        "14": "5 to 13 years",
+        "15": "14 to 17 years",
+        "16": "18 to 64 years",
+        "17": "16 years and over",
+        "18": "Under 5 years",
+        "29": "Age 0 to 14 years",
+        "30": "Age 15 to 44 years",
+        "31": "Age 16 years and over",
+    },
+    "SEX": {
+        "0": "Both sexes",
+        "1": "Male",
+        "2": "Female",
+    },
+    "RACE": {
+        "0": "All races",
+        "1": "White alone",
+        "2": "Black alone",
+        "3": "American Indian and Alaska Native alone",
+        "4": "Asian alone",
+        "5": "Native Hawaiian and Other Pacific Islander alone",
+        "6": "Two or more races",
+        "7": "White alone or in combination",
+        "8": "Black alone or in combination",
+        "9": "American Indian and Alaska Native alone or in combination",
+        "10": "Asian alone or in combination",
+        "11": "Native Hawaiian and Other Pacific Islander alone or in combination",
+    },
+    "HISP": {
+        "0": "Both Hispanic Origins",
+        "1": "Non-Hispanic",
+        "2": "Hispanic",
+    },
+}
+
 # Product-to-dataset mapping for PEP.
 _PRODUCT_DATASETS: dict[str, str] = {
     "population": "pep/population",
@@ -65,8 +117,8 @@ def get_estimates(
     breakdown
         Breakdown dimensions (e.g. ``"AGEGROUP"``, ``"SEX"``).
     breakdown_labels
-        If True, include human-readable breakdown labels.
-        Not yet implemented.
+        If True, add ``*_label`` columns with human-readable names
+        for each breakdown dimension (e.g. ``AGEGROUP_label``).
     vintage
         Vintage year for the estimates (default 2023).
     year
@@ -76,9 +128,9 @@ def get_estimates(
     county
         County FIPS code.
     time_series
-        If True, return data across multiple years.
-        Not yet implemented — the parameter is accepted for forward
-        compatibility but currently has no effect.
+        If True, request data across multiple years within the vintage
+        by querying the ``/pep/population`` time-series endpoint and
+        including ``DATE_CODE`` and ``DATE_DESC`` in the response.
     output
         ``"tidy"`` (default) or ``"wide"``.
     geometry
@@ -135,6 +187,11 @@ def get_estimates(
         for dim in breakdown:
             params[dim] = "*"
 
+    if time_series:
+        # Add date columns and request all dates within the vintage.
+        params["get"] = params["get"] + ",DATE_CODE,DATE_DESC"
+        params["DATE_CODE"] = "*"
+
     if year is not None:
         params["YEAR"] = str(year)
 
@@ -175,6 +232,15 @@ def get_estimates(
     ]
     for col in numeric_cols:
         df[col] = pd.to_numeric(df[col], errors="coerce")
+
+    # Add human-readable labels for breakdown dimensions.
+    if breakdown_labels and breakdown is not None:
+        for dim in breakdown:
+            dim_upper = dim.upper()
+            if dim_upper in _BREAKDOWN_LABELS and dim_upper in df.columns:
+                df[f"{dim_upper}_label"] = (
+                    df[dim_upper].astype(str).map(_BREAKDOWN_LABELS[dim_upper])
+                )
 
     # Format output.
     if output == "tidy":

@@ -746,29 +746,29 @@ This is Pythonic and matches the pandas ecosystem.
 
 | tidycensus Feature | pypums Equivalent | Phase | Status |
 |---|---|---|---|
-| `census_api_key()` | `census_api_key()` | 0 | Planned |
-| `get_acs()` | `get_acs()` | 1 | Planned |
-| `get_decennial()` | `get_decennial()` | 1 | Planned |
-| `load_variables()` | `load_variables()` | 1 | Planned |
-| `get_pums()` | `get_pums()` | 2 | Planned |
-| `get_estimates()` | `get_estimates()` | 3 | Planned |
-| `get_flows()` | `get_flows()` | 3 | Planned |
-| `moe_sum()` | `moe_sum()` | 2 | Planned |
-| `moe_prop()` | `moe_prop()` | 2 | Planned |
-| `moe_ratio()` | `moe_ratio()` | 2 | Planned |
-| `moe_product()` | `moe_product()` | 2 | Planned |
-| `significance()` | `significance()` | 2 | Planned |
-| `geometry=TRUE` | `geometry=True` | 2 | Planned |
-| `as_dot_density()` | `as_dot_density()` | 3 | Planned |
-| `interpolate_pw()` | `interpolate_pw()` | 3 | Planned |
-| `to_survey()` | `to_survey()` | 3 | Planned |
-| `fips_codes` | `fips_codes` | 0 | Planned |
-| `pums_variables` | `pums_variables` | 2 | Planned |
-| `mig_recodes` | `mig_recodes` | 3 | Planned |
+| `census_api_key()` | `census_api_key()` | 0 | Done |
+| `get_acs()` | `get_acs()` | 1 | Done |
+| `get_decennial()` | `get_decennial()` | 1 | Done |
+| `load_variables()` | `load_variables()` | 1 | Done |
+| `get_pums()` | `get_pums()` | 2 | Done |
+| `get_estimates()` | `get_estimates()` | 3 | Done |
+| `get_flows()` | `get_flows()` | 3 | Done |
+| `moe_sum()` | `moe_sum()` | 2 | Done |
+| `moe_prop()` | `moe_prop()` | 2 | Done |
+| `moe_ratio()` | `moe_ratio()` | 2 | Done |
+| `moe_product()` | `moe_product()` | 2 | Done |
+| `significance()` | `significance()` | 2 | Done |
+| `geometry=TRUE` | `geometry=True` | 2 | Done |
+| `as_dot_density()` | `as_dot_density()` | 3 | Done |
+| `interpolate_pw()` | `interpolate_pw()` | 3 | Done |
+| `to_survey()` | `to_survey()` | 3 | Done |
+| `fips_codes` | `fips_codes` | 0 | Done |
+| `pums_variables` | `pums_variables()` | 2 | Done |
+| `mig_recodes` | `mig_recodes` | 3 | Done |
 | `state_laea` / `county_laea` | deferred | — | Low priority |
-| `acs5_geography` | `acs5_geography` | 2 | Planned |
-| `summary_files()` | `summary_files()` | 3 | Planned |
-| `get_pop_groups()` | `get_pop_groups()` | 3 | Planned |
+| `acs5_geography` | `acs5_geography()` | 2 | Done |
+| `summary_files()` | `summary_files()` | 3 | Done |
+| `get_pop_groups()` | `get_pop_groups()` | 3 | Done |
 | `check_ddhca_groups()` | deferred | — | Low priority |
 | `shift_geo` (deprecated) | not implementing | — | Skip |
 

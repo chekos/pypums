@@ -5,6 +5,8 @@ from pypums.surveys import ACS as ACS
 
 from .acs import get_acs as get_acs
 from .api.key import census_api_key as census_api_key
+from .census_helpers import get_pop_groups as get_pop_groups
+from .census_helpers import summary_files as summary_files
 from .constants import __app_name__ as __app_name__
 from .constants import __version__ as __version__
 from .decennial import get_decennial as get_decennial
@@ -17,4 +19,5 @@ from .moe import moe_sum as moe_sum
 from .moe import significance as significance
 from .pums import get_pums as get_pums
 from .survey import get_survey_metadata as get_survey_metadata
+from .survey import to_survey as to_survey
 from .variables import load_variables as load_variables

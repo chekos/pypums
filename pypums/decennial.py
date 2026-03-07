@@ -50,6 +50,7 @@ def get_decennial(
     output: str = "tidy",
     pop_group: str | None = None,
     geometry: bool = False,
+    keep_geo_vars: bool = False,
     cache_table: bool = False,
     key: str | None = None,
 ) -> pd.DataFrame:
@@ -75,6 +76,9 @@ def get_decennial(
         Population group code for DHC-A disaggregated data.
     geometry
         If True, return a GeoDataFrame with shapes.
+    keep_geo_vars
+        If True, preserve the raw FIPS columns (state, county, tract,
+        etc.) in the output alongside GEOID.
     key
         Census API key. Falls back to ``census_api_key()``.
     cache_table
@@ -150,12 +154,17 @@ def get_decennial(
     for col in var_cols:
         df[col] = pd.to_numeric(df[col], errors="coerce")
 
+    # Determine which geo FIPS columns to keep.
+    geo_cols_present = [c for c in _GEO_COL_ORDER if c in df.columns]
+    extra_geo = geo_cols_present if keep_geo_vars else []
+
     if output == "wide":
-        keep_cols = ["GEOID", "NAME"] + var_cols
+        keep_cols = ["GEOID", "NAME"] + extra_geo + var_cols
         result = df[[c for c in keep_cols if c in df.columns]]
     else:
         # Tidy format: melt to one row per geography x variable.
         id_cols = ["GEOID", "NAME"] if "GEOID" in df.columns else ["NAME"]
+        id_cols = id_cols + extra_geo
         result = df.melt(
             id_vars=id_cols,
             value_vars=var_cols,
