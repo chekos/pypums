@@ -1,8 +1,7 @@
 """Census variable discovery and metadata."""
 
-import httpx
 import pandas as pd
-from pypums.api.client import CENSUS_API_BASE
+from pypums.api.client import CENSUS_API_BASE, fetch_json
 
 # Module-level in-memory cache for variable tables.
 _cache: dict[tuple[int, str], pd.DataFrame] = {}
@@ -10,9 +9,7 @@ _cache: dict[tuple[int, str], pd.DataFrame] = {}
 
 def _fetch_variables_json(url: str) -> dict:
     """Fetch variable definitions JSON from the Census API."""
-    response = httpx.get(url, timeout=30)
-    response.raise_for_status()
-    return response.json()
+    return fetch_json(url)
 
 
 def load_variables(
