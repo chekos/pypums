@@ -1,9 +1,14 @@
 """PUMS microdata retrieval via the Census API."""
 
+from pathlib import Path
+
 import pandas as pd
 from pypums.api.client import CENSUS_API_BASE, call_census_api
 from pypums.api.geography import _resolve_state_fips
 from pypums.api.key import census_api_key
+from pypums.cache import CensusCache
+
+_DEFAULT_CACHE_DIR = Path.home() / ".pypums" / "cache" / "api"
 
 # Standard PUMS weight and ID columns always requested.
 _PUMS_BASE_VARS = ["SERIALNO", "SPORDER", "PWGTP", "ST", "PUMA"]
@@ -68,6 +73,7 @@ def get_pums(
     rep_weights: str | None = None,
     recode: bool = False,
     show_call: bool = False,
+    cache_table: bool = False,
     key: str | None = None,
 ) -> pd.DataFrame:
     """Load PUMS microdata from the Census API.
@@ -120,6 +126,17 @@ def get_pums(
         user_vars = [variables]
     else:
         user_vars = list(variables)
+
+    # Build a cache key from request parameters.
+    state_str = state if isinstance(state, str) else ",".join(state) if state else ""
+    cache_key = f"pums_{year}_{survey}_{state_str}_{','.join(user_vars)}"
+
+    # Check cache before calling API.
+    if cache_table:
+        disk_cache = CensusCache(_DEFAULT_CACHE_DIR)
+        cached = disk_cache.get(cache_key)
+        if cached is not None:
+            return cached
 
     # Build the full variable list.
     all_vars = list(_PUMS_BASE_VARS)
@@ -191,5 +208,9 @@ def get_pums(
         for var in user_vars:
             if var in _PUMS_RECODES and var in df.columns:
                 df[f"{var}_label"] = df[var].astype(str).map(_PUMS_RECODES[var])
+
+    if cache_table:
+        disk_cache = CensusCache(_DEFAULT_CACHE_DIR)
+        disk_cache.set(cache_key, df, ttl_seconds=86400)
 
     return df

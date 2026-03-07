@@ -1,9 +1,14 @@
 """Decennial Census data retrieval via the Census API."""
 
+from pathlib import Path
+
 import pandas as pd
 from pypums.api.client import CENSUS_API_BASE, call_census_api
 from pypums.api.geography import build_geography_query
 from pypums.api.key import census_api_key
+from pypums.cache import CensusCache
+
+_DEFAULT_CACHE_DIR = Path.home() / ".pypums" / "cache" / "api"
 
 # Default dataset by census year.
 _YEAR_DATASETS: dict[int, str] = {
@@ -35,6 +40,7 @@ def get_decennial(
     output: str = "tidy",
     pop_group: str | None = None,
     geometry: bool = False,
+    cache_table: bool = False,
     key: str | None = None,
 ) -> pd.DataFrame:
     """Retrieve Decennial Census data from the Census API.
@@ -61,6 +67,8 @@ def get_decennial(
         If True, return a GeoDataFrame with shapes.
     key
         Census API key. Falls back to ``census_api_key()``.
+    cache_table
+        If True, cache the API response locally to avoid redundant calls.
 
     Returns
     -------
@@ -85,6 +93,16 @@ def get_decennial(
         api_vars = [f"group({table})"]
     else:
         raise ValueError("Must provide either 'variables' or 'table'.")
+
+    # Build a cache key from request parameters.
+    cache_key = f"dec_{year}_{dataset}_{geography}_{state}_{county}_{','.join(api_vars)}"
+
+    # Check cache before calling API.
+    if cache_table:
+        disk_cache = CensusCache(_DEFAULT_CACHE_DIR)
+        cached = disk_cache.get(cache_key)
+        if cached is not None:
+            return cached
 
     url = f"{CENSUS_API_BASE}/{year}/{dataset}"
     params: dict[str, str] = {
@@ -132,5 +150,9 @@ def get_decennial(
         from pypums.spatial import attach_geometry
 
         result = attach_geometry(result, geography, state=state, year=year)
+
+    if cache_table:
+        disk_cache = CensusCache(_DEFAULT_CACHE_DIR)
+        disk_cache.set(cache_key, result, ttl_seconds=86400)
 
     return result

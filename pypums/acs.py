@@ -1,9 +1,14 @@
 """American Community Survey data retrieval via the Census API."""
 
+from pathlib import Path
+
 import pandas as pd
 from pypums.api.client import CENSUS_API_BASE, call_census_api
 from pypums.api.geography import build_geography_query
 from pypums.api.key import census_api_key
+from pypums.cache import CensusCache
+
+_DEFAULT_CACHE_DIR = Path.home() / ".pypums" / "cache" / "api"
 
 # Z-scores for MOE confidence levels.
 _Z_SCORES: dict[int, float] = {
@@ -46,6 +51,7 @@ def get_acs(
     moe_level: int = 90,
     summary_var: str | None = None,
     geometry: bool = False,
+    cache_table: bool = False,
     key: str | None = None,
 ) -> pd.DataFrame:
     """Retrieve American Community Survey data from the Census API.
@@ -74,6 +80,8 @@ def get_acs(
         Variable ID to include as denominator columns.
     geometry
         If True, return a GeoDataFrame with shapes.
+    cache_table
+        If True, cache the API response locally to avoid redundant calls.
     key
         Census API key. Falls back to ``census_api_key()``.
 
@@ -108,6 +116,16 @@ def get_acs(
     if summary_var is not None:
         api_vars.append(f"{summary_var}E")
         api_vars.append(f"{summary_var}M")
+
+    # Build a cache key from request parameters.
+    cache_key = f"acs_{year}_{survey}_{geography}_{state}_{county}_{','.join(api_vars)}"
+
+    # Check cache before calling API.
+    if cache_table:
+        disk_cache = CensusCache(_DEFAULT_CACHE_DIR)
+        cached = disk_cache.get(cache_key)
+        if cached is not None:
+            return cached
 
     url = f"{CENSUS_API_BASE}/{year}/acs/{survey}"
     params: dict[str, str] = {
@@ -187,5 +205,9 @@ def get_acs(
         from pypums.spatial import attach_geometry
 
         result = attach_geometry(result, geography, state=state, year=year)
+
+    if cache_table:
+        disk_cache = CensusCache(_DEFAULT_CACHE_DIR)
+        disk_cache.set(cache_key, result, ttl_seconds=86400)
 
     return result
