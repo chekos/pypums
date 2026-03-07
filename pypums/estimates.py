@@ -131,6 +131,21 @@ def get_estimates(
     if year is not None:
         params["YEAR"] = str(year)
 
+    # Build cache key from all parameters that affect the result.
+    vars_str = ",".join(variables) if variables is not None else ""
+    breakdown_str = ",".join(breakdown) if breakdown is not None else ""
+    cache_key = (
+        f"est_{vintage}_{resolved_product}_{geography}_{state}_{county}"
+        f"_{year}_{vars_str}_{breakdown_str}"
+    )
+
+    # Check cache before calling API.
+    if cache_table:
+        disk_cache = CensusCache(_DEFAULT_CACHE_DIR)
+        cached = disk_cache.get(cache_key)
+        if cached is not None:
+            return cached
+
     if show_call:
         print(f"Census API call: {url}")
         print(f"  Parameters: {params}")
@@ -158,7 +173,6 @@ def get_estimates(
         df = attach_geometry(df, geography, state=state, year=vintage)
 
     if cache_table:
-        cache_key = f"est_{vintage}_{resolved_product}_{geography}_{state}_{county}"
         disk_cache = CensusCache(_DEFAULT_CACHE_DIR)
         disk_cache.set(cache_key, df, ttl_seconds=86400)
 

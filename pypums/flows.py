@@ -141,6 +141,21 @@ def get_flows(
         for dim in breakdown:
             params[dim] = "*"
 
+    # Build cache key from all parameters that affect the result.
+    vars_str = ",".join(variables) if variables is not None else ""
+    breakdown_str = ",".join(breakdown) if breakdown is not None else ""
+    cache_key = (
+        f"flows_{year}_{geography}_{state}_{county}_{msa}"
+        f"_{vars_str}_{breakdown_str}"
+    )
+
+    # Check cache before calling API.
+    if cache_table:
+        disk_cache = CensusCache(_DEFAULT_CACHE_DIR)
+        cached = disk_cache.get(cache_key)
+        if cached is not None:
+            return cached
+
     if show_call:
         print(f"Census API call: {url}")
         print(f"  Parameters: {params}")
@@ -157,7 +172,6 @@ def get_flows(
             df[col] = pd.to_numeric(df[col], errors="coerce")
 
     if cache_table:
-        cache_key = f"flows_{year}_{geography}_{state}_{county}_{msa}"
         disk_cache = CensusCache(_DEFAULT_CACHE_DIR)
         disk_cache.set(cache_key, df, ttl_seconds=86400)
 
