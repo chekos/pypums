@@ -188,6 +188,10 @@ def get_estimates(
             params[dim] = "*"
 
     if time_series:
+        if resolved_product != "population":
+            raise ValueError(
+                "time_series=True is only supported for product='population'"
+            )
         # Add date columns and request all dates within the vintage.
         params["get"] = params["get"] + ",DATE_CODE,DATE_DESC"
         params["DATE_CODE"] = "*"

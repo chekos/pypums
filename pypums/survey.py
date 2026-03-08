@@ -148,7 +148,7 @@ class SurveyDesign:
 
 def to_survey(
     df: pd.DataFrame,
-    type: str = "person",
+    weight_type: str = "person",
     design: str = "rep_weights",
 ) -> SurveyDesign:
     """Convert a PUMS DataFrame to a weighted survey design object.
@@ -161,7 +161,7 @@ def to_survey(
     ----------
     df
         PUMS DataFrame (from ``get_pums(rep_weights='person')``).
-    type
+    weight_type
         Weight type: ``"person"`` (default) or ``"housing"``.
     design
         Survey design type. Only ``"rep_weights"`` is supported.
@@ -179,19 +179,21 @@ def to_survey(
     if design != "rep_weights":
         raise ValueError(f"Only 'rep_weights' design is supported, got {design!r}")
 
-    if type == "person":
+    if weight_type == "person":
         weight = "PWGTP"
         rep_weight_cols = [f"PWGTP{i}" for i in range(1, 81)]
-    elif type == "housing":
+    elif weight_type == "housing":
         weight = "WGTP"
         rep_weight_cols = [f"WGTP{i}" for i in range(1, 81)]
     else:
-        raise ValueError(f"type must be 'person' or 'housing', got {type!r}")
+        raise ValueError(
+            f"weight_type must be 'person' or 'housing', got {weight_type!r}"
+        )
 
     if weight not in df.columns:
         raise ValueError(
             f"Weight column {weight!r} not found in DataFrame. "
-            f"Did you call get_pums(rep_weights='{type}')?"
+            f"Did you call get_pums(rep_weights='{weight_type}')?"
         )
 
     # Only include replicate weight columns that exist.

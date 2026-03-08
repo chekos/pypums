@@ -297,7 +297,7 @@ def interpolate_pw(
         target_wv = overlay.groupby("_to_idx")["_wv"].sum()
         target_values = target_wv / target_weights.replace(0, float("nan"))
 
-    result = to_gdf.copy()
+    result = to_gdf.copy().reset_index(drop=True)
     result[value_col] = result.index.map(
         dict(zip(target_values.index, target_values.values, strict=True))
     ).fillna(0.0)

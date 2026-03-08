@@ -208,8 +208,10 @@ def get_flows(
         for dim in breakdown:
             dim_upper = dim.upper()
             if dim_upper in MIG_RECODE_LABELS and dim_upper in df.columns:
-                df[f"{dim_upper}_label"] = (
-                    df[dim_upper].astype(str).map(MIG_RECODE_LABELS[dim_upper])
+                # Census API returns codes as strings (possibly zero-padded),
+                # so map directly without converting to avoid padding mismatch.
+                df[f"{dim_upper}_label"] = df[dim_upper].map(
+                    MIG_RECODE_LABELS[dim_upper]
                 )
 
     # Format output.

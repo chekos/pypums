@@ -59,3 +59,14 @@ def test_time_series_true_adds_date_params(estimates_api_response, fake_api_key)
         )
     params = mock_call.call_args[0][1]
     assert params.get("DATE_CODE") == "*"
+
+
+def test_time_series_rejects_non_population_product(fake_api_key):
+    """time_series=True should raise ValueError for non-population products."""
+    with pytest.raises(ValueError, match="only supported for product='population'"):
+        get_estimates(
+            geography="state",
+            product="housing",
+            time_series=True,
+            key=fake_api_key,
+        )

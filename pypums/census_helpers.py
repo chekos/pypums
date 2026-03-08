@@ -85,33 +85,23 @@ def get_pop_groups(
     # Census API returns JSON rows: first row is headers, rest is data.
     headers = raw[0]
     rows = []
+    state_col = None
+    if state is not None:
+        state_col = next((h for h in headers if h.lower() == "state"), None)
+
     for record in raw[1:]:
         row = dict(zip(headers, record, strict=True))
         rows.append(
             {
                 "code": row.get("POP_GROUP", ""),
                 "label": row.get("POP_GROUP_NAME", row.get("NAME", "")),
+                "_state": row.get(state_col, "") if state_col else "",
             }
         )
 
     df = pd.DataFrame(rows)
 
-    if state is not None and "state" in [h.lower() for h in headers]:
-        state_col = next(h for h in headers if h.lower() == "state")
-        state_rows = [
-            dict(zip(headers, r, strict=True))
-            for r in raw[1:]
-            if dict(zip(headers, r, strict=True)).get(state_col) == state
-        ]
-        if state_rows:
-            df = pd.DataFrame(
-                [
-                    {
-                        "code": r.get("POP_GROUP", ""),
-                        "label": r.get("POP_GROUP_NAME", r.get("NAME", "")),
-                    }
-                    for r in state_rows
-                ]
-            )
+    if state is not None and state_col is not None:
+        df = df[df["_state"] == state].reset_index(drop=True)
 
-    return df
+    return df.drop(columns=["_state"], errors="ignore")
