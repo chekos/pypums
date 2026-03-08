@@ -67,8 +67,8 @@ def get_flows(
     breakdown
         Breakdown dimensions for flow characteristics.
     breakdown_labels
-        If True, include human-readable breakdown labels.
-        Not yet implemented.
+        If True, add ``*_label`` columns with human-readable names
+        for each breakdown dimension using the ``mig_recodes`` lookup.
     year
         Data year (default 2019).
     output
@@ -200,6 +200,19 @@ def get_flows(
     geo_cols = [c for c in ("state1", "county1") if c in df.columns]
     if geo_cols:
         df["GEOID"] = df[geo_cols].apply(lambda row: "".join(row), axis=1)
+
+    # Add human-readable labels for breakdown dimensions.
+    if breakdown_labels and breakdown is not None:
+        from pypums.datasets.mig_recodes import MIG_RECODE_LABELS
+
+        for dim in breakdown:
+            dim_upper = dim.upper()
+            if dim_upper in MIG_RECODE_LABELS and dim_upper in df.columns:
+                # Census API returns codes as strings (possibly zero-padded),
+                # so map directly without converting to avoid padding mismatch.
+                df[f"{dim_upper}_label"] = df[dim_upper].map(
+                    MIG_RECODE_LABELS[dim_upper]
+                )
 
     # Format output.
     if output == "tidy":

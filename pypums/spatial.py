@@ -209,3 +209,97 @@ def as_dot_density(
                             break
 
     return _gpd.GeoDataFrame(rows, geometry="geometry", crs=gdf.crs)
+
+
+def interpolate_pw(
+    from_gdf: gpd.GeoDataFrame,
+    to_gdf: gpd.GeoDataFrame,
+    *,
+    value_col: str,
+    weight_col: str = "POP",
+    extensive: bool = True,
+) -> gpd.GeoDataFrame:
+    """Population-weighted areal interpolation.
+
+    Transfers values from one set of polygons (``from_gdf``) to
+    another (``to_gdf``) using population weights from a third
+    layer (the weight column in ``from_gdf``).
+
+    This is a simplified implementation that uses overlay intersection
+    areas weighted by population counts.
+
+    Parameters
+    ----------
+    from_gdf
+        Source GeoDataFrame with the values to interpolate.
+    to_gdf
+        Target GeoDataFrame defining the output zones.
+    value_col
+        Column in *from_gdf* containing the value to interpolate.
+    weight_col
+        Column in *from_gdf* containing population weights (default ``"POP"``).
+    extensive
+        If True (default), treat as an extensive variable (sum).
+        If False, treat as an intensive variable (weighted average).
+
+    Returns
+    -------
+    gpd.GeoDataFrame
+        Copy of *to_gdf* with an interpolated value column added.
+    """
+    import geopandas as _gpd
+
+    # Ensure both GeoDataFrames use the same CRS.
+    if from_gdf.crs != to_gdf.crs:
+        from_gdf = from_gdf.to_crs(to_gdf.crs)
+
+    # Add unique IDs for tracking.
+    from_copy = from_gdf[[value_col, weight_col, "geometry"]].copy()
+    from_copy["_from_idx"] = range(len(from_copy))
+    to_copy = to_gdf.copy()
+    to_copy["_to_idx"] = range(len(to_copy))
+
+    # Compute overlay intersection.
+    overlay = _gpd.overlay(
+        from_copy,
+        to_copy[["_to_idx", "geometry"]],
+        how="intersection",
+    )
+
+    if overlay.empty:
+        result = to_gdf.copy()
+        result[value_col] = 0.0
+        return result
+
+    # Compute intersection areas.
+    overlay["_int_area"] = overlay.geometry.area
+
+    # Compute weighted population in each intersection piece.
+    # Weight each intersection proportionally by its area share of the
+    # source zone.
+    from_areas = from_copy.geometry.area
+    overlay["_from_area"] = overlay["_from_idx"].map(
+        dict(zip(from_copy["_from_idx"], from_areas, strict=True))
+    )
+    overlay["_area_share"] = overlay["_int_area"] / overlay["_from_area"]
+    overlay["_int_weight"] = overlay[weight_col] * overlay["_area_share"]
+
+    # Compute total weight going to each target zone.
+    target_weights = overlay.groupby("_to_idx")["_int_weight"].sum()
+
+    if extensive:
+        # Extensive: distribute the total value proportionally.
+        overlay["_weighted_value"] = overlay[value_col] * overlay["_area_share"]
+        target_values = overlay.groupby("_to_idx")["_weighted_value"].sum()
+    else:
+        # Intensive: population-weighted average.
+        overlay["_wv"] = overlay[value_col] * overlay["_int_weight"]
+        target_wv = overlay.groupby("_to_idx")["_wv"].sum()
+        target_values = target_wv / target_weights.replace(0, float("nan"))
+
+    result = to_gdf.copy().reset_index(drop=True)
+    result[value_col] = result.index.map(
+        dict(zip(target_values.index, target_values.values, strict=True))
+    ).fillna(0.0)
+
+    return result
