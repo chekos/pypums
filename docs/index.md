@@ -16,7 +16,7 @@ df = pypums.get_acs(
     geography="county",
     variables=["B19013_001"],
     state="CA",
-    year=2022,
+    year=2023,
 )
 ```
 

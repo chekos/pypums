@@ -18,7 +18,7 @@ df = pypums.get_acs(
     geography="county",
     variables=["B19013_001"],
     state="CA",
-    year=2022,
+    year=2023,
 )
 df.head()
 ```
@@ -31,7 +31,7 @@ df = pypums.get_acs(
     variables=["B19013_001"],
     state="CA",
     county="037",
-    year=2022,
+    year=2023,
     geometry=True,  # returns a GeoDataFrame
 )
 df.plot(column="estimate", legend=True, figsize=(12, 8))
@@ -43,7 +43,7 @@ Work with PUMS microdata:
 pums = pypums.get_pums(
     variables=["AGEP", "SEX", "WAGP"],
     state="CA",
-    year=2022,
+    year=2023,
     recode=True,  # adds human-readable labels
 )
 pums.head()

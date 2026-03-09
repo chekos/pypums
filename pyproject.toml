@@ -5,7 +5,7 @@ build-backend = "uv_build"
 [project]
 name = "pypums"
 version = "0.2"
-description = "Download Public Use Micro Sample (PUMS) data files from the US Census Bureau's FTP server."
+description = "Python interface to the US Census Bureau API for ACS, Decennial Census, PUMS, population estimates, and migration flows."
 readme = "README.md"
 license = "Apache-2.0"
 requires-python = ">=3.10"
@@ -35,6 +35,7 @@ docs = [
     "mkdocs",
     "mkdocs-material",
     "mkdocstrings[python]",
+    "mkdocs-autorefs",
     "mkdocs-typer",
     "pymdown-extensions",
 ]

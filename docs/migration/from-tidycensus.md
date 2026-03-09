@@ -24,7 +24,7 @@ If you've used Kyle Walker's [tidycensus](https://walker-data.com/tidycensus/) R
 | `variables = c("B19013_001")` | `variables=["B19013_001"]` | List instead of c() |
 | `table = "B01001"` | `table="B01001"` | Identical |
 | `state = "CA"` | `state="CA"` | Identical |
-| `county = "Los Angeles"` | `county="037"` | PyPUMS uses FIPS codes for county |
+| `county = "Los Angeles"` | `county="037"` | PyPUMS uses FIPS codes (see tip below) |
 | `year = 2022` | `year=2022` | Identical |
 | `survey = "acs5"` | `survey="acs5"` | Identical |
 | `output = "tidy"` | `output="tidy"` | Identical |
@@ -34,6 +34,19 @@ If you've used Kyle Walker's [tidycensus](https://walker-data.com/tidycensus/) R
 | `key = "..."` | `key="..."` | Identical |
 | `summary_var = "B01003_001"` | `summary_var="B01003_001"` | Identical |
 | `keep_geo_vars = TRUE` | `keep_geo_vars=True` | Identical |
+
+!!! tip "Looking up county FIPS codes"
+    Unlike tidycensus, PyPUMS requires numeric FIPS codes for the `county`
+    parameter. Use `lookup_fips()` to translate a county name:
+
+    ```python
+    from pypums.datasets import lookup_fips
+
+    lookup_fips(state="California", county="Los Angeles County")
+    # => '06037'  →  pass county="037" (last 3 digits)
+    ```
+
+    See [Geography & FIPS Codes](../guides/geography.md) for more details.
 
 ### get_pums()
 

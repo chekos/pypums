@@ -1226,6 +1226,7 @@ dependencies = [
 [package.optional-dependencies]
 docs = [
     { name = "mkdocs" },
+    { name = "mkdocs-autorefs" },
     { name = "mkdocs-material" },
     { name = "mkdocs-typer" },
     { name = "mkdocstrings", extra = ["python"] },
@@ -1243,6 +1244,7 @@ requires-dist = [
     { name = "geopandas", marker = "extra == 'spatial'", specifier = ">=0.12" },
     { name = "httpx", specifier = ">=0.22.0" },
     { name = "mkdocs", marker = "extra == 'docs'" },
+    { name = "mkdocs-autorefs", marker = "extra == 'docs'" },
     { name = "mkdocs-material", marker = "extra == 'docs'" },
     { name = "mkdocs-typer", marker = "extra == 'docs'" },
     { name = "mkdocstrings", extras = ["python"], marker = "extra == 'docs'" },

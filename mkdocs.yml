@@ -14,6 +14,7 @@ theme:
     - search.suggest
     - search.highlight
     - content.code.copy
+    - content.code.annotate
     - content.tabs.link
     - toc.follow
   palette:

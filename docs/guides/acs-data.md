@@ -57,6 +57,13 @@ print(pop.head())
 4         06           California  B01003_001  39029342      NaN
 ```
 
+!!! info "Why is `moe` showing `NaN`?"
+    Some ACS variables — particularly total-population counts derived from the
+    Decennial Census base — do not have a margin of error. When the Census API
+    returns no MOE for a variable, PyPUMS fills the column with `NaN`. This is
+    expected, not a bug. Most other variables (income, housing, etc.) will
+    return numeric MOE values.
+
 !!! tip "Variable naming convention"
     ACS variable IDs follow the pattern `TABLE_SEQUENCE`. For example,
     `B19013_001` is sequence 001 (the estimate) from table B19013
