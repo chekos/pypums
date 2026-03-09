@@ -531,7 +531,7 @@ print(summary.to_string(index=False))
 **`variables_filter` not reducing rows**
 :   Filters apply server-side but only to the variables you specify. If a
     variable name is misspelled, the API silently ignores it. Use
-    `pums_variables()` to confirm the exact variable codes.
+    `pypums.datasets.pums_variables()` to confirm the exact variable codes.
 
 **"PWGTP" or weight columns missing**
 :   The base weight `PWGTP` (person) or `WGTP` (housing) is always included
@@ -548,5 +548,5 @@ print(summary.to_string(index=False))
 
 - [Survey Design & Weights](survey-design.md) — Using replicate weights and the `SurveyDesign` class for standard errors
 - [API Reference](../reference/api.md) — Full `get_pums()` function signature
-- [Finding Variables](variables.md) — Browsing PUMS variable codes with `pums_variables()`
+- [Finding Variables](variables.md) — Browsing PUMS variable codes with `pypums.datasets.pums_variables()`
 - [Coming from Census FTP](../migration/from-census-ftp.md) — Migration guide for users switching from direct FTP downloads

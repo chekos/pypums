@@ -66,13 +66,13 @@ pums.head()
 ## Installation
 
 ```bash
-pip install pypums
+uv add pypums
 ```
 
 For spatial/mapping support:
 
 ```bash
-pip install "pypums[spatial]"
+uv add "pypums[spatial]"
 ```
 
 ## Census API Key
@@ -92,7 +92,7 @@ pypums.census_api_key("your-key-here")
 
 ## Documentation
 
-Full documentation: [https://chekos.github.io/pypums](https://chekos.github.io/pypums)
+Full documentation: [https://pypums.readthedocs.io](https://pypums.readthedocs.io)
 
 ## Development
 

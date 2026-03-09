@@ -230,7 +230,7 @@ county_geo.plot(column="value", legend=True)
 
 !!! note "Optional dependency"
     `geometry=True` requires `geopandas`. Install with
-    `pip install pypums[spatial]` or `pip install geopandas`.
+    `uv add "pypums[spatial]"`.
 
 ---
 

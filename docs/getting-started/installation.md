@@ -7,17 +7,9 @@
 
 ## Install PyPUMS
 
-=== "pip"
-
-    ```bash
-    pip install pypums
-    ```
-
-=== "uv"
-
-    ```bash
-    uv add pypums
-    ```
+```bash
+uv add pypums
+```
 
 This installs PyPUMS and its core dependencies:
 
@@ -34,17 +26,9 @@ This installs PyPUMS and its core dependencies:
 
 If you plan to work with shapefiles, choropleths, or any geometry (the `geometry=True` parameter), install the spatial extras:
 
-=== "pip"
-
-    ```bash
-    pip install "pypums[spatial]"
-    ```
-
-=== "uv"
-
-    ```bash
-    uv add "pypums[spatial]"
-    ```
+```bash
+uv add "pypums[spatial]"
+```
 
 This adds [`geopandas`](https://geopandas.org/) and its dependencies (`shapely`, `pyproj`, `fiona`), which enable PyPUMS to fetch TIGER/Line shapefiles and return `GeoDataFrame` objects.
 
@@ -163,13 +147,13 @@ If this prints your key without raising an error, you are ready to go.
     running. Check with:
 
     ```bash
-    pip show pypums
+    uv pip show pypums
     ```
 
     If nothing is printed, install it again:
 
     ```bash
-    pip install pypums
+    uv add pypums
     ```
 
 ??? question "I get `ValueError: No Census API key found`"
@@ -186,7 +170,7 @@ If this prints your key without raising an error, you are ready to go.
     You need the spatial extras. Install them with:
 
     ```bash
-    pip install "pypums[spatial]"
+    uv add "pypums[spatial]"
     ```
 
 ## Next steps

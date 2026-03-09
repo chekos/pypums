@@ -77,13 +77,13 @@ df = pypums.get_acs(
 ## Quick Install
 
 ```bash
-pip install pypums
+uv add pypums
 ```
 
 For spatial/mapping support:
 
 ```bash
-pip install "pypums[spatial]"
+uv add "pypums[spatial]"
 ```
 
 You'll need a free [Census API key](https://api.census.gov/data/key_signup.html).

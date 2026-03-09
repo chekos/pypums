@@ -34,4 +34,4 @@ Before submitting your code please do the following steps:
 
 You can contribute by spreading a word about this library. It would also be a huge contribution to write a short article on how you are using this project. You can also share your best practices with us.
 
-See the full [contributing guide](https://chekos.github.io/pypums/about/contributing/) for more details.
+See the full [contributing guide](https://pypums.readthedocs.io/about/contributing/) for more details.

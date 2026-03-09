@@ -223,7 +223,7 @@ ca_flows_geo.plot(column="estimate", legend=True)
     The `geometry=True` option requires `geopandas` to be installed:
 
     ```shell
-    pip install pypums[spatial]
+    uv add "pypums[spatial]"
     ```
 
 ## Caching
