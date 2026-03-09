@@ -51,7 +51,7 @@ years = range(2018, 2023)
 frames = []
 
 for year in years:
-    for st in states:
+    for st in states:  # get_acs() accepts one state at a time
         df = pypums.get_acs(
             geography="state",
             variables="B01001_001",

@@ -5,7 +5,7 @@ alphanumeric string like `B19013_001` that points to a specific table, row,
 and measurement. Before you can pull data with `get_acs()` or
 `get_decennial()`, you need to know the right variable codes.
 
-PyPUMS provides `load_variables()` to search and browse the full Census
+PyPUMS provides `pypums.load_variables()` to search and browse the full Census
 variable catalog, plus `pypums.datasets.pums_variables()` for PUMS microdata fields.
 
 ## What is a Census variable?
