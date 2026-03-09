@@ -1,12 +1,9 @@
-Credits
-=======
+# Authors
 
-Development Lead
-----------------
+## Development Lead
 
--   Sergio Sánchez Zavala <<sergio@cimarron.io>>
+- **Sergio Sanchez Zavala** — [github.com/chekos](https://github.com/chekos)
 
-Contributors
-------------
+## Contributors
 
-None yet. Why not be the first?
+- [@yonran](https://github.com/yonran) — Bug fixes and improvements (v0.0.7)
