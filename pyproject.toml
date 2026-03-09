@@ -33,7 +33,7 @@ spatial = ["geopandas>=0.12"]
 test = ["pytest"]
 docs = [
     "mkdocs",
-    "mdx_include",
+    "mkdocs-material",
     "mkdocstrings[python]",
     "mkdocs-typer",
     "pymdown-extensions",

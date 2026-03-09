@@ -1,18 +1,66 @@
 site_name: PyPUMS
-theme: readthedocs
+site_description: Python interface to the US Census Bureau API
+site_url: https://chekos.github.io/pypums
+repo_url: https://github.com/chekos/pypums
+repo_name: chekos/pypums
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.tabs.link
+    - toc.follow
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
 
 nav:
-  - PyPUMS: index.md
-  - User guide:
-    - Installation: user-guide/installation.md
-    - Usage: user-guide/usage.md
-  - API reference:
-    - Surveys (ACS): reference/surveys.md
-    - CLI: reference/cli.md
+  - Home: index.md
+  - Getting Started:
+    - Installation: getting-started/installation.md
+    - Quick Start: getting-started/quickstart.md
+    - "Census 101: Which Dataset?": getting-started/census-101.md
+  - Guides:
+    - ACS Data: guides/acs-data.md
+    - Decennial Census: guides/decennial-data.md
+    - PUMS Microdata: guides/pums-microdata.md
+    - Population Estimates: guides/population-estimates.md
+    - Migration Flows: guides/migration-flows.md
+    - Finding Variables: guides/variables.md
+    - Geography & FIPS Codes: guides/geography.md
+    - Margins of Error: guides/margins-of-error.md
+    - Spatial Data & Mapping: guides/spatial.md
+    - Survey Design & Weights: guides/survey-design.md
+    - Caching: guides/caching.md
+    - Multi-Year Analysis: guides/multi-year.md
+  - Reference:
+    - API Reference: reference/api.md
+    - CLI Reference: reference/cli.md
+    - Datasets: reference/datasets.md
+    - Changelog: reference/changelog.md
+  - Migration:
+    - From tidycensus (R): migration/from-tidycensus.md
+    - From Old PyPUMS: migration/from-old-pypums.md
+    - From Census FTP: migration/from-census-ftp.md
   - About:
-    - Authors: about/authors.md
     - Contributing: about/contributing.md
-    - Changelog: about/history.md
+    - Authors: about/authors.md
 
 plugins:
   - search
@@ -24,20 +72,29 @@ plugins:
           options:
             show_source: false
             show_root_heading: true
+            show_symbol_type_heading: true
+            docstring_style: numpy
+            merge_init_into_class: true
 
 markdown_extensions:
-    - smarty
-    - toc:
-        permalink: True
-    - sane_lists
-    - admonition
-    - codehilite
-    - pymdownx.superfences:
-        custom_fences:
+  - smarty
+  - toc:
+      permalink: true
+  - sane_lists
+  - admonition
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
         - name: mermaid
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format ''
-    - pymdownx.tabbed:
-        alternate_style: true
-    - mdx_include
-    - mkdocs-typer
+  - pymdownx.tabbed:
+      alternate_style: true
+  - attr_list
+  - md_in_html
+  - tables
+  - mkdocs-typer

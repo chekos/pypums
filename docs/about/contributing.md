@@ -1,113 +1,121 @@
-Contributing
-============
+# Contributing
 
-Contributions are welcome, and they are greatly appreciated! Every
-little bit helps, and credit will always be given.
+Contributions are welcome! Every bit helps, and credit will always be given.
 
-You can contribute in many ways:
-
-Types of Contributions
-----------------------
+## Ways to Contribute
 
 ### Report Bugs
 
-Report bugs at <https://github.com/chekos/pypums/issues>.
+Report bugs at [github.com/chekos/pypums/issues](https://github.com/chekos/pypums/issues).
 
-If you are reporting a bug, please include:
+When reporting a bug, please include:
 
--   Your operating system name and version.
--   Any details about your local setup that might be helpful in
-    troubleshooting.
--   Detailed steps to reproduce the bug.
+- Your operating system and Python version
+- The exact code that produced the error
+- The full traceback
+- What you expected to happen
 
 ### Fix Bugs
 
-Look through the GitHub issues for bugs. Anything tagged with \"bug\"
-and \"help wanted\" is open to whoever wants to implement it.
+Look through the [GitHub issues](https://github.com/chekos/pypums/issues) for bugs. Anything tagged with "bug" and "help wanted" is open to whoever wants to implement it.
 
 ### Implement Features
 
-Look through the GitHub issues for features. Anything tagged with
-\"enhancement\" and \"help wanted\" is open to whoever wants to
-implement it.
+Look through the [GitHub issues](https://github.com/chekos/pypums/issues) for features. Anything tagged with "enhancement" and "help wanted" is open to whoever wants to implement it.
 
 ### Write Documentation
 
-pypums could always use more documentation, whether as part of the
-official pypums docs, in docstrings, or even on the web in blog posts,
-articles, and such.
+PyPUMS can always use better documentation, whether it's improving existing guides, adding new examples, or writing blog posts.
 
 ### Submit Feedback
 
-The best way to send feedback is to file an issue at
-<https://github.com/chekos/pypums/issues>.
+File an issue at [github.com/chekos/pypums/issues](https://github.com/chekos/pypums/issues).
 
-If you are proposing a feature:
+If you're proposing a feature:
 
--   Explain in detail how it would work.
--   Keep the scope as narrow as possible, to make it easier to
-    implement.
--   Remember that this is a volunteer-driven project, and that
-    contributions are welcome :)
+- Explain in detail how it would work
+- Keep the scope as narrow as possible
+- Remember that this is a volunteer-driven project
 
-Get Started!
-------------
+## Development Setup
 
-Ready to contribute? Here\'s how to set up [pypums](#pypum) for
-local development.
+1. Fork the [pypums repo](https://github.com/chekos/pypums) on GitHub.
 
-1.  Fork the [pypums]{#pypums} repo on GitHub.
+2. Clone your fork locally:
 
-2.  Clone your fork locally:
+    ```bash
+    git clone git@github.com:your-username/pypums.git
+    cd pypums
+    ```
 
-        git clone git@github.com:your_name_here/pypums.git
+3. Install [uv](https://docs.astral.sh/uv/) and set up the project:
 
-3.  Install your local copy into a virtualenv. Assuming you have
-    virtualenvwrapper installed, this is how you set up your fork for
-    local development:
+    ```bash
+    uv sync --extra test
+    ```
 
-        cd pypums
-        python -m venv venv
-        source venv/bin/activate
+    For working on documentation:
 
-    Or if you are using `pipenv`:
+    ```bash
+    uv sync --extra docs
+    ```
 
-        pipenv shell
+    For spatial features:
 
-    Now install the dependencies and test dependencies:
+    ```bash
+    uv sync --extra spatial
+    ```
 
-        pip install -e '.[test]'
+4. Create a branch for your changes:
 
-4.  Create a branch for local development:
+    ```bash
+    git checkout -b name-of-your-bugfix-or-feature
+    ```
 
-        git checkout -b name-of-your-bugfix-or-feature
+5. Make your changes and run the tests:
 
-    Now you can make your changes locally.
-    <br>
+    ```bash
+    uv run pytest
+    ```
 
-5.  When you're done making changes, check that your changes pass
-    the tests. **Please include tests for everyting you're adding**.
+    Run specific test phases:
 
-    To run the tests:
+    ```bash
+    uv run pytest -m phase0    # Foundation tests
+    uv run pytest -m phase1    # Core data function tests
+    uv run pytest -m phase2    # MOE, spatial, PUMS tests
+    uv run pytest -m phase3    # Estimates, flows, survey tests
+    ```
 
-        pytest
+6. Check code style:
 
-6.  Commit your changes and push your branch to GitHub:
+    ```bash
+    uvx ruff check .
+    uvx ruff format --check .
+    ```
 
-        git add .
-        git commit -m "Your detailed description of your changes."
-        git push origin name-of-your-bugfix-or-feature
+7. Commit your changes and push:
 
-7.  Submit a pull request through the GitHub website.
+    ```bash
+    git add .
+    git commit -m "Your detailed description of your changes."
+    git push origin name-of-your-bugfix-or-feature
+    ```
 
-Pull Request Guidelines
------------------------
+8. Submit a pull request through GitHub.
 
-Before you submit a pull request, check that it meets these guidelines:
+## Pull Request Guidelines
 
-1.  The pull request should include tests.
-2.  If the pull request adds functionality, the docs should be updated.
-    Put your new functionality into a function with a docstring.
-3.  The pull request should work for Python 3.6 - 3.9.
-    Check <https://travis-ci.org/chekos/pypums/pull_requests>
-    and make sure that the tests pass for all supported Python versions.
+Before you submit a pull request:
+
+1. The pull request should include tests.
+2. If the pull request adds functionality, update the docs. Add a docstring to any new public function.
+3. The pull request should work for Python 3.10+.
+4. Make sure the tests pass by checking the GitHub Actions results.
+
+## Code Style
+
+- We use [Ruff](https://docs.astral.sh/ruff/) for linting and formatting
+- Target Python 3.10+
+- NumPy-style docstrings for all public functions
+- Type hints throughout
