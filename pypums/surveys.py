@@ -1,5 +1,6 @@
 """Surveys module."""
 
+import warnings
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -18,7 +19,12 @@ from .utils import (
 
 @dataclass
 class ACS:
-    """American Community Survey base class."""
+    """American Community Survey base class.
+
+    .. deprecated::
+        Use :func:`pypums.get_pums` for PUMS microdata or
+        :func:`pypums.get_acs` for ACS summary tables instead.
+    """
 
     year: int = 2023
     state: str = "California"
@@ -26,6 +32,12 @@ class ACS:
     sample_unit: str = "person"
 
     def __post_init__(self):
+        warnings.warn(
+            "ACS() is deprecated. Use get_pums() for PUMS microdata "
+            "or get_acs() for ACS summary tables.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         self._year = _clean_year(self.year)
         self._survey = _clean_survey(self.survey, self._year)
         self._sample_unit = self.sample_unit[0].lower()
