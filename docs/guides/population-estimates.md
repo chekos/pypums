@@ -198,8 +198,14 @@ print(labeled[["NAME", "AGEGROUP", "AGEGROUP_label", "SEX", "SEX_label"]].head()
     | 10 | Age 18 to 64 years |
     | 11 | Age 18 years and over |
     | 12 | Age 65 years and over |
+    | 13 | Under 18 years |
+    | 14 | 5 to 13 years |
+    | 15 | 14 to 17 years |
+    | 16 | 18 to 64 years |
+    | 17 | 16 years and over |
     | 18 | Under 5 years |
     | 29 | Age 0 to 14 years |
+    | 30 | Age 15 to 44 years |
     | 31 | Age 16 years and over |
 
 === "SEX"
@@ -223,9 +229,9 @@ print(labeled[["NAME", "AGEGROUP", "AGEGROUP_label", "SEX", "SEX_label"]].head()
     | 6 | Two or more races |
     | 7 | White alone or in combination |
     | 8 | Black alone or in combination |
-    | 9 | AIAN alone or in combination |
+    | 9 | American Indian and Alaska Native alone or in combination |
     | 10 | Asian alone or in combination |
-    | 11 | NHPI alone or in combination |
+    | 11 | Native Hawaiian and Other Pacific Islander alone or in combination |
 
 === "HISP"
 
@@ -393,7 +399,7 @@ pop_geo.plot(column="value", legend=True, cmap="Blues")
 
 !!! note "Optional dependency"
     `geometry=True` requires `geopandas`. Install with
-    `pip install pypums[spatial]` or `pip install geopandas`.
+    `uv add "pypums[spatial]"`.
 
 ---
 

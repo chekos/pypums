@@ -388,7 +388,7 @@ ca_counties_geo.plot(column="estimate", legend=True)
 
 !!! note "Optional dependency"
     `geometry=True` requires `geopandas`. Install it with
-    `pip install pypums[spatial]` or `pip install geopandas`.
+    `uv add "pypums[spatial]"`.
 
 ---
 
@@ -614,7 +614,7 @@ See the [Finding Variables](variables.md) guide for full details.
 **`ImportError: geopandas`**
 
 :   Geometry support requires the spatial extras. Install them with
-    `pip install "pypums[spatial]"`.
+    `uv add "pypums[spatial]"`.
 
 **`moe_level must be one of [90, 95, 99]`**
 

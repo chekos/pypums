@@ -51,16 +51,17 @@ years = range(2018, 2023)
 frames = []
 
 for year in years:
-    df = pypums.get_acs(
-        geography="state",
-        variables="B01001_001",
-        state=states,
-        year=year,
-        survey="acs5",
-        cache_table=True,  # cache to avoid re-fetching
-    )
-    df["year"] = year
-    frames.append(df)
+    for st in states:
+        df = pypums.get_acs(
+            geography="state",
+            variables="B01001_001",
+            state=st,
+            year=year,
+            survey="acs5",
+            cache_table=True,  # cache to avoid re-fetching
+        )
+        df["year"] = year
+        frames.append(df)
 
 trend = pd.concat(frames, ignore_index=True)
 

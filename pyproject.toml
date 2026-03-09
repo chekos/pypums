@@ -21,6 +21,7 @@ dependencies = [
 
 [project.urls]
 Homepage = "https://github.com/chekos/pypums"
+Documentation = "https://pypums.readthedocs.io"
 Issues = "https://github.com/chekos/pypums/issues"
 CI = "https://github.com/chekos/pypums/actions"
 Changelog = "https://github.com/chekos/pypums/releases"

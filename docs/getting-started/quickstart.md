@@ -59,7 +59,7 @@ print(ca_income.head())
 
 ## 2. Make a map -- Tract-level choropleth
 
-Fetch tract-level poverty rates for Los Angeles County and plot a choropleth. This requires the `spatial` extras (`pip install "pypums[spatial]"`).
+Fetch tract-level poverty rates for Los Angeles County and plot a choropleth. This requires the `spatial` extras (`uv add "pypums[spatial]"`).
 
 ```python
 import pypums

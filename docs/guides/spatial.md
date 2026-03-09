@@ -8,17 +8,9 @@ geospatial analysis.
     Geometry features depend on **geopandas** and its dependencies (`shapely`,
     `pyproj`, `fiona`). Install them with:
 
-    === "pip"
-
-        ```bash
-        pip install "pypums[spatial]"
-        ```
-
-    === "uv"
-
-        ```bash
-        uv add "pypums[spatial]"
-        ```
+    ```bash
+    uv add "pypums[spatial]"
+    ```
 
 ---
 
@@ -416,9 +408,8 @@ memory. A few tips for working with large datasets:
 ## Troubleshooting
 
 **`ImportError: geopandas is required for spatial operations`**
-:   Install the spatial extra: `pip install "pypums[spatial]"` (or
-    `uv add "pypums[spatial]"`). This pulls in `geopandas`, `shapely`, and
-    `pyproj`.
+:   Install the spatial extra: `uv add "pypums[spatial]"`. This pulls in
+    `geopandas`, `shapely`, and `pyproj`.
 
 **Geometry column is all `None`**
 :   The Census TIGER/Line server may not have shapefiles for the geography
@@ -439,9 +430,10 @@ memory. A few tips for working with large datasets:
     after dropping unneeded columns.
 
 **Dot-density map is slow or crashes**
-:   `as_dot_density()` generates one point per `n` people. For large areas,
-    increase `n` (e.g., `n=100` instead of `n=1`) or subset to a single
-    county before generating dots.
+:   `as_dot_density()` generates one point per `dots_per_value` people. For
+    large areas, increase `dots_per_value` (e.g., `dots_per_value=100`
+    instead of `dots_per_value=1`) or subset to a single county before
+    generating dots.
 
 ---
 
