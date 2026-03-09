@@ -21,7 +21,7 @@ from .utils import (
 class ACS:
     """American Community Survey base class.
 
-    .. deprecated::
+    .. deprecated:: 0.2
         Use :func:`pypums.get_pums` for PUMS microdata or
         :func:`pypums.get_acs` for ACS summary tables instead.
     """
@@ -36,7 +36,7 @@ class ACS:
             "ACS() is deprecated. Use get_pums() for PUMS microdata "
             "or get_acs() for ACS summary tables.",
             DeprecationWarning,
-            stacklevel=2,
+            stacklevel=3,
         )
         self._year = _clean_year(self.year)
         self._survey = _clean_survey(self.survey, self._year)

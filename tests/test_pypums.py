@@ -68,6 +68,7 @@ def test_clean_year_range():
         _clean_year(1999)
 
 
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 def test_acs_class_urls():
     assert (
         ACS()._survey_url
@@ -87,6 +88,7 @@ def test_acs_class_urls():
     )
 
 
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 def test_acs_class_2020():
     """ACS for 2020 should always use 5-Year survey."""
     acs_2020 = ACS(2020, "Ohio", "1-Year")
@@ -97,6 +99,7 @@ def test_acs_class_2020():
     )
 
 
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 def test_acs_class_attributes():
     assert ACS()._sample_unit == ACS().sample_unit[0].lower()
     assert ACS(sample_unit="household")._sample_unit == "h"
@@ -105,10 +108,12 @@ def test_acs_class_attributes():
     assert ACS(2020, survey="1-Year")._survey == "5-Year/"
 
 
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 def test_acs_class_as_df():
     assert isinstance(ACS(state="alaska").as_dataframe(), DataFrame)
 
 
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 def test_instantiated_acs():
     instantiated_ACS = ACS()
     instantiated_ACS.download()
@@ -122,3 +127,8 @@ def test_instantiated_acs():
         f"raw/acs_{str(instantiated_ACS._year)[-2:]}/"
     )
     assert isinstance(instantiated_df, DataFrame)
+
+
+def test_acs_class_emits_deprecation_warning():
+    with pytest.warns(DeprecationWarning, match="ACS\\(\\) is deprecated"):
+        ACS()
