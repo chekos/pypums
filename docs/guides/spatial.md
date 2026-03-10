@@ -201,33 +201,125 @@ attach_geometry(
 
 ---
 
-## Plotting with matplotlib
+## Plotting with Altair
 
-Every `GeoDataFrame` has a built-in `.plot()` method powered by matplotlib.
-A minimal choropleth is one line:
+[Altair](https://altair-viz.github.io/) works naturally with `GeoDataFrame` objects
+returned by PyPUMS. Use `mark_geoshape()` to create choropleth maps:
 
 ```python
-import matplotlib.pyplot as plt
+import altair as alt
 
-gdf.plot(column="estimate", legend=True, figsize=(12, 8))
-plt.title("Median Household Income by Tract")
-plt.axis("off")
-plt.tight_layout()
-plt.show()
+alt.Chart(gdf).mark_geoshape().encode(
+    color=alt.Color("estimate:Q", title="Median Household Income"),
+    tooltip=["NAME:N", "estimate:Q"],
+).project("albersUsa").properties(
+    width=600, height=400,
+    title="Median Household Income by Tract",
+)
 ```
 
-For more control, pass a colormap, classification scheme, or edge color:
+For more control, use a color scale and configure the legend:
 
 ```python
-gdf.plot(
-    column="estimate",
-    cmap="YlGnBu",
-    edgecolor="0.8",
-    linewidth=0.3,
-    legend=True,
-    figsize=(12, 8),
-    missing_kwds={"color": "lightgrey"},
-)
+alt.Chart(gdf).mark_geoshape(stroke="white", strokeWidth=0.3).encode(
+    color=alt.Color(
+        "estimate:Q",
+        scale=alt.Scale(scheme="yellowgreenblue"),
+        legend=alt.Legend(title="Median Income ($)"),
+    ),
+    tooltip=["NAME:N", alt.Tooltip("estimate:Q", format="$,")],
+).project("albersUsa").properties(width=600, height=400)
+```
+
+```vegalite
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": 600,
+  "height": 400,
+  "title": "Median Household Income by State (sample data)",
+  "data": {
+    "url": "https://cdn.jsdelivr.net/npm/vega-datasets@v2.7.0/data/us-10m.json",
+    "format": {"type": "topojson", "feature": "states"}
+  },
+  "transform": [
+    {
+      "lookup": "id",
+      "from": {
+        "data": {
+          "values": [
+            {"id": 1, "estimate": 56950, "name": "Alabama"},
+            {"id": 2, "estimate": 77640, "name": "Alaska"},
+            {"id": 4, "estimate": 65913, "name": "Arizona"},
+            {"id": 5, "estimate": 52528, "name": "Arkansas"},
+            {"id": 6, "estimate": 91905, "name": "California"},
+            {"id": 8, "estimate": 82254, "name": "Colorado"},
+            {"id": 9, "estimate": 83771, "name": "Connecticut"},
+            {"id": 10, "estimate": 72724, "name": "Delaware"},
+            {"id": 11, "estimate": 101027, "name": "District of Columbia"},
+            {"id": 12, "estimate": 63062, "name": "Florida"},
+            {"id": 13, "estimate": 65030, "name": "Georgia"},
+            {"id": 15, "estimate": 84857, "name": "Hawaii"},
+            {"id": 16, "estimate": 65988, "name": "Idaho"},
+            {"id": 17, "estimate": 72205, "name": "Illinois"},
+            {"id": 18, "estimate": 62222, "name": "Indiana"},
+            {"id": 19, "estimate": 65573, "name": "Iowa"},
+            {"id": 20, "estimate": 64521, "name": "Kansas"},
+            {"id": 21, "estimate": 55573, "name": "Kentucky"},
+            {"id": 22, "estimate": 52087, "name": "Louisiana"},
+            {"id": 23, "estimate": 64767, "name": "Maine"},
+            {"id": 24, "estimate": 90203, "name": "Maryland"},
+            {"id": 25, "estimate": 89026, "name": "Massachusetts"},
+            {"id": 26, "estimate": 63498, "name": "Michigan"},
+            {"id": 27, "estimate": 77706, "name": "Minnesota"},
+            {"id": 28, "estimate": 48610, "name": "Mississippi"},
+            {"id": 29, "estimate": 60789, "name": "Missouri"},
+            {"id": 30, "estimate": 60560, "name": "Montana"},
+            {"id": 31, "estimate": 65551, "name": "Nebraska"},
+            {"id": 32, "estimate": 65686, "name": "Nevada"},
+            {"id": 33, "estimate": 83449, "name": "New Hampshire"},
+            {"id": 34, "estimate": 89296, "name": "New Jersey"},
+            {"id": 35, "estimate": 53992, "name": "New Mexico"},
+            {"id": 36, "estimate": 74314, "name": "New York"},
+            {"id": 37, "estimate": 60516, "name": "North Carolina"},
+            {"id": 38, "estimate": 68131, "name": "North Dakota"},
+            {"id": 39, "estimate": 61938, "name": "Ohio"},
+            {"id": 40, "estimate": 55826, "name": "Oklahoma"},
+            {"id": 41, "estimate": 70084, "name": "Oregon"},
+            {"id": 42, "estimate": 67587, "name": "Pennsylvania"},
+            {"id": 44, "estimate": 71169, "name": "Rhode Island"},
+            {"id": 45, "estimate": 59318, "name": "South Carolina"},
+            {"id": 46, "estimate": 63920, "name": "South Dakota"},
+            {"id": 47, "estimate": 59695, "name": "Tennessee"},
+            {"id": 48, "estimate": 66963, "name": "Texas"},
+            {"id": 49, "estimate": 79449, "name": "Utah"},
+            {"id": 50, "estimate": 67674, "name": "Vermont"},
+            {"id": 51, "estimate": 80615, "name": "Virginia"},
+            {"id": 53, "estimate": 84247, "name": "Washington"},
+            {"id": 54, "estimate": 50884, "name": "West Virginia"},
+            {"id": 55, "estimate": 67125, "name": "Wisconsin"},
+            {"id": 56, "estimate": 65003, "name": "Wyoming"}
+          ]
+        },
+        "key": "id",
+        "fields": ["estimate", "name"]
+      }
+    }
+  ],
+  "projection": {"type": "albersUsa"},
+  "mark": {"type": "geoshape", "stroke": "white", "strokeWidth": 0.5},
+  "encoding": {
+    "color": {
+      "field": "estimate",
+      "type": "quantitative",
+      "scale": {"scheme": "yellowgreenblue"},
+      "legend": {"title": "Median Income ($)", "format": "$,"}
+    },
+    "tooltip": [
+      {"field": "name", "type": "nominal", "title": "State"},
+      {"field": "estimate", "type": "quantitative", "title": "Median Income", "format": "$,"}
+    ]
+  }
+}
 ```
 
 ---
@@ -304,17 +396,20 @@ dots = as_dot_density(
 )
 
 # Plot.
-import matplotlib.pyplot as plt
+import altair as alt
 
-fig, ax = plt.subplots(figsize=(12, 12))
-colors = {"White": "#1f77b4", "Black": "#2ca02c", "Asian": "#d62728", "Hispanic": "#ff7f0e"}
-for label, color in colors.items():
-    subset = dots[dots["value"] == label]
-    subset.plot(ax=ax, color=color, markersize=0.5, label=label)
-ax.legend()
-ax.set_axis_off()
-plt.tight_layout()
-plt.show()
+alt.Chart(dots).mark_circle(size=1, opacity=0.6).encode(
+    longitude="geometry.x:Q",
+    latitude="geometry.y:Q",
+    color=alt.Color(
+        "value:N",
+        scale=alt.Scale(
+            domain=["White", "Black", "Asian", "Hispanic"],
+            range=["#1f77b4", "#2ca02c", "#d62728", "#ff7f0e"],
+        ),
+    ),
+    tooltip=["value:N"],
+).project("albersUsa").properties(width=600, height=600)
 ```
 
 **Signature:**

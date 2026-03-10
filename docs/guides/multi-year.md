@@ -42,8 +42,8 @@ further analysis.
 ## Example: population trends 2018--2022
 
 ```python
+import altair as alt
 import pandas as pd
-import matplotlib.pyplot as plt
 import pypums
 
 states = ["CA", "TX", "FL", "NY"]
@@ -66,15 +66,56 @@ for year in years:
 trend = pd.concat(frames, ignore_index=True)
 
 # Plot.
-fig, ax = plt.subplots(figsize=(10, 6))
-for name, group in trend.groupby("NAME"):
-    ax.plot(group["year"], group["estimate"], marker="o", label=name)
-ax.set_xlabel("Year")
-ax.set_ylabel("Population (ACS 5-year estimate)")
-ax.set_title("Population Trends, 2018-2022")
-ax.legend()
-plt.tight_layout()
-plt.show()
+alt.Chart(trend).mark_line(point=True).encode(
+    x=alt.X("year:O", title="Year"),
+    y=alt.Y("estimate:Q", title="Population (ACS 5-year estimate)"),
+    color="NAME:N",
+    tooltip=["NAME", "year:O", "estimate:Q"],
+).properties(title="Population Trends, 2018-2022", width=500, height=300)
+```
+
+```vegalite
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": "Population Trends, 2018-2022",
+  "width": 500,
+  "height": 300,
+  "data": {
+    "values": [
+      {"year": 2018, "NAME": "California", "estimate": 39557045},
+      {"year": 2019, "NAME": "California", "estimate": 39512223},
+      {"year": 2020, "NAME": "California", "estimate": 39538223},
+      {"year": 2021, "NAME": "California", "estimate": 39237836},
+      {"year": 2022, "NAME": "California", "estimate": 39029342},
+      {"year": 2018, "NAME": "Texas", "estimate": 28701845},
+      {"year": 2019, "NAME": "Texas", "estimate": 28995881},
+      {"year": 2020, "NAME": "Texas", "estimate": 29145505},
+      {"year": 2021, "NAME": "Texas", "estimate": 29527941},
+      {"year": 2022, "NAME": "Texas", "estimate": 30029572},
+      {"year": 2018, "NAME": "Florida", "estimate": 21299325},
+      {"year": 2019, "NAME": "Florida", "estimate": 21477737},
+      {"year": 2020, "NAME": "Florida", "estimate": 21538187},
+      {"year": 2021, "NAME": "Florida", "estimate": 22177997},
+      {"year": 2022, "NAME": "Florida", "estimate": 22244823},
+      {"year": 2018, "NAME": "New York", "estimate": 19530351},
+      {"year": 2019, "NAME": "New York", "estimate": 19453561},
+      {"year": 2020, "NAME": "New York", "estimate": 20201249},
+      {"year": 2021, "NAME": "New York", "estimate": 19835913},
+      {"year": 2022, "NAME": "New York", "estimate": 19677151}
+    ]
+  },
+  "mark": {"type": "line", "point": true},
+  "encoding": {
+    "x": {"field": "year", "type": "ordinal", "title": "Year"},
+    "y": {"field": "estimate", "type": "quantitative", "title": "Population (ACS 5-year estimate)"},
+    "color": {"field": "NAME", "type": "nominal", "title": "State"},
+    "tooltip": [
+      {"field": "NAME", "type": "nominal"},
+      {"field": "year", "type": "ordinal"},
+      {"field": "estimate", "type": "quantitative", "format": ","}
+    ]
+  }
+}
 ```
 
 !!! tip "Cache results when pulling many years"

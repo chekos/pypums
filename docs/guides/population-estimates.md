@@ -394,7 +394,102 @@ pop_geo = pypums.get_estimates(
     vintage=2023,
     geometry=True,
 )
-pop_geo.plot(column="value", legend=True, cmap="Blues")
+import altair as alt
+
+alt.Chart(pop_geo).mark_geoshape(stroke="white", strokeWidth=0.5).encode(
+    color=alt.Color("value:Q", scale=alt.Scale(scheme="blues"), legend=alt.Legend(title="Population")),
+    tooltip=["NAME:N", alt.Tooltip("value:Q", format=",")],
+).project("albersUsa").properties(width=500, height=400)
+```
+
+```vegalite
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": 500,
+  "height": 350,
+  "title": "2023 Population Estimates by State (sample data)",
+  "data": {
+    "url": "https://cdn.jsdelivr.net/npm/vega-datasets@v2.7.0/data/us-10m.json",
+    "format": {"type": "topojson", "feature": "states"}
+  },
+  "transform": [
+    {
+      "lookup": "id",
+      "from": {
+        "data": {
+          "values": [
+            {"id": 1, "value": 5108468, "name": "Alabama"},
+            {"id": 2, "value": 733406, "name": "Alaska"},
+            {"id": 4, "value": 7303398, "name": "Arizona"},
+            {"id": 5, "value": 3067732, "name": "Arkansas"},
+            {"id": 6, "value": 38965193, "name": "California"},
+            {"id": 8, "value": 5877610, "name": "Colorado"},
+            {"id": 9, "value": 3617176, "name": "Connecticut"},
+            {"id": 10, "value": 1017551, "name": "Delaware"},
+            {"id": 12, "value": 22610726, "name": "Florida"},
+            {"id": 13, "value": 11029227, "name": "Georgia"},
+            {"id": 15, "value": 1435138, "name": "Hawaii"},
+            {"id": 16, "value": 1964726, "name": "Idaho"},
+            {"id": 17, "value": 12549689, "name": "Illinois"},
+            {"id": 18, "value": 6862199, "name": "Indiana"},
+            {"id": 19, "value": 3207004, "name": "Iowa"},
+            {"id": 20, "value": 2940546, "name": "Kansas"},
+            {"id": 21, "value": 4526154, "name": "Kentucky"},
+            {"id": 22, "value": 4573749, "name": "Louisiana"},
+            {"id": 23, "value": 1395722, "name": "Maine"},
+            {"id": 24, "value": 6180253, "name": "Maryland"},
+            {"id": 25, "value": 7001399, "name": "Massachusetts"},
+            {"id": 26, "value": 10037261, "name": "Michigan"},
+            {"id": 27, "value": 5737915, "name": "Minnesota"},
+            {"id": 28, "value": 2939690, "name": "Mississippi"},
+            {"id": 29, "value": 6196156, "name": "Missouri"},
+            {"id": 30, "value": 1132812, "name": "Montana"},
+            {"id": 31, "value": 1978379, "name": "Nebraska"},
+            {"id": 32, "value": 3194176, "name": "Nevada"},
+            {"id": 33, "value": 1402054, "name": "New Hampshire"},
+            {"id": 34, "value": 9290841, "name": "New Jersey"},
+            {"id": 35, "value": 2114371, "name": "New Mexico"},
+            {"id": 36, "value": 19571216, "name": "New York"},
+            {"id": 37, "value": 10835491, "name": "North Carolina"},
+            {"id": 38, "value": 783926, "name": "North Dakota"},
+            {"id": 39, "value": 11785935, "name": "Ohio"},
+            {"id": 40, "value": 4019800, "name": "Oklahoma"},
+            {"id": 41, "value": 4233358, "name": "Oregon"},
+            {"id": 42, "value": 12961683, "name": "Pennsylvania"},
+            {"id": 44, "value": 1095962, "name": "Rhode Island"},
+            {"id": 45, "value": 5373555, "name": "South Carolina"},
+            {"id": 46, "value": 919318, "name": "South Dakota"},
+            {"id": 47, "value": 7126489, "name": "Tennessee"},
+            {"id": 48, "value": 30503301, "name": "Texas"},
+            {"id": 49, "value": 3417734, "name": "Utah"},
+            {"id": 50, "value": 647464, "name": "Vermont"},
+            {"id": 51, "value": 8683619, "name": "Virginia"},
+            {"id": 53, "value": 7812880, "name": "Washington"},
+            {"id": 54, "value": 1770071, "name": "West Virginia"},
+            {"id": 55, "value": 5910955, "name": "Wisconsin"},
+            {"id": 56, "value": 584057, "name": "Wyoming"}
+          ]
+        },
+        "key": "id",
+        "fields": ["value", "name"]
+      }
+    }
+  ],
+  "projection": {"type": "albersUsa"},
+  "mark": {"type": "geoshape", "stroke": "white", "strokeWidth": 0.5},
+  "encoding": {
+    "color": {
+      "field": "value",
+      "type": "quantitative",
+      "scale": {"scheme": "blues"},
+      "legend": {"title": "Population", "format": ","}
+    },
+    "tooltip": [
+      {"field": "name", "type": "nominal", "title": "State"},
+      {"field": "value", "type": "quantitative", "title": "Population", "format": ","}
+    ]
+  }
+}
 ```
 
 !!! note "Optional dependency"
@@ -516,13 +611,12 @@ county_map = pypums.get_estimates(
     vintage=2023,
     geometry=True,
 )
-county_map.plot(
-    column="value",
-    legend=True,
-    cmap="YlGnBu",
-    edgecolor="white",
-    linewidth=0.5,
-)
+import altair as alt
+
+alt.Chart(county_map).mark_geoshape(stroke="white", strokeWidth=0.5).encode(
+    color=alt.Color("value:Q", scale=alt.Scale(scheme="yellowgreenblue"), legend=alt.Legend(title="Population")),
+    tooltip=["NAME:N", alt.Tooltip("value:Q", format=",")],
+).project("albersUsa").properties(width=500, height=400)
 ```
 
 ---

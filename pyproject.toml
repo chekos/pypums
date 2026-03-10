@@ -39,6 +39,7 @@ docs = [
     "mkdocs-autorefs",
     "mkdocs-typer",
     "pymdown-extensions",
+    "mkdocs-charts-plugin",
 ]
 
 [tool.uv.build-backend]
