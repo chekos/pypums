@@ -133,7 +133,7 @@ optionally which county) you want tracts for.
     ```
     52 states/territories
     939 metro/micro areas
-    33,120 ZCTAs
+    33120 ZCTAs
     ```
 
 === "State required"
@@ -160,7 +160,7 @@ optionally which county) you want tracts for.
 
     ```
     58 counties in CA
-    1,834 places in TX
+    1834 places in TX
     ```
 
 === "State + county required"
@@ -188,8 +188,8 @@ optionally which county) you want tracts for.
     ```
 
     ```
-    2,495 tracts in LA County
-    4,010 block groups in Cook County
+    2495 tracts in LA County
+    4010 block groups in Cook County
     ```
 
 ## FIPS codes explained

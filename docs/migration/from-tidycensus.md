@@ -140,7 +140,7 @@ If you've used Kyle Walker's [tidycensus](https://walker-data.com/tidycensus/) R
     ```
 
     ```
-    2,495 tracts
+    2495 tracts
          GEOID                           NAME  estimate                  geometry
     0  06037101110  Census Tract 1011.10, ...   85714.0  POLYGON ((-118.24 34.05...
     1  06037101122  Census Tract 1011.22, ...   62500.0  POLYGON ((-118.25 34.04...

@@ -141,7 +141,7 @@ print(f"{len(age_flows)} flow records with age breakdowns")
 ```
 
 ```
-45,210 flow records with age breakdowns
+45210 flow records with age breakdowns
 ```
 
 ### Adding human-readable labels

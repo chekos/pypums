@@ -117,7 +117,7 @@ print(females[["AGEP", "SEX", "SCHL"]].head())
 ```
 
 ```
-198,412 records (all SEX == 2)
+198412 records (all SEX == 2)
    AGEP SEX SCHL
 0    35   2   21
 1    33   2   16
@@ -140,7 +140,7 @@ print(f"{len(grad_degrees)} records with Bachelor's, Master's, or Doctorate")
 ```
 
 ```
-98,245 records with Bachelor's, Master's, or Doctorate
+98245 records with Bachelor's, Master's, or Doctorate
 ```
 
 !!! tip "Server-side vs. client-side filtering"
@@ -168,7 +168,7 @@ print(employed_male_ba[["AGEP", "SEX", "SCHL", "ESR", "WAGP"]].head())
 ```
 
 ```
-12,843 employed males with BA in New York
+12843 employed males with BA in New York
    AGEP SEX SCHL ESR   WAGP
 0    34   1   21   1  65000
 1    28   1   21   1  52000
@@ -264,10 +264,11 @@ are included.
     ```
 
     ```
-    80 WGTP columns: ['WGTP1', 'WGTP2', 'WGTP3', 'WGTP4'] ... ['WGTP79', 'WGTP80']
+    81 WGTP columns: ['WGTP', 'WGTP1', 'WGTP2', 'WGTP3'] ... ['WGTP79', 'WGTP80']
     ```
 
-    Adds 80 housing replicate weight columns (`WGTP1` through `WGTP80`).
+    Adds 80 housing replicate weight columns (`WGTP1` through `WGTP80`)
+    alongside the main weight `WGTP`.
 
 === "Both"
 
@@ -347,7 +348,7 @@ print(f"{len(dtla)} records in PUMA 03710 (Downtown LA)")
 ```
 
 ```
-2,841 records in PUMA 03710 (Downtown LA)
+2841 records in PUMA 03710 (Downtown LA)
 ```
 
 ### Multiple PUMAs

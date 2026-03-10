@@ -234,7 +234,7 @@ print(f"{len(la_tracts)} tracts in LA County")
 ```
 
 ```
-2,495 tracts in LA County
+2495 tracts in LA County
 ```
 
 !!! tip "County FIPS codes"
@@ -257,7 +257,7 @@ print(f"{len(cook_bgs)} block groups in Cook County")
 ```
 
 ```
-4,010 block groups in Cook County
+4010 block groups in Cook County
 ```
 
 **All places in a state:**
@@ -274,7 +274,7 @@ print(tx_places.head(3))
 ```
 
 ```
-1,834 places in Texas
+1834 places in Texas
      GEOID                    NAME    variable  estimate     moe
 0  4800100  Abernathy city, Texas  B01003_001      2846   229.0
 1  4800484     Addison town, Texas  B01003_001     16661  1031.0
@@ -684,7 +684,7 @@ print(f"Statistically significant: {is_sig}")
 ```
 
 ```
-Combined MOE: 2746.0
+Combined MOE: 2746.4
 Proportion MOE: 0.0305
 Statistically significant: True
 ```

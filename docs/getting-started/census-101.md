@@ -226,7 +226,7 @@ print(f"{len(la_tracts)} tracts in Los Angeles County")
 ```
 
 ```
-2,495 tracts in Los Angeles County
+2495 tracts in Los Angeles County
 ```
 
 ---

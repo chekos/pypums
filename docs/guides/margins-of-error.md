@@ -308,7 +308,7 @@ print(f"Renter-to-owner ratio: {ratio_est:.3f} +/- {ratio_moe:.3f}")
 ```
 
 ```
-Renter-to-owner ratio: 0.429 +/- 0.063
+Renter-to-owner ratio: 0.429 +/- 0.065
 ```
 
 ### `moe_prop()` --- margins of error for proportions

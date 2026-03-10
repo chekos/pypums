@@ -174,7 +174,7 @@ print(f"{len(by_age_sex)} rows (states × age groups × sexes)")
 ```
 
 ```
-4,992 rows (states × age groups × sexes)
+4992 rows (states × age groups × sexes)
 ```
 
 ---
@@ -672,7 +672,7 @@ print(race_data[["NAME", "RACE_label", "HISP_label", "value"]].head(4))
 ```
 
 ```
-7,620 rows
+7620 rows
                          NAME          RACE_label           HISP_label      value
 0  Anderson County, Texas       All races   Both Hispanic Origins      57245
 1  Anderson County, Texas       All races         Non-Hispanic      43210

@@ -227,7 +227,7 @@ critical for multi-year analysis.
     ```
 
     ```
-    2,495 tracts in Los Angeles County
+    2495 tracts in Los Angeles County
     ```
 
 ### Year interpretation for ACS 5-year
@@ -358,14 +358,13 @@ import pypums
 cpi = {
     2018: 251.1,
     2019: 255.7,
-    2020: 258.8,
     2021: 270.9,
     2022: 292.7,
 }
 target_year = 2022
 
 frames = []
-for year in range(2018, 2023):
+for year in [2018, 2019, 2021, 2022]:  # skip 2020 (no standard ACS 1-year)
     df = pypums.get_acs(
         geography="state",
         variables="B19013_001",  # Median household income
@@ -387,9 +386,8 @@ print(trend[["year", "estimate", "estimate_real"]])
    year    estimate  estimate_real
 0  2018    75277.0      87760.6
 1  2019    78672.0      90046.7
-2  2020    78672.0      89005.4
-3  2021    80440.0      86906.3
-4  2022    84097.0      84097.0
+2  2021    80440.0      86906.3
+3  2022    84097.0      84097.0
 ```
 
 !!! note
@@ -420,12 +418,12 @@ print(df[["NAME", "DATE_CODE", "DATE_DESC", "value"]].head(10))
 ```
 
 ```
-         NAME  DATE_CODE              DATE_DESC      value
-0  California          1  4/1/2020 Census pop.  39538223
-1  California          2     7/1/2020 pop. est.  39499738
-2  California          3     7/1/2021 pop. est.  39142991
-3  California          4     7/1/2022 pop. est.  38965193
-4  California          5     7/1/2023 pop. est.  38965193
+         NAME  DATE_CODE                    DATE_DESC      value
+0  California          1  4/1/2020 Census population  39538223
+1  California          2  7/1/2020 population estimate  39499738
+2  California          3  7/1/2021 population estimate  39142991
+3  California          4  7/1/2022 population estimate  38965193
+4  California          5  7/1/2023 population estimate  38965193
 ```
 
 This is more efficient than looping over individual years and avoids the need
