@@ -726,7 +726,7 @@ print(gdf.head())
 ```
 
 ```python
-# Convert to dots (1 dot = 100 people).
+# Convert to dots (1 dot = 500 people).
 dots = as_dot_density(
     gdf,
     values={
@@ -735,7 +735,7 @@ dots = as_dot_density(
         "B03002_006E": "Asian",
         "B03002_012E": "Hispanic",
     },
-    dots_per_value=100,
+    dots_per_value=500,
     seed=42,
 )
 print(dots.head(10))
@@ -743,16 +743,16 @@ print(dots.head(10))
 
 ```
                       geometry  value
-0  POINT (-122.22019 37.86251)  White
-1  POINT (-122.22283 37.87751)  White
-2  POINT (-122.24249 37.87414)  White
-3  POINT (-122.23136 37.87632)  White
-4  POINT (-122.22468 37.86307)  White
-5   POINT (-122.2316 37.85667)  White
-6   POINT (-122.22776 37.8668)  White
-7   POINT (-122.2251 37.86543)  White
-8   POINT (-122.23612 37.8662)  White
-9  POINT (-122.21817 37.87009)  White
+0  POINT (-122.22019 37.86309)  White
+1  POINT (-122.24366 37.86566)  White
+2    POINT (-122.21322 37.858)  White
+3  POINT (-122.22063 37.86959)  White
+4  POINT (-122.24579 37.84953)  White
+5  POINT (-122.25481 37.84437)  White
+6  POINT (-122.25605 37.83734)  White
+7  POINT (-122.24739 37.84439)  White
+8  POINT (-122.24799 37.84545)  White
+9  POINT (-122.25714 37.84095)  White
 ```
 
 ```python
@@ -781,10 +781,8 @@ chart
 
 !!! example "Interactive preview — dot density map of Alameda County, CA (sample data)"
 
-    This preview uses `dots_per_value=500` (1 dot = 500 people) for rendering
-    performance. The code example above uses `dots_per_value=100` for finer
-    detail. The spatial distribution of dots reveals neighborhood-level
-    patterns of racial and ethnic composition.
+    Each dot represents 500 people. The spatial distribution of dots reveals
+    neighborhood-level patterns of racial and ethnic composition.
 
     ```vegalite
     {
