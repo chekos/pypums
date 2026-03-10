@@ -397,12 +397,17 @@ dots = as_dot_density(
     seed=42,
 )
 
+# Extract point coordinates for Altair.
+dots = dots.copy()
+dots["lon"] = dots.geometry.x
+dots["lat"] = dots.geometry.y
+
 # Plot.
 import altair as alt
 
 alt.Chart(dots).mark_circle(size=1, opacity=0.6).encode(
-    longitude="geometry.x:Q",
-    latitude="geometry.y:Q",
+    longitude="lon:Q",
+    latitude="lat:Q",
     color=alt.Color(
         "value:N",
         scale=alt.Scale(
