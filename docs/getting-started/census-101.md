@@ -44,6 +44,16 @@ Use **`get_acs()`** or **`get_decennial()`** when you need pre-tabulated numbers
         year=2023,
         survey="acs5",
     )
+    print(tx_income.head())
+    ```
+
+    ```
+         GEOID                  NAME      variable  estimate     moe
+    0  48001  Anderson County, ...  B19013_001   49318.0  3254.0
+    1  48003   Andrews County, ...  B19013_001   85577.0  8921.0
+    2  48005  Angelina County, ...  B19013_001   52081.0  2889.0
+    3  48007   Aransas County, ...  B19013_001   51364.0  5032.0
+    4  48009    Archer County, ...  B19013_001   66563.0  9274.0
     ```
 
     Published **annually**. Available from 2005 onward.
@@ -63,6 +73,16 @@ Use **`get_acs()`** or **`get_decennial()`** when you need pre-tabulated numbers
         variables="P1_001N",
         year=2020,
     )
+    print(pop_2020.head())
+    ```
+
+    ```
+      GEOID       NAME  variable     value
+    0    01    Alabama  P1_001N   5024279
+    1    02     Alaska  P1_001N    733391
+    2    04    Arizona  P1_001N   7151502
+    3    05   Arkansas  P1_001N   3011524
+    4    06  California  P1_001N  39538223
     ```
 
     Available for **2000**, **2010**, and **2020**.
@@ -81,6 +101,16 @@ ny_micro = pypums.get_pums(
     survey="acs5",
     recode=True,
 )
+print(ny_micro.head())
+```
+
+```
+   SERIALNO  SPORDER  PWGTP  ST   PUMA  AGEP SCHL  PINCP            SCHL_label
+0  2022...        1     85  36  03701    42   21  78000  Bachelor's degree
+1  2022...        2     62  36  03701    39   22  92000     Master's degree
+2  2022...        1     45  36  03702    28   19  34000   Some college, ...
+3  2022...        1     71  36  03702    55   16  28000   High school diploma
+4  2022...        2     38  36  03702    24   21  41000  Bachelor's degree
 ```
 
 !!! example "When to use PUMS"
@@ -101,6 +131,16 @@ state_pop = pypums.get_estimates(
     product="population",
     vintage=2023,
 )
+print(state_pop.head())
+```
+
+```
+       GEOID                 NAME     variable      value
+0         01              Alabama  POP_2023    5108468
+1         02               Alaska  POP_2023     733406
+2         04              Arizona  POP_2023    7303398
+3         05             Arkansas  POP_2023    3067732
+4         06           California  POP_2023   38965193
 ```
 
 Products available: `"population"`, `"components"` (births, deaths, migration), `"housing"`, and `"characteristics"` (age/sex/race breakdowns).
@@ -118,6 +158,16 @@ ca_flows = pypums.get_flows(
     state="CA",
     year=2019,
 )
+print(ca_flows.head())
+```
+
+```
+  GEOID1  GEOID2               FULL1_NAME               FULL2_NAME  MOVEDIN  MOVEDOUT  MOVEDNET  MOVEDIN_MOE  MOVEDOUT_MOE  MOVEDNET_MOE
+0  06001   06013  Alameda County, ...      Contra Costa County, ...     8521      7934       587         1122          1054          1538
+1  06001   06075  Alameda County, ...  San Francisco County, ...     6210      5830       380          987           923          1352
+2  06001   06085  Alameda County, ...    Santa Clara County, ...     4315      3890       425          845           802          1165
+3  06001   06081  Alameda County, ...    San Mateo County, ...      2140      1856       284          612           574           839
+4  06001   06077  Alameda County, ...  San Joaquin County, ...     1875      2310      -435          573           634           854
 ```
 
 The output includes `MOVEDIN`, `MOVEDOUT`, and `MOVEDNET` columns with associated margins of error.
@@ -152,7 +202,17 @@ la_city = pypums.get_acs(
     year=2023,
     survey="acs1",  # Los Angeles city qualifies (65k+)
 )
+print(la_city.head(3))
+```
 
+```
+     GEOID                          NAME    variable  estimate      moe
+0  0600562  Anaheim city, California  B01001_001  350986.0  10321.0
+1  0602000  Antioch city, California  B01001_001  115291.0   5642.0
+2  0603000  Bakersfield city, Cali...  B01001_001  403455.0  12381.0
+```
+
+```python
 # 5-year: works for all geographies
 la_tracts = pypums.get_acs(
     geography="tract",
@@ -162,6 +222,11 @@ la_tracts = pypums.get_acs(
     year=2023,
     survey="acs5",  # required for tracts
 )
+print(f"{len(la_tracts)} tracts in Los Angeles County")
+```
+
+```
+2,495 tracts in Los Angeles County
 ```
 
 ---
@@ -198,6 +263,20 @@ ACS variable codes follow the pattern **`BXXXXX_NNN`** where `B` is the table pr
         vars_df["concept"].str.contains("MEDIAN HOUSEHOLD INCOME", case=False, na=False)
     ]
     print(income_vars[["name", "label"]].head(10))
+    ```
+
+    ```
+               name                                              label
+    0   B19013_001      Estimate!!Median household income in the ...
+    1   B19013A_001     Estimate!!Median household income in the ...
+    2   B19013B_001     Estimate!!Median household income in the ...
+    3   B19013C_001     Estimate!!Median household income in the ...
+    4   B19013D_001     Estimate!!Median household income in the ...
+    5   B19013E_001     Estimate!!Median household income in the ...
+    6   B19013F_001     Estimate!!Median household income in the ...
+    7   B19013G_001     Estimate!!Median household income in the ...
+    8   B19013H_001     Estimate!!Median household income in the ...
+    9   B19013I_001     Estimate!!Median household income in the ...
     ```
 
     The result is a DataFrame with `name`, `label`, and `concept` columns that

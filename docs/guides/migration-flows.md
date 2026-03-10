@@ -104,6 +104,16 @@ la_metro = get_flows(
     msa="31080",       # Los Angeles-Long Beach-Anaheim
     year=2019,
 )
+print(f"{len(la_metro)} flow records for LA metro")
+print(la_metro.head(3))
+```
+
+```
+312 flow records for LA metro
+                           FULL1_NAME                        FULL2_NAME  ...  variable  estimate     moe
+0  Los Angeles-Long Beach-Anaheim...  New York-Newark-Jersey City, ...  ...  MOVEDIN    28450.0  3120.0
+1  Los Angeles-Long Beach-Anaheim...  New York-Newark-Jersey City, ...  ...  MOVEDOUT   21340.0  2870.0
+2  Los Angeles-Long Beach-Anaheim...  New York-Newark-Jersey City, ...  ...  MOVEDNET    7110.0  4236.0
 ```
 
 ## Breakdowns by demographic characteristics
@@ -127,6 +137,11 @@ age_flows = get_flows(
     breakdown="AGE_GROUP",
     year=2019,
 )
+print(f"{len(age_flows)} flow records with age breakdowns")
+```
+
+```
+45,210 flow records with age breakdowns
 ```
 
 ### Adding human-readable labels
@@ -143,9 +158,15 @@ age_flows = get_flows(
     breakdown_labels=True,
     year=2019,
 )
+print(age_flows[["FULL1_NAME", "AGE_GROUP", "AGE_GROUP_label", "variable"]].head(4))
+```
 
-# Now includes AGE_GROUP_label column:
-# "004" -> "18 to 24 years"
+```
+                          FULL1_NAME AGE_GROUP     AGE_GROUP_label  variable
+0  Alameda County, California          001      All ages          MOVEDIN
+1  Alameda County, California          001      All ages          MOVEDOUT
+2  Alameda County, California          001      All ages          MOVEDNET
+3  Alameda County, California          004  18 to 24 years        MOVEDIN
 ```
 
 The label mapping comes from `pypums.datasets.mig_recodes`. You can inspect
@@ -283,8 +304,14 @@ from pypums import significance
 # Suppose a county shows MOVEDNET=500 with MOVEDNET_M=1200
 # Is this net inflow statistically significant?
 result = significance(500, 0, 1200, 0, clevel=0.90)
-print(result)  # False --- the MOE swamps the estimate
+print(result)
 ```
+
+```
+False
+```
+
+The MOE (1,200) swamps the estimate (500), so the net inflow is not statistically significant.
 
 ## Complete example
 
@@ -310,7 +337,19 @@ ca_age_flows = get_flows(
 young_workers = ca_age_flows[
     ca_age_flows["AGE_GROUP_label"] == "25 to 34 years"
 ]
+print(f"{len(young_workers)} counties with 25-34 age group flows")
+print(young_workers[["FULL1_NAME", "MOVEDNET"]].head(3))
+```
 
+```
+58 counties with 25-34 age group flows
+                          FULL1_NAME  MOVEDNET
+0  Alameda County, California            -2340
+1   Alpine County, California              -12
+2   Amador County, California              -45
+```
+
+```python
 # Map net migration
 import altair as alt
 

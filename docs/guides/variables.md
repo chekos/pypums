@@ -130,6 +130,16 @@ The variable catalog is large --- the ACS 5-year dataset alone contains over
     education = vars_df[
         vars_df["label"].str.contains("bachelor", case=False, na=False)
     ]
+    print(f"{len(education)} variables matching 'bachelor'")
+    print(education[["name", "label"]].head(3))
+    ```
+
+    ```
+    42 variables matching 'bachelor'
+              name                                              label
+    0  B15003_022E  Estimate!!Total:!!Bachelor's degree
+    1  B15003_022M  Margin of Error!!Total:!!Bachelor's degree
+    2  B15002_015E  Estimate!!Total:!!Male:!!Bachelor's degree
     ```
 
 === "Search by concept"
@@ -139,6 +149,11 @@ The variable catalog is large --- the ACS 5-year dataset alone contains over
     poverty = vars_df[
         vars_df["concept"].str.contains("poverty", case=False, na=False)
     ]
+    print(f"{len(poverty)} variables related to poverty")
+    ```
+
+    ```
+    584 variables related to poverty
     ```
 
 === "Search by variable name"
@@ -148,6 +163,16 @@ The variable catalog is large --- the ACS 5-year dataset alone contains over
     sex_by_age = vars_df[
         vars_df["name"].str.startswith("B01001_")
     ]
+    print(f"{len(sex_by_age)} variables in B01001")
+    print(sex_by_age[["name", "label"]].head(3))
+    ```
+
+    ```
+    98 variables in B01001
+              name                                         label
+    0  B01001_001E  Estimate!!Total:
+    1  B01001_001M  Margin of Error!!Total:
+    2  B01001_002E  Estimate!!Total:!!Male:
     ```
 
 === "Combined search"
@@ -161,6 +186,11 @@ The variable catalog is large --- the ACS 5-year dataset alone contains over
         | vars_df["concept"].str.contains(query, case=False, na=False)
     )
     results = vars_df[mask]
+    print(f"{len(results)} variables matching 'median income'")
+    ```
+
+    ```
+    186 variables matching 'median income'
     ```
 
 ## Caching variable lookups
@@ -199,6 +229,15 @@ income_pums = pums_df[
     pums_df["label"].str.contains("income", case=False, na=False)
 ]
 print(income_pums[["name", "label"]].head())
+```
+
+```
+    name                                    label
+0  FINCP     Family income (past 12 months)
+1  HINCP  Household income (past 12 months)
+2   INTP        Interest, dividends, and net ...
+3    OIP        All other income (past 12 months)
+4  PINCP  Total person's income (past 12 months)
 ```
 
 The `pums_variables()` function returns a DataFrame with columns:
@@ -278,8 +317,15 @@ from pypums import load_variables, get_acs
 vars_df = load_variables(2022, "acs5", cache=True)
 results = vars_df[vars_df["label"].str.contains("median household income", case=False, na=False)]
 print(results[["name", "label"]])
-# -> B19013_001E  Estimate!!Median household income ...
+```
 
+```
+            name                                              label
+12345  B19013_001E  Estimate!!Median household income in the past...
+12346  B19013_001M  Margin of Error!!Median household income in t...
+```
+
+```python
 # Step 2: Use the base variable name (without E/M suffix) in get_acs()
 income = get_acs(
     "county",
@@ -289,6 +335,15 @@ income = get_acs(
 )
 
 print(income.head())
+```
+
+```
+     GEOID                          NAME    variable  estimate     moe
+0  06001      Alameda County, California  B19013_001  122488.0  1729.0
+1  06003       Alpine County, California  B19013_001   62750.0 20225.0
+2  06005       Amador County, California  B19013_001   70634.0  5180.0
+3  06007        Butte County, California  B19013_001   55718.0  2214.0
+4  06009    Calaveras County, California  B19013_001   68906.0  5439.0
 ```
 
 !!! warning "Suffix mismatch"

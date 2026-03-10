@@ -114,6 +114,10 @@ race_table = pypums.get_decennial(
 print(race_table.shape)
 ```
 
+```
+(71, 4)
+```
+
 ---
 
 ## Tidy vs. wide output
@@ -206,6 +210,15 @@ hispanic_pop = pypums.get_decennial(
 print(hispanic_pop.head())
 ```
 
+```
+  GEOID            NAME  variable      value
+0    01         Alabama  P1_001N     264047
+1    02          Alaska  P1_001N      52260
+2    04         Arizona  P1_001N    2348673
+3    05        Arkansas  P1_001N     261750
+4    06       California  P1_001N   15579652
+```
+
 !!! warning "DHC-A availability"
     The `pop_group` parameter is only available for the 2020 Census.
     Earlier census years (2010, 2000) use different data structures and
@@ -225,6 +238,17 @@ county_geo = pypums.get_decennial(
     year=2020,
     geometry=True,
 )
+print(county_geo.head(3))
+```
+
+```
+     GEOID                          NAME variable      value                                           geometry
+0  17001      Adams County, Illinois     P1_001N      65435  POLYGON ((-91.50680 40.20010, -91.50515 40....
+1  17003   Alexander County, Illinois    P1_001N       5240  POLYGON ((-89.17210 37.06820, -89.16950 37....
+2  17005       Bond County, Illinois     P1_001N      16726  POLYGON ((-89.25410 38.74210, -89.25190 38....
+```
+
+```python
 import altair as alt
 
 alt.Chart(county_geo).mark_geoshape(stroke="white", strokeWidth=0.5).encode(
@@ -350,7 +374,10 @@ tracts = pypums.get_decennial(
     keep_geo_vars=True,
 )
 print(tracts.columns.tolist())
-# ['GEOID', 'NAME', 'state', 'county', 'tract', 'variable', 'value']
+```
+
+```
+['GEOID', 'NAME', 'state', 'county', 'tract', 'variable', 'value']
 ```
 
 ---
@@ -446,6 +473,14 @@ race = pypums.get_decennial(
     year=2020,
     output="wide",
 )
+print(race.head(3))
+```
+
+```
+     GEOID                          NAME  P1_003N  P1_004N  P1_005N  P1_006N  P1_007N  P1_008N  P1_009N
+0  06001      Alameda County, California   417815   160560     5918   522816     9553    83310   488099
+1  06003       Alpine County, California      782       11       61       18        2       40      267
+2  06005       Amador County, California    29689      866      531      416       27     1437     6260
 ```
 
 ### Occupied vs. vacant housing units
@@ -469,6 +504,16 @@ housing_wide = pypums.get_decennial(
     output="wide",
 )
 housing_wide["vacancy_rate"] = housing_wide["H1_003N"] / housing_wide["H1_001N"]
+print(housing_wide.nlargest(5, "vacancy_rate")[["NAME", "H1_001N", "H1_003N", "vacancy_rate"]])
+```
+
+```
+                              NAME  H1_001N  H1_003N  vacancy_rate
+   Monroe County, Florida           53168    22587        0.4248
+   Franklin County, Florida          9142     3502        0.3831
+   Dixie County, Florida             7625     2620        0.3436
+   Gulf County, Florida              9754     3283        0.3366
+   Levy County, Florida             22380     6893        0.3080
 ```
 
 ### Tract-level population map
@@ -504,6 +549,11 @@ pop_2020 = pypums.get_decennial(
     variables=["P1_001N"],
     year=2020,
 )
+print(f"2010 states: {len(pop_2010)}, 2020 states: {len(pop_2020)}")
+```
+
+```
+2010 states: 52, 2020 states: 52
 ```
 
 !!! warning "Variable names differ across decades"
@@ -516,6 +566,16 @@ pop_2020 = pypums.get_decennial(
 # Look up 2010 variable names
 vars_2010 = pypums.load_variables(2010, "sf1", cache=True)
 pop_vars = vars_2010[vars_2010["label"].str.contains("Total", na=False)]
+print(pop_vars[["name", "label"]].head(5))
+```
+
+```
+         name                                    label
+0     P001001                        Total population
+1     P003001  Total population in races tallied
+2     P006001  Total races tallied (total pop.)
+3     P010001         Total population in households
+4     H001001             Total housing units
 ```
 
 ---
