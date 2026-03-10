@@ -39,6 +39,8 @@ docs = [
     "mkdocs-autorefs",
     "mkdocs-typer",
     "pymdown-extensions",
+    "mkdocs-charts-plugin",
+    "altair",
 ]
 
 [tool.uv.build-backend]

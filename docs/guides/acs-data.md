@@ -127,7 +127,7 @@ The `output` parameter controls the shape of the returned DataFrame.
 === "Tidy (default)"
 
     Each row is one geography-variable combination. This is ideal for
-    plotting with libraries like Altair, Plotly, or seaborn.
+    plotting with [Altair](https://altair-viz.github.io/).
 
     ```python
     df_tidy = pypums.get_acs(
@@ -383,7 +383,12 @@ ca_counties_geo = pypums.get_acs(
 print(type(ca_counties_geo))
 # <class 'geopandas.geodataframe.GeoDataFrame'>
 
-ca_counties_geo.plot(column="estimate", legend=True)
+import altair as alt
+
+alt.Chart(ca_counties_geo).mark_geoshape(stroke="white", strokeWidth=0.5).encode(
+    color=alt.Color("estimate:Q", legend=alt.Legend(title="Population")),
+    tooltip=["NAME:N", alt.Tooltip("estimate:Q", format=",")],
+).project("albersUsa").properties(width=500, height=400)
 ```
 
 !!! note "Optional dependency"

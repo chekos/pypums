@@ -84,21 +84,123 @@ print(type(la_poverty))  # <class 'geopandas.geodataframe.GeoDataFrame'>
 4. **county** -- `"037"` is the FIPS code for Los Angeles County. Use `pypums.datasets.fips.lookup_fips(state="California", county="Los Angeles County")` to look up codes.
 5. **geometry** -- When `True`, PyPUMS fetches TIGER/Line cartographic boundary shapefiles and merges them with the data. The result is a `GeoDataFrame` with a `geometry` column.
 
-Now plot it:
+Now plot it with [Altair](https://altair-viz.github.io/):
 
 ```python
-la_poverty.plot(
-    column="estimate",
-    cmap="YlOrRd",
-    legend=True,
-    figsize=(12, 10),
-    edgecolor="0.8",
-    linewidth=0.3,
-    missing_kwds={"color": "lightgrey"},
+import altair as alt
+
+alt.Chart(la_poverty).mark_geoshape(
+    stroke="white", strokeWidth=0.3,
+).encode(
+    color=alt.Color(
+        "estimate:Q",
+        scale=alt.Scale(scheme="yelloworangered"),
+        legend=alt.Legend(title="Below Poverty Level"),
+    ),
+    tooltip=["NAME:N", alt.Tooltip("estimate:Q", format=",")],
+).project("albersUsa").properties(
+    width=600, height=500,
+    title="Poverty by Census Tract, Los Angeles County",
 )
 ```
 
 The resulting map shows poverty counts by Census tract across Los Angeles County, with darker shades indicating higher counts.
+
+!!! example "Interactive preview — state-level choropleth with ACS population data"
+    The chart below shows a state-level choropleth to demonstrate what
+    `geometry=True` output looks like when plotted with Altair. Your actual
+    tract-level map will have much finer geographic detail.
+
+```vegalite
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": 600,
+  "height": 400,
+  "title": "ACS Total Population by State",
+  "data": {
+    "url": "https://cdn.jsdelivr.net/npm/vega-datasets@v2.7.0/data/us-10m.json",
+    "format": {"type": "topojson", "feature": "states"}
+  },
+  "transform": [
+    {
+      "lookup": "id",
+      "from": {
+        "data": {
+          "values": [
+            {"id": 1, "estimate": 5074296, "name": "Alabama"},
+            {"id": 2, "estimate": 733583, "name": "Alaska"},
+            {"id": 4, "estimate": 7359197, "name": "Arizona"},
+            {"id": 5, "estimate": 3045637, "name": "Arkansas"},
+            {"id": 6, "estimate": 39029342, "name": "California"},
+            {"id": 8, "estimate": 5839926, "name": "Colorado"},
+            {"id": 9, "estimate": 3626205, "name": "Connecticut"},
+            {"id": 10, "estimate": 1018396, "name": "Delaware"},
+            {"id": 11, "estimate": 671803, "name": "District of Columbia"},
+            {"id": 12, "estimate": 22244823, "name": "Florida"},
+            {"id": 13, "estimate": 10912876, "name": "Georgia"},
+            {"id": 15, "estimate": 1440196, "name": "Hawaii"},
+            {"id": 16, "estimate": 1939033, "name": "Idaho"},
+            {"id": 17, "estimate": 12582032, "name": "Illinois"},
+            {"id": 18, "estimate": 6833037, "name": "Indiana"},
+            {"id": 19, "estimate": 3200517, "name": "Iowa"},
+            {"id": 20, "estimate": 2937150, "name": "Kansas"},
+            {"id": 21, "estimate": 4512310, "name": "Kentucky"},
+            {"id": 22, "estimate": 4590241, "name": "Louisiana"},
+            {"id": 23, "estimate": 1385340, "name": "Maine"},
+            {"id": 24, "estimate": 6164660, "name": "Maryland"},
+            {"id": 25, "estimate": 6981974, "name": "Massachusetts"},
+            {"id": 26, "estimate": 10034113, "name": "Michigan"},
+            {"id": 27, "estimate": 5717184, "name": "Minnesota"},
+            {"id": 28, "estimate": 2940057, "name": "Mississippi"},
+            {"id": 29, "estimate": 6177957, "name": "Missouri"},
+            {"id": 30, "estimate": 1122867, "name": "Montana"},
+            {"id": 31, "estimate": 1967923, "name": "Nebraska"},
+            {"id": 32, "estimate": 3177772, "name": "Nevada"},
+            {"id": 33, "estimate": 1395231, "name": "New Hampshire"},
+            {"id": 34, "estimate": 9261699, "name": "New Jersey"},
+            {"id": 35, "estimate": 2113344, "name": "New Mexico"},
+            {"id": 36, "estimate": 19677151, "name": "New York"},
+            {"id": 37, "estimate": 10698973, "name": "North Carolina"},
+            {"id": 38, "estimate": 779261, "name": "North Dakota"},
+            {"id": 39, "estimate": 11756058, "name": "Ohio"},
+            {"id": 40, "estimate": 4019800, "name": "Oklahoma"},
+            {"id": 41, "estimate": 4240137, "name": "Oregon"},
+            {"id": 42, "estimate": 12972008, "name": "Pennsylvania"},
+            {"id": 44, "estimate": 1093734, "name": "Rhode Island"},
+            {"id": 45, "estimate": 5282634, "name": "South Carolina"},
+            {"id": 46, "estimate": 909824, "name": "South Dakota"},
+            {"id": 47, "estimate": 7051339, "name": "Tennessee"},
+            {"id": 48, "estimate": 30029572, "name": "Texas"},
+            {"id": 49, "estimate": 3380800, "name": "Utah"},
+            {"id": 50, "estimate": 647064, "name": "Vermont"},
+            {"id": 51, "estimate": 8642274, "name": "Virginia"},
+            {"id": 53, "estimate": 7785786, "name": "Washington"},
+            {"id": 54, "estimate": 1775156, "name": "West Virginia"},
+            {"id": 55, "estimate": 5892539, "name": "Wisconsin"},
+            {"id": 56, "estimate": 576851, "name": "Wyoming"}
+          ]
+        },
+        "key": "id",
+        "fields": ["estimate", "name"]
+      }
+    }
+  ],
+  "projection": {"type": "albersUsa"},
+  "mark": {"type": "geoshape", "stroke": "white", "strokeWidth": 0.5},
+  "encoding": {
+    "color": {
+      "field": "estimate",
+      "type": "quantitative",
+      "scale": {"scheme": "yelloworangered"},
+      "legend": {"title": "Population", "format": ","}
+    },
+    "tooltip": [
+      {"field": "name", "type": "nominal", "title": "State"},
+      {"field": "estimate", "type": "quantitative", "title": "Population", "format": ","}
+    ]
+  }
+}
+```
 
 !!! info "What is a TIGER/Line shapefile?"
     The Census Bureau publishes free geographic boundary files called

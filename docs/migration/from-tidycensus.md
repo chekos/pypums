@@ -126,7 +126,12 @@ If you've used Kyle Walker's [tidycensus](https://walker-data.com/tidycensus/) R
         geometry=True,
         year=2022,
     )
-    df.plot(column="estimate", legend=True)
+    import altair as alt
+
+    alt.Chart(df).mark_geoshape(stroke="white", strokeWidth=0.3).encode(
+        color="estimate:Q",
+        tooltip=["NAME:N", "estimate:Q"],
+    ).project("albersUsa")
     ```
 
 ### PUMS microdata
@@ -189,7 +194,7 @@ If you've used Kyle Walker's [tidycensus](https://walker-data.com/tidycensus/) R
 | **County parameter** | Accepts county names: `county = "Los Angeles"` | Uses FIPS codes: `county="037"`. Use `lookup_fips()` to find codes |
 | **Output type** | tibble / sf object | pandas DataFrame / GeoDataFrame |
 | **Spatial CRS** | Varies by function | Always NAD83 (EPSG:4269) from TIGER/Line |
-| **Plotting** | ggplot2 / tmap | matplotlib / geopandas `.plot()` |
+| **Plotting** | ggplot2 / tmap | Altair / geopandas |
 | **PUMS download** | Downloads CSV files from FTP | Queries Census API directly (faster for filtered requests) |
 | **Survey design** | Returns `tbl_svy` (srvyr package) | Returns `SurveyDesign` object with SDR methods |
 

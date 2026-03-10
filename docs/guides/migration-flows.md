@@ -209,7 +209,12 @@ ca_flows_geo = get_flows(
 )
 
 # ca_flows_geo is a GeoDataFrame with a 'geometry' column
-ca_flows_geo.plot(column="estimate", legend=True)
+import altair as alt
+
+alt.Chart(ca_flows_geo).mark_geoshape(stroke="white", strokeWidth=0.5).encode(
+    color=alt.Color("estimate:Q", legend=alt.Legend(title="Estimate")),
+    tooltip=["FULL1_NAME:N", alt.Tooltip("estimate:Q", format=",")],
+).project("albersUsa").properties(width=500, height=400)
 ```
 
 !!! note "Origin geography only"
@@ -307,7 +312,12 @@ young_workers = ca_age_flows[
 ]
 
 # Map net migration
-young_workers.plot(column="MOVEDNET", legend=True, cmap="RdBu")
+import altair as alt
+
+alt.Chart(young_workers).mark_geoshape(stroke="white", strokeWidth=0.5).encode(
+    color=alt.Color("MOVEDNET:Q", scale=alt.Scale(scheme="redblue"), legend=alt.Legend(title="Net Migration")),
+    tooltip=["FULL1_NAME:N", alt.Tooltip("MOVEDNET:Q", format=",")],
+).project("albersUsa").properties(width=500, height=400)
 ```
 
 ---
