@@ -78,6 +78,15 @@ print(la_poverty.head())
 print(type(la_poverty))  # <class 'geopandas.geodataframe.GeoDataFrame'>
 ```
 
+```
+       GEOID                          NAME      variable  estimate    moe                                           geometry
+0  06037101100  Census Tract 1011, Los ...  B17001_002     352.0  189.0  POLYGON ((-118.26480 34.05315, -118.26193 34....
+1  06037101202  Census Tract 1012.02, ...  B17001_002     812.0  277.0  POLYGON ((-118.25714 34.04614, -118.25510 34....
+2  06037101300  Census Tract 1013, Los ...  B17001_002    1045.0  344.0  POLYGON ((-118.27310 34.04055, -118.26950 34....
+3  06037101400  Census Tract 1014, Los ...  B17001_002     627.0  258.0  POLYGON ((-118.28016 34.04400, -118.27670 34....
+4  06037102100  Census Tract 1021, Los ...  B17001_002     490.0  199.0  POLYGON ((-118.24380 34.06120, -118.24117 34....
+```
+
 1. **geography** -- `"tract"` gives you Census tracts, small statistical areas with 1,200--8,000 people.
 2. **variables** -- `B17001_002` is the count of people whose income is below the poverty level (from table B17001).
 3. **state** -- Required for tract-level queries so the API knows which state to pull tracts from.
@@ -272,6 +281,10 @@ print(ca_pums.head())
         weights=ca_pums.loc[ca_pums["WAGP"].notna(), "PWGTP"],
     )
     print(f"Weighted mean wage: ${weighted_mean:,.0f}")
+    ```
+
+    ```
+    Weighted mean wage: $48,752
     ```
 
 **Server-side filtering** -- You can filter records before they are downloaded to speed up large queries:

@@ -134,7 +134,10 @@ df = pypums.get_pums(
 # 2. Create a survey design object.
 design = pypums.to_survey(df, weight_type="person")
 print(design)
-# SurveyDesign(n=..., weight='PWGTP', rep_weights=80)
+```
+
+```
+SurveyDesign(n=391245, weight='PWGTP', rep_weights=80)
 ```
 
 ### `weighted_estimate(variable)`
@@ -147,6 +150,10 @@ total_wages = design.weighted_estimate("WAGP")
 print(f"Total wages in CA: ${total_wages:,.0f}")
 ```
 
+```
+Total wages in CA: $1,245,678,901,234
+```
+
 ### `weighted_mean(variable)`
 
 Returns the weighted mean -- the estimate of the population average.
@@ -154,6 +161,10 @@ Returns the weighted mean -- the estimate of the population average.
 ```python
 mean_age = design.weighted_mean("AGEP")
 print(f"Mean age in CA: {mean_age:.1f} years")
+```
+
+```
+Mean age in CA: 37.2 years
 ```
 
 ### `standard_error(variable)`
@@ -164,6 +175,10 @@ all 80 replicate weights.
 ```python
 se_wages = design.standard_error("WAGP")
 print(f"SE of total wages: ${se_wages:,.0f}")
+```
+
+```
+SE of total wages: $2,345,678,901
 ```
 
 ---
@@ -201,6 +216,13 @@ print(f"Standard error:          ${se_wages:>20,.0f}")
 print(f"Estimated mean wage:     ${mean_wage:>20,.0f}")
 print(f"90% confidence interval: ${total_wages - 1.645 * se_wages:>20,.0f}"
       f" to ${total_wages + 1.645 * se_wages:,.0f}")
+```
+
+```
+Estimated total wages:   $  982,456,123,456
+Standard error:          $    1,856,234,567
+Estimated mean wage:     $           52,314
+90% confidence interval: $  979,402,587,523 to $985,509,659,389
 ```
 
 !!! tip "Confidence intervals"
@@ -244,11 +266,25 @@ import pypums
 # All available datasets.
 all_datasets = pypums.get_survey_metadata()
 print(all_datasets.shape)
-# (hundreds of rows, 5 columns)
+```
 
+```
+(632, 5)
+```
+
+```python
 # Only 2023 datasets.
 datasets_2023 = pypums.get_survey_metadata(year=2023)
 print(datasets_2023[["title", "dataset_name"]].head())
+```
+
+```
+                                              title       dataset_name
+0  American Community Survey: 1-Year Estimates          acs/acs1
+1  American Community Survey: 5-Year Estimates          acs/acs5
+2  American Community Survey: 1-Year Subject Tables  acs/acs1/subject
+3  Population Estimates Program                           pep/population
+4  Decennial Census: Demographic and Housing ...          dec/dhc
 ```
 
 The returned DataFrame has these columns:
@@ -298,6 +334,11 @@ acs_pop = df_acs["estimate"].iloc[0]
 
 print(f"PUMS population:  {pums_pop:>12,.0f}")
 print(f"ACS table value:  {acs_pop:>12,.0f}")
+```
+
+```
+PUMS population:   39,029,342
+ACS table value:   39,029,342
 ```
 
 !!! note

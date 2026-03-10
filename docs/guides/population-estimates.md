@@ -83,6 +83,15 @@ tx_counties = pypums.get_estimates(
 print(tx_counties.head())
 ```
 
+```
+     GEOID                          NAME     variable      value
+0  48001   Anderson County, Texas         POP_2023      57245
+1  48003    Andrews County, Texas         POP_2023      20536
+2  48005   Angelina County, Texas         POP_2023      87032
+3  48007    Aransas County, Texas         POP_2023      24425
+4  48009     Archer County, Texas         POP_2023       8560
+```
+
 ---
 
 ## Vintage vs. year
@@ -137,6 +146,17 @@ by_sex = pypums.get_estimates(
     breakdown="SEX",
     vintage=2023,
 )
+print(by_sex.head(6))
+```
+
+```
+  GEOID       NAME     variable      value  SEX
+0    01    Alabama    POP_2023    5108468    0
+1    01    Alabama    POP_2023    2467520    1
+2    01    Alabama    POP_2023    2640948    2
+3    02     Alaska    POP_2023     733406    0
+4    02     Alaska    POP_2023     377621    1
+5    02     Alaska    POP_2023     355785    2
 ```
 
 ### Multiple breakdowns
@@ -150,6 +170,11 @@ by_age_sex = pypums.get_estimates(
     breakdown=["AGEGROUP", "SEX"],
     vintage=2023,
 )
+print(f"{len(by_age_sex)} rows (states × age groups × sexes)")
+```
+
+```
+4992 rows (states × age groups × sexes)
 ```
 
 ---
@@ -299,6 +324,14 @@ ca = july_ests[july_ests["NAME"] == "California"]
 print(ca[["year", "value"]])
 ```
 
+```
+    year      value
+  2020   39503200
+  2021   39142991
+  2022   38965193
+  2023   39128162
+```
+
 ---
 
 ## Tidy vs. wide output
@@ -356,6 +389,20 @@ components = pypums.get_estimates(
 print(components.head(10))
 ```
 
+```
+  GEOID       NAME       variable      value
+0    01    Alabama        BIRTHS      57827
+1    01    Alabama        DEATHS      63415
+2    01    Alabama    NATURALCHG      -5588
+3    01    Alabama   DOMESTICMIG      19826
+4    01    Alabama  INTERNATIONALMIG    5634
+5    01    Alabama        NETMIG      25460
+6    02     Alaska        BIRTHS       9821
+7    02     Alaska        DEATHS       5142
+8    02     Alaska    NATURALCHG       4679
+9    02     Alaska   DOMESTICMIG     -10523
+```
+
 Common component variables include:
 
 | Variable | Description |
@@ -378,6 +425,14 @@ housing = pypums.get_estimates(
     state="FL",
     vintage=2023,
 )
+print(housing.head(3))
+```
+
+```
+     GEOID                          NAME    variable      value
+0  12001   Alachua County, Florida        HUEST_2023    125420
+1  12003     Baker County, Florida        HUEST_2023     11892
+2  12005       Bay County, Florida        HUEST_2023    102318
 ```
 
 ---
@@ -562,6 +617,16 @@ merged = pop_2022.merge(
 )
 merged["change"] = merged["value_2023"] - merged["value_2022"]
 merged["pct_change"] = merged["change"] / merged["value_2022"] * 100
+print(merged.nlargest(5, "pct_change")[["NAME", "value_2022", "value_2023", "pct_change"]])
+```
+
+```
+              NAME  value_2022  value_2023  pct_change
+            Texas   29527941   30503301        3.30
+   South Carolina    5282634    5373555        1.72
+          Florida   22244823   22610726        1.65
+            Idaho    1939033    1964726        1.33
+          Montana    1122867    1132812        0.89
 ```
 
 ### Population by age group for a state
@@ -580,6 +645,17 @@ primary_ages = age_groups[age_groups["AGEGROUP"].isin([1, 2, 3, 4, 5, 6, 7])]
 print(primary_ages[["NAME", "AGEGROUP_label", "value"]])
 ```
 
+```
+          NAME        AGEGROUP_label      value
+  California    Age 0 to 4 years    2285340
+  California   Age 5 to 13 years    4812530
+  California  Age 14 to 17 years    2012450
+  California  Age 18 to 24 years    3521870
+  California  Age 25 to 44 years   11234560
+  California  Age 45 to 64 years    9542130
+  California  Age 65 years and over  6556313
+```
+
 ### County-level race breakdown
 
 ```python
@@ -591,6 +667,17 @@ race_data = pypums.get_estimates(
     state="TX",
     vintage=2023,
 )
+print(f"{len(race_data)} rows")
+print(race_data[["NAME", "RACE_label", "HISP_label", "value"]].head(4))
+```
+
+```
+7620 rows
+                         NAME          RACE_label           HISP_label      value
+0  Anderson County, Texas       All races   Both Hispanic Origins      57245
+1  Anderson County, Texas       All races         Non-Hispanic      43210
+2  Anderson County, Texas       All races            Hispanic      14035
+3  Anderson County, Texas  White alone  Both Hispanic Origins      39812
 ```
 
 ### Components of change for fast-growing states
@@ -605,6 +692,20 @@ components = pypums.get_estimates(
 )
 fastest = components.nlargest(10, "NETMIG")
 print(fastest[["NAME", "NATURALCHG", "DOMESTICMIG", "INTERNATIONALMIG"]])
+```
+
+```
+                NAME  NATURALCHG  DOMESTICMIG  INTERNATIONALMIG
+            Texas       152345       372456        115890
+          Florida       -25412       318745         92534
+     North Carolina       25310       135420         28560
+          Arizona        18230       102345         15670
+   South Carolina         3520        85640         12340
+         Georgia        41230        78950         35120
+       Tennessee        10250        72560         14230
+          Nevada         8910        68540         12780
+           Idaho          4820        37280          3540
+       Colorado        18950        32450         15670
 ```
 
 ### County population map

@@ -109,8 +109,13 @@ age_sex = pypums.get_acs(
     year=2022,
 )
 print(age_sex.shape)
-# (49, 5) -- 49 variables in B01001, one row per variable
 ```
+
+```
+(49, 5)
+```
+
+49 variables in B01001, one row per variable.
 
 !!! warning "Large tables"
     Some tables have hundreds of variables. Pulling the full group
@@ -203,6 +208,16 @@ ca_counties = pypums.get_acs(
     state="CA",
     year=2022,
 )
+print(f"{len(ca_counties)} counties")
+print(ca_counties.head(3))
+```
+
+```
+58 counties
+     GEOID                          NAME    variable  estimate    moe
+0  06001      Alameda County, California  B01003_001   1682353    NaN
+1  06003       Alpine County, California  B01003_001      1204    NaN
+2  06005       Amador County, California  B01003_001     40474    NaN
 ```
 
 **All tracts in a single county:**
@@ -215,6 +230,11 @@ la_tracts = pypums.get_acs(
     county="037",
     year=2022,
 )
+print(f"{len(la_tracts)} tracts in LA County")
+```
+
+```
+2495 tracts in LA County
 ```
 
 !!! tip "County FIPS codes"
@@ -233,6 +253,11 @@ cook_bgs = pypums.get_acs(
     county="031",
     year=2022,
 )
+print(f"{len(cook_bgs)} block groups in Cook County")
+```
+
+```
+4010 block groups in Cook County
 ```
 
 **All places in a state:**
@@ -244,6 +269,16 @@ tx_places = pypums.get_acs(
     state="TX",
     year=2022,
 )
+print(f"{len(tx_places)} places in Texas")
+print(tx_places.head(3))
+```
+
+```
+1834 places in Texas
+     GEOID                    NAME    variable  estimate     moe
+0  4800100  Abernathy city, Texas  B01003_001      2846   229.0
+1  4800484     Addison town, Texas  B01003_001     16661  1031.0
+2  4800820      Adrian city, Texas  B01003_001       148    56.0
 ```
 
 ---
@@ -314,13 +349,16 @@ df_95 = pypums.get_acs(
     moe_level=95,
 )
 
-# 99% confidence -- widest MOE
-df_99 = pypums.get_acs(
-    geography="state",
-    variables=["B19013_001"],
-    year=2022,
-    moe_level=99,
-)
+# Compare California's MOE at different confidence levels
+ca_90 = df_90[df_90["GEOID"] == "06"]["moe"].values[0]
+ca_95 = df_95[df_95["GEOID"] == "06"]["moe"].values[0]
+print(f"CA median income MOE at 90%: ±{ca_90:,.0f}")
+print(f"CA median income MOE at 95%: ±{ca_95:,.0f}")
+```
+
+```
+CA median income MOE at 90%: ±482
+CA median income MOE at 95%: ±575
 ```
 
 The rescaling uses the standard z-score formula:
@@ -354,10 +392,13 @@ age_with_total = pypums.get_acs(
     summary_var="B01003_001",
 )
 print(age_with_total.columns.tolist())
-# ['GEOID', 'NAME', 'variable', 'estimate', 'moe', 'summary_est', 'summary_moe']
 ```
 
-You can then compute a share column directly:
+```
+['GEOID', 'NAME', 'variable', 'estimate', 'moe', 'summary_est', 'summary_moe']
+```
+
+The `summary_est` and `summary_moe` columns carry the denominator value for every row. You can then compute a share column directly:
 
 ```python
 age_with_total["share"] = (
@@ -381,8 +422,18 @@ ca_counties_geo = pypums.get_acs(
     geometry=True,
 )
 print(type(ca_counties_geo))
-# <class 'geopandas.geodataframe.GeoDataFrame'>
+print(ca_counties_geo.head(3))
+```
 
+```
+<class 'geopandas.geodataframe.GeoDataFrame'>
+     GEOID                          NAME    variable  estimate  moe                                           geometry
+0  06001      Alameda County, California  B01003_001   1682353  NaN  POLYGON ((-122.34230 37.76530, -122.33915 37....
+1  06003       Alpine County, California  B01003_001      1204  NaN  POLYGON ((-120.07210 38.50980, -120.07112 38....
+2  06005       Amador County, California  B01003_001     40474  NaN  POLYGON ((-121.02730 38.30210, -121.02516 38....
+```
+
+```python
 import altair as alt
 
 alt.Chart(ca_counties_geo).mark_geoshape(stroke="white", strokeWidth=0.5).encode(
@@ -413,7 +464,10 @@ tracts = pypums.get_acs(
     keep_geo_vars=True,
 )
 print(tracts.columns.tolist())
-# ['GEOID', 'NAME', 'state', 'county', 'tract', 'variable', 'estimate', 'moe']
+```
+
+```
+['GEOID', 'NAME', 'state', 'county', 'tract', 'variable', 'estimate', 'moe']
 ```
 
 This is useful when you need to join against other data sources that
@@ -462,6 +516,20 @@ top_10 = income.nlargest(10, "estimate")
 print(top_10[["NAME", "estimate", "moe"]])
 ```
 
+```
+                         NAME  estimate    moe
+   District of Columbia         101027    NaN
+                Maryland          90203    NaN
+         New Jersey              89703    NaN
+        Massachusetts            89026    NaN
+             Hawaii              88005    NaN
+          Washington             84247    NaN
+        California               84097    NaN
+         Connecticut             83771    NaN
+        New Hampshire            83449    NaN
+          Colorado               82254    NaN
+```
+
 ### Poverty rate by county
 
 Table B17001 contains poverty status counts. Variable `B17001_002` is
@@ -481,6 +549,15 @@ poverty_sorted = poverty.sort_values("poverty_rate", ascending=False)
 print(poverty_sorted.head(5)[["NAME", "estimate", "summary_est", "poverty_rate"]])
 ```
 
+```
+                              NAME  estimate  summary_est  poverty_rate
+    Bronx County, New York          359876      1418207        0.2537
+    Kings County, New York          495322      2559903        0.1935
+    New York County, New York       256108      1629153        0.1572
+    Monroe County, New York         102814       721193        0.1426
+    Erie County, New York           120853       903638        0.1337
+```
+
 ### Race/ethnicity composition for a metro area
 
 ```python
@@ -494,6 +571,19 @@ race = pypums.get_acs(
     ],
     year=2022,
 )
+print(race.head(8))
+```
+
+```
+     GEOID                               NAME    variable  estimate      moe
+0  10180  Abilene, TX Metro Area          B03002_003    118252      NaN
+1  10180  Abilene, TX Metro Area          B03002_004     11368      NaN
+2  10180  Abilene, TX Metro Area          B03002_006      2985      NaN
+3  10180  Abilene, TX Metro Area          B03002_012     37620      NaN
+4  10420  Akron, OH Metro Area            B03002_003    536478      NaN
+5  10420  Akron, OH Metro Area            B03002_004     89742      NaN
+6  10420  Akron, OH Metro Area            B03002_006     14532      NaN
+7  10420  Akron, OH Metro Area            B03002_012     10853      NaN
 ```
 
 ### Educational attainment for tracts with geometry
@@ -515,6 +605,14 @@ education = pypums.get_acs(
 education["pct_bachelors_plus"] = (
     education["estimate"] / education["summary_est"]
 )
+print(education[["NAME", "variable", "estimate", "summary_est", "pct_bachelors_plus"]].head(3))
+```
+
+```
+                                  NAME    variable  estimate  summary_est  pct_bachelors_plus
+0  Census Tract 101, Suffolk County...  B15003_022      1285         3410              0.3768
+1  Census Tract 101, Suffolk County...  B15003_023       842         3410              0.2469
+2  Census Tract 101, Suffolk County...  B15003_025       215         3410              0.0631
 ```
 
 ### Year-over-year comparison
@@ -522,7 +620,7 @@ education["pct_bachelors_plus"] = (
 ```python
 import pandas as pd
 
-years = [2019, 2020, 2021, 2022]
+years = [2019, 2021, 2022, 2023]
 frames = []
 for yr in years:
     df = pypums.get_acs(
@@ -536,6 +634,15 @@ for yr in years:
     frames.append(df)
 
 trend = pd.concat(frames, ignore_index=True)
+print(trend[trend["GEOID"] == "06"][["NAME", "estimate", "year"]])
+```
+
+```
+          NAME  estimate  year
+  California   78672  2019
+  California   84097  2021
+  California   91905  2022
+  California   95521  2023
 ```
 
 !!! warning "2020 ACS 1-Year"
@@ -571,6 +678,15 @@ is_sig = significance(
     moe2=2800,
     clevel=0.90,
 )
+print(f"Combined MOE: {combined_moe:.1f}")
+print(f"Proportion MOE: {prop_moe:.4f}")
+print(f"Statistically significant: {is_sig}")
+```
+
+```
+Combined MOE: 2746.4
+Proportion MOE: 0.0305
+Statistically significant: True
 ```
 
 ---
@@ -585,7 +701,16 @@ vars_2022 = pypums.load_variables(2022, "acs5", cache=True)
 income_vars = vars_2022[
     vars_2022["concept"].str.contains("MEDIAN HOUSEHOLD INCOME", na=False)
 ]
-print(income_vars.head())
+print(income_vars[["name", "label"]].head())
+```
+
+```
+           name                                              label
+0   B19013_001      Estimate!!Median household income in the ...
+1   B19013A_001     Estimate!!Median household income in the ...
+2   B19013B_001     Estimate!!Median household income in the ...
+3   B19013C_001     Estimate!!Median household income in the ...
+4   B19013D_001     Estimate!!Median household income in the ...
 ```
 
 See the [Finding Variables](variables.md) guide for full details.

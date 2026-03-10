@@ -27,6 +27,15 @@ from pypums.datasets import fips_codes
 print(fips_codes.head())
 ```
 
+```
+       state state_code              county county_code
+0    Alabama         01  Autauga County         001
+1    Alabama         01  Baldwin County         003
+2    Alabama         01  Barbour County         005
+3    Alabama         01     Bibb County         007
+4    Alabama         01   Blount County         009
+```
+
 **Columns:**
 
 | Column | Description | Example |
@@ -107,6 +116,15 @@ vars_df = pums_variables()
 print(vars_df.head())
 ```
 
+```
+  variable                            label   type
+0     AGEP                     Age (years)  int
+1      CIT               Citizenship status  str
+2    CITWP  Year of naturalization (write-in)  str
+3      COW             Class of worker  str
+4    DDRS   Self-care difficulty  str
+```
+
 The dictionary includes variable names, labels, and data types for all PUMS variables available through the Census API.
 
 ---
@@ -122,6 +140,15 @@ from pypums.datasets import acs5_geography
 
 geo_df = acs5_geography()
 print(geo_df.head())
+```
+
+```
+                        name  geoLevelDisplay                    requires
+0                         us              010                          []
+1                     region              020                          []
+2                   division              030                          []
+3                      state              040                          []
+4                     county              050                     [state]
 ```
 
 This is useful for discovering which geography levels are available and what parent geographies they require.

@@ -119,12 +119,21 @@ optionally which county) you want tracts for.
 
     # All states
     states = get_acs("state", variables="B01003_001", year=2022)
+    print(f"{len(states)} states/territories")
 
     # All CBSAs (metro areas) nationwide
     metros = get_acs("cbsa", variables="B01003_001", year=2022)
+    print(f"{len(metros)} metro/micro areas")
 
     # All ZCTAs nationwide
     zctas = get_acs("zcta", variables="B01003_001", year=2022)
+    print(f"{len(zctas)} ZCTAs")
+    ```
+
+    ```
+    52 states/territories
+    939 metro/micro areas
+    33120 ZCTAs
     ```
 
 === "State required"
@@ -137,6 +146,7 @@ optionally which county) you want tracts for.
         state="CA",
         year=2022,
     )
+    print(f"{len(counties)} counties in CA")
 
     # All places (cities) in Texas
     places = get_acs(
@@ -145,6 +155,12 @@ optionally which county) you want tracts for.
         state="TX",
         year=2022,
     )
+    print(f"{len(places)} places in TX")
+    ```
+
+    ```
+    58 counties in CA
+    1834 places in TX
     ```
 
 === "State + county required"
@@ -158,6 +174,7 @@ optionally which county) you want tracts for.
         county="037",
         year=2022,
     )
+    print(f"{len(tracts)} tracts in LA County")
 
     # All block groups in Cook County, IL
     bgs = get_acs(
@@ -167,6 +184,12 @@ optionally which county) you want tracts for.
         county="031",
         year=2022,
     )
+    print(f"{len(bgs)} block groups in Cook County")
+    ```
+
+    ```
+    2495 tracts in LA County
+    4010 block groups in Cook County
     ```
 
 ## FIPS codes explained
@@ -261,6 +284,15 @@ print(fips_codes.head())
 # Find all counties in California
 ca_counties = fips_codes[fips_codes["state"] == "California"]
 print(ca_counties[["county", "county_code"]].head())
+```
+
+```
+              county county_code
+  Alameda County         001
+    Alpine County         003
+    Amador County         005
+     Butte County         007
+ Calaveras County         009
 ```
 
 The DataFrame has four columns:

@@ -112,6 +112,18 @@ females = pypums.get_pums(
     year=2022,
     variables_filter={"SEX": 2},
 )
+print(f"{len(females)} records (all SEX == 2)")
+print(females[["AGEP", "SEX", "SCHL"]].head())
+```
+
+```
+198412 records (all SEX == 2)
+   AGEP SEX SCHL
+0    35   2   21
+1    33   2   16
+2    67   2   22
+3    28   2   19
+4    42   2   21
 ```
 
 ### Filter to multiple values
@@ -124,6 +136,11 @@ grad_degrees = pypums.get_pums(
     year=2022,
     variables_filter={"SCHL": [21, 22, 24]},
 )
+print(f"{len(grad_degrees)} records with Bachelor's, Master's, or Doctorate")
+```
+
+```
+98245 records with Bachelor's, Master's, or Doctorate
 ```
 
 !!! tip "Server-side vs. client-side filtering"
@@ -146,6 +163,18 @@ employed_male_ba = pypums.get_pums(
         "ESR": 1,
     },
 )
+print(f"{len(employed_male_ba)} employed males with BA in New York")
+print(employed_male_ba[["AGEP", "SEX", "SCHL", "ESR", "WAGP"]].head())
+```
+
+```
+12843 employed males with BA in New York
+   AGEP SEX SCHL ESR   WAGP
+0    34   1   21   1  65000
+1    28   1   21   1  52000
+2    41   1   21   1  88000
+3    26   1   21   1  45000
+4    38   1   21   1  72000
 ```
 
 ---
@@ -210,8 +239,12 @@ are included.
         year=2022,
         rep_weights="person",
     )
-    print([c for c in df.columns if c.startswith("PWGTP")])
-    # ['PWGTP', 'PWGTP1', 'PWGTP2', ..., 'PWGTP80']
+    rep_cols = [c for c in df.columns if c.startswith("PWGTP")]
+    print(f"{len(rep_cols)} PWGTP columns: {rep_cols[:4]} ... {rep_cols[-2:]}")
+    ```
+
+    ```
+    81 PWGTP columns: ['PWGTP', 'PWGTP1', 'PWGTP2', 'PWGTP3'] ... ['PWGTP79', 'PWGTP80']
     ```
 
     Adds 80 person replicate weight columns (`PWGTP1` through
@@ -226,11 +259,16 @@ are included.
         year=2022,
         rep_weights="housing",
     )
-    print([c for c in df.columns if c.startswith("WGTP")])
-    # ['WGTP1', 'WGTP2', ..., 'WGTP80']
+    rep_cols = [c for c in df.columns if c.startswith("WGTP")]
+    print(f"{len(rep_cols)} WGTP columns: {rep_cols[:4]} ... {rep_cols[-2:]}")
     ```
 
-    Adds 80 housing replicate weight columns (`WGTP1` through `WGTP80`).
+    ```
+    81 WGTP columns: ['WGTP', 'WGTP1', 'WGTP2', 'WGTP3'] ... ['WGTP79', 'WGTP80']
+    ```
+
+    Adds 80 housing replicate weight columns (`WGTP1` through `WGTP80`)
+    alongside the main weight `WGTP`.
 
 === "Both"
 
@@ -278,6 +316,11 @@ print(f"Mean wages: ${main_est:,.0f}")
 print(f"MOE (90%):  +/- ${moe_90:,.0f}")
 ```
 
+```
+Mean wages: $52,314
+MOE (90%):  +/- $412
+```
+
 ---
 
 ## PUMA geography
@@ -301,6 +344,11 @@ dtla = pypums.get_pums(
     puma="03710",
     year=2022,
 )
+print(f"{len(dtla)} records in PUMA 03710 (Downtown LA)")
+```
+
+```
+2841 records in PUMA 03710 (Downtown LA)
 ```
 
 ### Multiple PUMAs
@@ -313,6 +361,14 @@ sf_area = pypums.get_pums(
     puma=["07501", "07502", "07503"],
     year=2022,
 )
+print(sf_area["PUMA"].value_counts())
+```
+
+```
+07501    3215
+07502    2987
+07503    2654
+Name: PUMA, dtype: int64
 ```
 
 ---
@@ -380,6 +436,16 @@ weighted_counts = (
 print(weighted_counts.head())
 ```
 
+```
+SCHL_label
+Bachelor's degree           1542318
+Regular high school diploma 1120845
+Master's degree              712340
+Some college, no degree      689412
+Associate's degree           385210
+Name: PWGTP, dtype: int64
+```
+
 ### Housing-level example
 
 For housing variables, include `WGTP` in the variables list and filter
@@ -394,6 +460,11 @@ housing = pypums.get_pums(
 # Keep one record per household
 hh = housing[housing["SPORDER"] == 1]
 weighted_median_rent = hh.loc[hh["RNTP"] > 0, "RNTP"].median()
+print(f"Median monthly rent (MA): ${weighted_median_rent:,.0f}")
+```
+
+```
+Median monthly rent (MA): $1,650
 ```
 
 ---

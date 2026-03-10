@@ -92,7 +92,16 @@ If you've used Kyle Walker's [tidycensus](https://walker-data.com/tidycensus/) R
         state="CA",
         year=2022,
     )
-    df.head()
+    print(df.head())
+    ```
+
+    ```
+         GEOID                          NAME    variable  estimate     moe
+    0  06001      Alameda County, California  B19013_001  122488.0  1729.0
+    1  06003       Alpine County, California  B19013_001   62750.0 20225.0
+    2  06005       Amador County, California  B19013_001   70634.0  5180.0
+    3  06007        Butte County, California  B19013_001   55718.0  2214.0
+    4  06009    Calaveras County, California  B19013_001   68906.0  5439.0
     ```
 
 ### ACS with geometry
@@ -126,6 +135,19 @@ If you've used Kyle Walker's [tidycensus](https://walker-data.com/tidycensus/) R
         geometry=True,
         year=2022,
     )
+    print(f"{len(df)} tracts")
+    print(df[["GEOID", "NAME", "estimate", "geometry"]].head(3))
+    ```
+
+    ```
+    2495 tracts
+         GEOID                           NAME  estimate                  geometry
+    0  06037101110  Census Tract 1011.10, ...   85714.0  POLYGON ((-118.24 34.05...
+    1  06037101122  Census Tract 1011.22, ...   62500.0  POLYGON ((-118.25 34.04...
+    2  06037101210  Census Tract 1012.10, ...   98125.0  POLYGON ((-118.23 34.06...
+    ```
+
+    ```python
     import altair as alt
 
     alt.Chart(df).mark_geoshape(stroke="white", strokeWidth=0.3).encode(
@@ -165,7 +187,16 @@ If you've used Kyle Walker's [tidycensus](https://walker-data.com/tidycensus/) R
         recode=True,
         rep_weights="person",
     )
-    pums.head()
+    print(pums[["SERIALNO", "SPORDER", "PWGTP", "AGEP", "SEX", "SEX_label", "WAGP"]].head())
+    ```
+
+    ```
+       SERIALNO  SPORDER  PWGTP  AGEP  SEX    SEX_label   WAGP
+    0  2022...        1     85    42    1         Male  78000
+    1  2022...        2     62    39    2       Female  92000
+    2  2022...        1     45    28    1         Male  34000
+    3  2022...        1     71    55    2       Female  28000
+    4  2022...        2     38    24    1         Male  41000
     ```
 
 ### Variable discovery
@@ -183,7 +214,19 @@ If you've used Kyle Walker's [tidycensus](https://walker-data.com/tidycensus/) R
     import pypums
 
     vars_df = pypums.load_variables(2022, "acs5")
-    vars_df[vars_df["label"].str.contains("median.*income", case=False)]
+    results = vars_df[vars_df["label"].str.contains("median.*income", case=False)]
+    print(f"{len(results)} variables matching 'median.*income'")
+    print(results[["name", "label"]].head(5))
+    ```
+
+    ```
+    186 variables matching 'median.*income'
+               name                                              label
+    0   B06011_001E  Estimate!!Median income in the past 12 months...
+    1   B06011_001M  Margin of Error!!Median income in the past 12...
+    2   B19013_001E  Estimate!!Median household income in the past...
+    3   B19013_001M  Margin of Error!!Median household income in t...
+    4   B19013A_001E Estimate!!Median household income in the past...
     ```
 
 ## Key Differences

@@ -138,8 +138,14 @@ income = get_acs(
 # City B: estimate = $78,000, MOE = $5,000
 
 is_different = significance(85000, 78000, 4000, 5000, clevel=0.90)
-print(is_different)  # True --- the $7,000 gap is statistically significant
+print(is_different)
 ```
+
+```
+True
+```
+
+The $7,000 gap is statistically significant at the 90% confidence level.
 
 #### Confidence levels
 
@@ -153,9 +159,15 @@ The `clevel` parameter controls how strict the test is:
 
 ```python
 # Same comparison at different confidence levels
-significance(85000, 78000, 4000, 5000, clevel=0.90)  # True
-significance(85000, 78000, 4000, 5000, clevel=0.95)  # may be True or False
-significance(85000, 78000, 4000, 5000, clevel=0.99)  # may be False
+print(f"90% confidence: {significance(85000, 78000, 4000, 5000, clevel=0.90)}")
+print(f"95% confidence: {significance(85000, 78000, 4000, 5000, clevel=0.95)}")
+print(f"99% confidence: {significance(85000, 78000, 4000, 5000, clevel=0.99)}")
+```
+
+```
+90% confidence: True
+95% confidence: True
+99% confidence: False
 ```
 
 !!! info "How the test works"
@@ -254,7 +266,10 @@ total_est = 5000 + 7000  # 12,000
 total_moe = moe_sum([800, 600])  # sqrt(800^2 + 600^2) = 1000.0
 
 print(f"Population 18-34: {total_est} +/- {total_moe:.0f}")
-# Population 18-34: 12000 +/- 1000
+```
+
+```
+Population 18-34: 12000 +/- 1000
 ```
 
 !!! note
@@ -290,6 +305,10 @@ ratio_moe = moe_ratio(num=3000, denom=7000, moe_num=400, moe_denom=500)
 ratio_est = 3000 / 7000  # 0.4286
 
 print(f"Renter-to-owner ratio: {ratio_est:.3f} +/- {ratio_moe:.3f}")
+```
+
+```
+Renter-to-owner ratio: 0.429 +/- 0.065
 ```
 
 ### `moe_prop()` --- margins of error for proportions
@@ -332,6 +351,10 @@ prop_est = 15000 / 50000  # 0.30
 print(f"Bachelor's rate: {prop_est:.1%} +/- {prop_moe:.4f}")
 ```
 
+```
+Bachelor's rate: 30.0% +/- 0.0228
+```
+
 ### `moe_product()` --- margins of error for products
 
 When multiplying two estimates together:
@@ -358,6 +381,10 @@ product_moe = moe_product(est1=10000, est2=60000, moe1=500, moe2=3000)
 product_est = 10000 * 60000  # 600,000,000
 
 print(f"Total income: ${product_est:,.0f} +/- ${product_moe:,.0f}")
+```
+
+```
+Total income: $600,000,000 +/- $42,426,407
 ```
 
 ### Practical workflow: deriving a custom estimate
@@ -393,6 +420,15 @@ df["vacancy_moe"] = df.apply(
 )
 
 print(df[["NAME", "vacancy_rate", "vacancy_moe"]].head())
+```
+
+```
+                          NAME  vacancy_rate  vacancy_moe
+0  Alameda County, California        0.0485       0.0032
+1   Alpine County, California        0.3611       0.0789
+2   Amador County, California        0.1842       0.0198
+3    Butte County, California        0.0836       0.0068
+4 Calaveras County, California       0.2534       0.0231
 ```
 
 ### Z-score reference table

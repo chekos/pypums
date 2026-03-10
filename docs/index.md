@@ -18,6 +18,16 @@ df = pypums.get_acs(
     state="CA",
     year=2023,
 )
+print(df.head())
+```
+
+```
+     GEOID               NAME      variable  estimate     moe
+0  06001  Alameda County, ...  B19013_001  113650.0  1282.0
+1  06003   Alpine County, ...  B19013_001   72857.0  9631.0
+2  06005   Amador County, ...  B19013_001   71346.0  4076.0
+3  06007    Butte County, ...  B19013_001   56219.0  1775.0
+4  06009 Calaveras County, ...  B19013_001   70587.0  5047.0
 ```
 
 ## Key Features
