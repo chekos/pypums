@@ -233,12 +233,17 @@ alt.Chart(county_geo).mark_geoshape(stroke="white", strokeWidth=0.5).encode(
 ).project("albersUsa").properties(width=500, height=400)
 ```
 
+!!! example "Interactive preview — state-level 2020 Census population"
+    The code above fetches county-level data for Illinois. The chart below
+    uses state-level data to demonstrate what `geometry=True` + Altair
+    looks like at a broader geographic scale.
+
 ```vegalite
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "width": 500,
   "height": 350,
-  "title": "2020 Census Population by State (sample data)",
+  "title": "2020 Census Population by State",
   "data": {
     "url": "https://cdn.jsdelivr.net/npm/vega-datasets@v2.7.0/data/us-10m.json",
     "format": {"type": "topojson", "feature": "states"}
@@ -257,6 +262,7 @@ alt.Chart(county_geo).mark_geoshape(stroke="white", strokeWidth=0.5).encode(
             {"id": 8, "value": 5773714, "name": "Colorado"},
             {"id": 9, "value": 3605944, "name": "Connecticut"},
             {"id": 10, "value": 989948, "name": "Delaware"},
+            {"id": 11, "value": 689545, "name": "District of Columbia"},
             {"id": 12, "value": 21538187, "name": "Florida"},
             {"id": 13, "value": 10711908, "name": "Georgia"},
             {"id": 15, "value": 1455271, "name": "Hawaii"},

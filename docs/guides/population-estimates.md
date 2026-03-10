@@ -402,12 +402,17 @@ alt.Chart(pop_geo).mark_geoshape(stroke="white", strokeWidth=0.5).encode(
 ).project("albersUsa").properties(width=500, height=400)
 ```
 
+!!! example "Interactive preview — state-level population estimates"
+    The code above fetches county-level data for Washington state. The chart
+    below uses state-level data to show what `geometry=True` + Altair
+    looks like at a national scale.
+
 ```vegalite
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "width": 500,
   "height": 350,
-  "title": "2023 Population Estimates by State (sample data)",
+  "title": "2023 Population Estimates by State",
   "data": {
     "url": "https://cdn.jsdelivr.net/npm/vega-datasets@v2.7.0/data/us-10m.json",
     "format": {"type": "topojson", "feature": "states"}
@@ -426,6 +431,7 @@ alt.Chart(pop_geo).mark_geoshape(stroke="white", strokeWidth=0.5).encode(
             {"id": 8, "value": 5877610, "name": "Colorado"},
             {"id": 9, "value": 3617176, "name": "Connecticut"},
             {"id": 10, "value": 1017551, "name": "Delaware"},
+            {"id": 11, "value": 678972, "name": "District of Columbia"},
             {"id": 12, "value": 22610726, "name": "Florida"},
             {"id": 13, "value": 11029227, "name": "Georgia"},
             {"id": 15, "value": 1435138, "name": "Hawaii"},

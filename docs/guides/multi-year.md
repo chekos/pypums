@@ -74,6 +74,8 @@ alt.Chart(trend).mark_line(point=True).encode(
 ).properties(title="Population Trends, 2018-2022", width=500, height=300)
 ```
 
+!!! example "Interactive preview"
+
 ```vegalite
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",

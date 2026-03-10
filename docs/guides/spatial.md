@@ -231,6 +231,8 @@ alt.Chart(gdf).mark_geoshape(stroke="white", strokeWidth=0.3).encode(
 ).project("albersUsa").properties(width=600, height=400)
 ```
 
+!!! example "Interactive preview — state-level median household income"
+
 ```vegalite
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",

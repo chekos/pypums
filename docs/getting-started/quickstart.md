@@ -106,12 +106,17 @@ alt.Chart(la_poverty).mark_geoshape(
 
 The resulting map shows poverty counts by Census tract across Los Angeles County, with darker shades indicating higher counts.
 
+!!! example "Interactive preview — state-level choropleth with ACS population data"
+    The chart below shows a state-level choropleth to demonstrate what
+    `geometry=True` output looks like when plotted with Altair. Your actual
+    tract-level map will have much finer geographic detail.
+
 ```vegalite
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "width": 600,
   "height": 400,
-  "title": "Population by State (sample choropleth)",
+  "title": "ACS Total Population by State",
   "data": {
     "url": "https://cdn.jsdelivr.net/npm/vega-datasets@v2.7.0/data/us-10m.json",
     "format": {"type": "topojson", "feature": "states"}
@@ -130,6 +135,7 @@ The resulting map shows poverty counts by Census tract across Los Angeles County
             {"id": 8, "estimate": 5839926, "name": "Colorado"},
             {"id": 9, "estimate": 3626205, "name": "Connecticut"},
             {"id": 10, "estimate": 1018396, "name": "Delaware"},
+            {"id": 11, "estimate": 671803, "name": "District of Columbia"},
             {"id": 12, "estimate": 22244823, "name": "Florida"},
             {"id": 13, "estimate": 10912876, "name": "Georgia"},
             {"id": 15, "estimate": 1440196, "name": "Hawaii"},
