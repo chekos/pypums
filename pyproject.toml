@@ -33,7 +33,7 @@ pypums = "pypums.cli:cli"
 spatial = ["geopandas>=0.12"]
 test = ["pytest"]
 docs = [
-    "mkdocs",
+    "mkdocs>=1.6,<2",
     "mkdocs-material",
     "mkdocstrings[python]",
     "mkdocs-autorefs",

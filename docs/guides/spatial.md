@@ -42,12 +42,12 @@ corresponding TIGER/Line shapefile, merge it with the tabular data on the
     ```
 
     ```
-       GEOID                           NAME     variable  estimate  moe                                           geometry
-    0  06001     Alameda County, California  B01001_001   1682353  NaN  MULTIPOLYGON (((-122.34 37.79, -122.33 37.79,...
-    1  06003      Alpine County, California  B01001_001      1235  143  POLYGON ((-120.07 38.70, -120.07 38.70, -120....
-    2  06005      Amador County, California  B01001_001     41259  NaN  POLYGON ((-121.03 38.71, -121.02 38.71, -121....
-    3  06007       Butte County, California  B01001_001    211632  NaN  POLYGON ((-122.05 39.82, -122.05 39.82, -122....
-    4  06009  Calaveras County, California  B01001_001     46221  NaN  POLYGON ((-120.99 38.23, -120.98 38.23, -120....
+       GEOID                                           geometry                          NAME    variable  estimate        moe
+    0  06001  POLYGON ((-122.34225 37.80556, -122.33385 37.8...    Alameda County, California  B01001_001   1651949 -555555555
+    1  06003  POLYGON ((-120.07239 38.70277, -120.06762 38.7...     Alpine County, California  B01001_001      1695        234
+    2  06005  POLYGON ((-121.02741 38.50354, -121.02747 38.5...     Amador County, California  B01001_001     41029 -555555555
+    3  06007  POLYGON ((-122.06874 39.84222, -122.06694 39.8...      Butte County, California  B01001_001    209470 -555555555
+    4  06009  POLYGON ((-120.9936 38.22558, -120.99161 38.22...  Calaveras County, California  B01001_001     45995 -555555555
     ```
 
     !!! tip
@@ -211,7 +211,7 @@ corresponding TIGER/Line shapefile, merge it with the tabular data on the
           "field": "value",
           "type": "quantitative",
           "scale": {"scheme": "blues"},
-          "legend": {"title": "Population", "format": ","}
+          "legend": {"title": "Population", "format": "~s"}
         },
         "tooltip": [
           {"field": "name", "type": "nominal", "title": "State"},
@@ -352,12 +352,12 @@ print(df.head())
 ```
 
 ```
-       GEOID                                         NAME     variable  estimate      moe
-0  17031010100  Census Tract 101, Cook County, Illinois  B19013_001     62344    12038
-1  17031010201  Census Tract 102.01, Cook County, Illinois  B19013_001     78250    11587
-2  17031010202  Census Tract 102.02, Cook County, Illinois  B19013_001     46985    10341
-3  17031010300  Census Tract 103, Cook County, Illinois  B19013_001     38750     8204
-4  17031010400  Census Tract 104, Cook County, Illinois  B19013_001     31563     6427
+         GEOID                                        NAME    variable  estimate    moe
+0  17031010100     Census Tract 101; Cook County; Illinois  B19013_001     69460  21834
+1  17031010201  Census Tract 102.01; Cook County; Illinois  B19013_001     49639  24247
+2  17031010202  Census Tract 102.02; Cook County; Illinois  B19013_001     55119  15618
+3  17031010300     Census Tract 103; Cook County; Illinois  B19013_001     65871  14559
+4  17031010400     Census Tract 104; Cook County; Illinois  B19013_001     49017   8306
 ```
 
 ```python
@@ -376,16 +376,23 @@ print(gdf.head())
 
 ```
 <class 'geopandas.geodataframe.GeoDataFrame'>
-['GEOID', 'NAME', 'variable', 'estimate', 'moe', 'geometry']
+['GEOID', 'geometry', 'NAME', 'variable', 'estimate', 'moe']
 ```
 
 ```
-       GEOID                                              NAME     variable  estimate      moe                                           geometry
-0  17031010100  Census Tract 101, Cook County, Illinois  B19013_001     62344    12038  POLYGON ((-87.63 41.90, -87.63 41.90, -87.62...
-1  17031010201  Census Tract 102.01, Cook County, Illinois  B19013_001     78250    11587  POLYGON ((-87.63 41.91, -87.63 41.91, -87.62...
-2  17031010202  Census Tract 102.02, Cook County, Illinois  B19013_001     46985    10341  POLYGON ((-87.64 41.91, -87.64 41.91, -87.63...
-3  17031010300  Census Tract 103, Cook County, Illinois  B19013_001     38750     8204  POLYGON ((-87.64 41.92, -87.64 41.92, -87.63...
-4  17031010400  Census Tract 104, Cook County, Illinois  B19013_001     31563     6427  POLYGON ((-87.65 41.92, -87.65 41.91, -87.64...
+         GEOID                                           geometry                                        NAME  \
+0  17031010100  POLYGON ((-87.6772 42.02294, -87.67188 42.0229...     Census Tract 101; Cook County; Illinois
+1  17031010201  POLYGON ((-87.68465 42.01948, -87.68045 42.019...  Census Tract 102.01; Cook County; Illinois
+2  17031010202  POLYGON ((-87.67686 42.01941, -87.67331 42.019...  Census Tract 102.02; Cook County; Illinois
+3  17031010300  POLYGON ((-87.67133 42.01937, -87.6695 42.0193...     Census Tract 103; Cook County; Illinois
+4  17031010400  POLYGON ((-87.66345 42.01283, -87.66133 42.012...     Census Tract 104; Cook County; Illinois
+
+     variable  estimate    moe
+0  B19013_001     69460  21834
+1  B19013_001     49639  24247
+2  B19013_001     55119  15618
+3  B19013_001     65871  14559
+4  B19013_001     49017   8306
 ```
 
 !!! tip "Before and after"
@@ -507,7 +514,7 @@ chart
         "color": {
           "field": "estimate",
           "type": "quantitative",
-          "legend": {"title": "Median Household Income"}
+          "legend": {"title": "Median Household Income", "format": "$~s"}
         },
         "tooltip": [
           {"field": "name", "type": "nominal", "title": "State"},
@@ -614,7 +621,7 @@ chart
           "field": "estimate",
           "type": "quantitative",
           "scale": {"scheme": "yellowgreenblue"},
-          "legend": {"title": "Median Income ($)", "format": "$,"}
+          "legend": {"title": "Median Income ($)", "format": "$~s"}
         },
         "tooltip": [
           {"field": "name", "type": "nominal", "title": "State"},
@@ -693,8 +700,8 @@ import pypums
 gdf = pypums.get_acs(
     geography="tract",
     variables=["B03002_003", "B03002_004", "B03002_006", "B03002_012"],
-    state="IL",
-    county="031",
+    state="CA",
+    county="001",
     year=2023,
     output="wide",
     geometry=True,
@@ -703,16 +710,23 @@ print(gdf.head())
 ```
 
 ```
-       GEOID                                              NAME  B03002_003E  B03002_003M  B03002_004E  B03002_004M  B03002_006E  B03002_006M  B03002_012E  B03002_012M                                           geometry
-0  17031010100  Census Tract 101, Cook County, Illinois         2841          312          152           78          125           59          401          148  POLYGON ((-87.63 41.90, -87.63 41.90, -87.62...
-1  17031010201  Census Tract 102.01, Cook County, Illinois      3512          398           98           56          210           84          285          121  POLYGON ((-87.63 41.91, -87.63 41.91, -87.62...
-2  17031010202  Census Tract 102.02, Cook County, Illinois      1245          215          412          132           89           47          892          204  POLYGON ((-87.64 41.91, -87.64 41.91, -87.63...
-3  17031010300  Census Tract 103, Cook County, Illinois          523          148         2105          301           45           28         1230          189  POLYGON ((-87.64 41.92, -87.64 41.92, -87.63...
-4  17031010400  Census Tract 104, Cook County, Illinois          312          102         2890          345           31           22          985          167  POLYGON ((-87.65 41.92, -87.65 41.91, -87.64...
+         GEOID                                           geometry                                           NAME  \
+0  06001400100  POLYGON ((-122.24691 37.88536, -122.24197 37.8...  Census Tract 4001; Alameda County; California
+1  06001400200  POLYGON ((-122.25742 37.8431, -122.2562 37.844...  Census Tract 4002; Alameda County; California
+2  06001400300  POLYGON ((-122.26534 37.83846, -122.26459 37.8...  Census Tract 4003; Alameda County; California
+3  06001400400  POLYGON ((-122.2618 37.84179, -122.2613 37.845...  Census Tract 4004; Alameda County; California
+4  06001400500  POLYGON ((-122.26941 37.84811, -122.26896 37.8...  Census Tract 4005; Alameda County; California
+
+   B03002_003E  B03002_004E  B03002_006E  B03002_012E  B03002_003M  B03002_004M  B03002_006M  B03002_012M
+0         2107          137          462          200          428          113          106          107
+1         1408           43          256          196          195           52          115           95
+2         3365          524          609          497          471          137          197          305
+3         2645          433          422          604          566          258          106          280
+4         1696          911          306          557          389          636          113          236
 ```
 
 ```python
-# Convert to dots (1 dot = 100 people).
+# Convert to dots (1 dot = 500 people).
 dots = as_dot_density(
     gdf,
     values={
@@ -721,24 +735,24 @@ dots = as_dot_density(
         "B03002_006E": "Asian",
         "B03002_012E": "Hispanic",
     },
-    dots_per_value=100,
+    dots_per_value=500,
     seed=42,
 )
 print(dots.head(10))
 ```
 
 ```
-                     geometry    value
-0  POINT (-87.6312 41.9045)    White
-1  POINT (-87.6287 41.9023)    White
-2  POINT (-87.6298 41.9051)    White
-3  POINT (-87.6305 41.9038)    White
-4  POINT (-87.6291 41.9029)    White
-5  POINT (-87.6245 41.9061)    Black
-6  POINT (-87.6267 41.9044)    Black
-7  POINT (-87.6341 41.9073)    Asian
-8  POINT (-87.6278 41.9055)  Hispanic
-9  POINT (-87.6319 41.9082)  Hispanic
+                      geometry  value
+0  POINT (-122.22019 37.86309)  White
+1  POINT (-122.24366 37.86566)  White
+2    POINT (-122.21322 37.858)  White
+3  POINT (-122.22063 37.86959)  White
+4  POINT (-122.24579 37.84953)  White
+5  POINT (-122.25481 37.84437)  White
+6  POINT (-122.25605 37.83734)  White
+7  POINT (-122.24739 37.84439)  White
+8  POINT (-122.24799 37.84545)  White
+9  POINT (-122.25714 37.84095)  White
 ```
 
 ```python
@@ -761,156 +775,79 @@ chart = alt.Chart(dots).mark_circle(size=1, opacity=0.6).encode(
         ),
     ),
     tooltip=["value:N"],
-).project("albersUsa").properties(width=600, height=600)
+).project("mercator").properties(width=600, height=600)
 chart
 ```
 
-!!! example "Interactive preview — dot density map of Cook County, IL (sample data)"
+!!! example "Interactive preview — dot density map of Alameda County, CA (sample data)"
 
-    Each dot represents 100 people. The spatial distribution of dots reveals
+    Each dot represents 500 people. The spatial distribution of dots reveals
     neighborhood-level patterns of racial and ethnic composition.
 
     ```vegalite
     {
       "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-      "width": 500,
-      "height": 550,
-      "title": "Racial & Ethnic Dot Density — Cook County, IL (sample)",
-      "data": {
-        "values": [
-          {"lon": -87.631, "lat": 41.904, "value": "White"},
-          {"lon": -87.629, "lat": 41.902, "value": "White"},
-          {"lon": -87.633, "lat": 41.910, "value": "White"},
-          {"lon": -87.637, "lat": 41.913, "value": "White"},
-          {"lon": -87.641, "lat": 41.918, "value": "White"},
-          {"lon": -87.648, "lat": 41.923, "value": "White"},
-          {"lon": -87.655, "lat": 41.931, "value": "White"},
-          {"lon": -87.662, "lat": 41.939, "value": "White"},
-          {"lon": -87.668, "lat": 41.946, "value": "White"},
-          {"lon": -87.671, "lat": 41.951, "value": "White"},
-          {"lon": -87.675, "lat": 41.958, "value": "White"},
-          {"lon": -87.680, "lat": 41.965, "value": "White"},
-          {"lon": -87.686, "lat": 41.972, "value": "White"},
-          {"lon": -87.690, "lat": 41.978, "value": "White"},
-          {"lon": -87.695, "lat": 41.985, "value": "White"},
-          {"lon": -87.699, "lat": 41.992, "value": "White"},
-          {"lon": -87.703, "lat": 41.997, "value": "White"},
-          {"lon": -87.710, "lat": 42.005, "value": "White"},
-          {"lon": -87.715, "lat": 42.012, "value": "White"},
-          {"lon": -87.720, "lat": 42.018, "value": "White"},
-          {"lon": -87.726, "lat": 42.025, "value": "White"},
-          {"lon": -87.730, "lat": 42.033, "value": "White"},
-          {"lon": -87.736, "lat": 42.041, "value": "White"},
-          {"lon": -87.742, "lat": 42.048, "value": "White"},
-          {"lon": -87.748, "lat": 42.055, "value": "White"},
-          {"lon": -87.755, "lat": 42.063, "value": "White"},
-          {"lon": -87.760, "lat": 42.070, "value": "White"},
-          {"lon": -87.766, "lat": 42.078, "value": "White"},
-          {"lon": -87.772, "lat": 42.085, "value": "White"},
-          {"lon": -87.779, "lat": 42.092, "value": "White"},
-          {"lon": -87.623, "lat": 41.780, "value": "Black"},
-          {"lon": -87.618, "lat": 41.773, "value": "Black"},
-          {"lon": -87.630, "lat": 41.768, "value": "Black"},
-          {"lon": -87.615, "lat": 41.762, "value": "Black"},
-          {"lon": -87.625, "lat": 41.755, "value": "Black"},
-          {"lon": -87.635, "lat": 41.748, "value": "Black"},
-          {"lon": -87.620, "lat": 41.741, "value": "Black"},
-          {"lon": -87.612, "lat": 41.735, "value": "Black"},
-          {"lon": -87.628, "lat": 41.728, "value": "Black"},
-          {"lon": -87.640, "lat": 41.721, "value": "Black"},
-          {"lon": -87.605, "lat": 41.715, "value": "Black"},
-          {"lon": -87.622, "lat": 41.708, "value": "Black"},
-          {"lon": -87.638, "lat": 41.698, "value": "Black"},
-          {"lon": -87.610, "lat": 41.691, "value": "Black"},
-          {"lon": -87.625, "lat": 41.685, "value": "Black"},
-          {"lon": -87.632, "lat": 41.795, "value": "Black"},
-          {"lon": -87.645, "lat": 41.790, "value": "Black"},
-          {"lon": -87.650, "lat": 41.783, "value": "Black"},
-          {"lon": -87.658, "lat": 41.776, "value": "Black"},
-          {"lon": -87.660, "lat": 41.770, "value": "Black"},
-          {"lon": -87.655, "lat": 41.765, "value": "Black"},
-          {"lon": -87.649, "lat": 41.758, "value": "Black"},
-          {"lon": -87.643, "lat": 41.752, "value": "Black"},
-          {"lon": -87.637, "lat": 41.745, "value": "Black"},
-          {"lon": -87.665, "lat": 41.738, "value": "Black"},
-          {"lon": -87.670, "lat": 41.730, "value": "Black"},
-          {"lon": -87.675, "lat": 41.722, "value": "Black"},
-          {"lon": -87.680, "lat": 41.715, "value": "Black"},
-          {"lon": -87.685, "lat": 41.708, "value": "Black"},
-          {"lon": -87.690, "lat": 41.700, "value": "Black"},
-          {"lon": -87.635, "lat": 41.852, "value": "Asian"},
-          {"lon": -87.632, "lat": 41.849, "value": "Asian"},
-          {"lon": -87.630, "lat": 41.846, "value": "Asian"},
-          {"lon": -87.628, "lat": 41.843, "value": "Asian"},
-          {"lon": -87.695, "lat": 41.998, "value": "Asian"},
-          {"lon": -87.700, "lat": 42.003, "value": "Asian"},
-          {"lon": -87.705, "lat": 42.008, "value": "Asian"},
-          {"lon": -87.710, "lat": 42.013, "value": "Asian"},
-          {"lon": -87.715, "lat": 42.018, "value": "Asian"},
-          {"lon": -87.720, "lat": 42.023, "value": "Asian"},
-          {"lon": -87.725, "lat": 42.028, "value": "Asian"},
-          {"lon": -87.633, "lat": 41.870, "value": "Asian"},
-          {"lon": -87.637, "lat": 41.875, "value": "Asian"},
-          {"lon": -87.641, "lat": 41.880, "value": "Asian"},
-          {"lon": -87.645, "lat": 41.885, "value": "Asian"},
-          {"lon": -87.680, "lat": 41.975, "value": "Asian"},
-          {"lon": -87.683, "lat": 41.980, "value": "Asian"},
-          {"lon": -87.686, "lat": 41.985, "value": "Asian"},
-          {"lon": -87.689, "lat": 41.990, "value": "Asian"},
-          {"lon": -87.692, "lat": 41.995, "value": "Asian"},
-          {"lon": -87.660, "lat": 41.950, "value": "Asian"},
-          {"lon": -87.720, "lat": 41.860, "value": "Hispanic"},
-          {"lon": -87.725, "lat": 41.855, "value": "Hispanic"},
-          {"lon": -87.730, "lat": 41.850, "value": "Hispanic"},
-          {"lon": -87.735, "lat": 41.845, "value": "Hispanic"},
-          {"lon": -87.715, "lat": 41.840, "value": "Hispanic"},
-          {"lon": -87.710, "lat": 41.835, "value": "Hispanic"},
-          {"lon": -87.705, "lat": 41.830, "value": "Hispanic"},
-          {"lon": -87.700, "lat": 41.825, "value": "Hispanic"},
-          {"lon": -87.695, "lat": 41.820, "value": "Hispanic"},
-          {"lon": -87.690, "lat": 41.815, "value": "Hispanic"},
-          {"lon": -87.685, "lat": 41.875, "value": "Hispanic"},
-          {"lon": -87.680, "lat": 41.870, "value": "Hispanic"},
-          {"lon": -87.675, "lat": 41.865, "value": "Hispanic"},
-          {"lon": -87.670, "lat": 41.860, "value": "Hispanic"},
-          {"lon": -87.665, "lat": 41.855, "value": "Hispanic"},
-          {"lon": -87.660, "lat": 41.850, "value": "Hispanic"},
-          {"lon": -87.740, "lat": 41.870, "value": "Hispanic"},
-          {"lon": -87.745, "lat": 41.865, "value": "Hispanic"},
-          {"lon": -87.750, "lat": 41.860, "value": "Hispanic"},
-          {"lon": -87.755, "lat": 41.855, "value": "Hispanic"},
-          {"lon": -87.758, "lat": 41.880, "value": "Hispanic"},
-          {"lon": -87.762, "lat": 41.885, "value": "Hispanic"},
-          {"lon": -87.765, "lat": 41.890, "value": "Hispanic"},
-          {"lon": -87.768, "lat": 41.895, "value": "Hispanic"},
-          {"lon": -87.770, "lat": 41.900, "value": "Hispanic"},
-          {"lon": -87.773, "lat": 41.905, "value": "Hispanic"},
-          {"lon": -87.776, "lat": 41.910, "value": "Hispanic"},
-          {"lon": -87.778, "lat": 41.915, "value": "Hispanic"},
-          {"lon": -87.780, "lat": 41.920, "value": "Hispanic"},
-          {"lon": -87.783, "lat": 41.925, "value": "Hispanic"}
-        ]
-      },
-      "mark": {"type": "circle", "size": 8, "opacity": 0.7},
-      "encoding": {
-        "longitude": {"field": "lon", "type": "quantitative"},
-        "latitude": {"field": "lat", "type": "quantitative"},
-        "color": {
-          "field": "value",
-          "type": "nominal",
-          "scale": {
-            "domain": ["White", "Black", "Asian", "Hispanic"],
-            "range": ["#1f77b4", "#2ca02c", "#d62728", "#ff7f0e"]
+      "layer": [
+        {
+          "data": {
+            "url": "../../assets/alameda-boundary.json",
+            "format": {"type": "json"}
           },
-          "legend": {"title": "Group"}
+          "mark": {
+            "type": "geoshape",
+            "fill": "#e8e8e8",
+            "stroke": "#999",
+            "strokeWidth": 1
+          }
         },
-        "tooltip": [{"field": "value", "type": "nominal", "title": "Group"}]
-      },
+        {
+          "data": {
+            "url": "../../assets/alameda-dots.json"
+          },
+          "mark": {
+            "type": "circle",
+            "size": 8,
+            "opacity": 0.6
+          },
+          "encoding": {
+            "longitude": {
+              "field": "lon",
+              "type": "quantitative"
+            },
+            "latitude": {
+              "field": "lat",
+              "type": "quantitative"
+            },
+            "color": {
+              "field": "value",
+              "type": "nominal",
+              "scale": {
+                "domain": [
+                  "White",
+                  "Black",
+                  "Asian",
+                  "Hispanic"
+                ],
+                "range": [
+                  "#1f77b4",
+                  "#2ca02c",
+                  "#d62728",
+                  "#ff7f0e"
+                ]
+              },
+              "legend": {
+                "title": "Race/Ethnicity"
+              }
+            }
+          }
+        }
+      ],
       "projection": {
-        "type": "mercator",
-        "scale": 30000,
-        "center": [-87.7, 41.85]
-      }
+        "type": "mercator"
+      },
+      "width": 500,
+      "height": 500,
+      "title": "Racial & Ethnic Dot Density \u2014 Alameda County, CA (1 dot = 500 people)"
     }
     ```
 
