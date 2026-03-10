@@ -1320,7 +1320,7 @@ requires-dist = [
     { name = "altair", marker = "extra == 'docs'" },
     { name = "geopandas", marker = "extra == 'spatial'", specifier = ">=0.12" },
     { name = "httpx", specifier = ">=0.22.0" },
-    { name = "mkdocs", marker = "extra == 'docs'" },
+    { name = "mkdocs", marker = "extra == 'docs'", specifier = ">=1.6,<2" },
     { name = "mkdocs-autorefs", marker = "extra == 'docs'" },
     { name = "mkdocs-charts-plugin", marker = "extra == 'docs'" },
     { name = "mkdocs-material", marker = "extra == 'docs'" },
