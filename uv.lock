@@ -1343,7 +1343,7 @@ requires-dist = [
     { name = "mkdocstrings", extras = ["python"], marker = "extra == 'docs'" },
     { name = "pandas", specifier = ">=1.1.0" },
     { name = "pyarrow", specifier = ">=10.0.0" },
-    { name = "pygris", marker = "extra == 'spatial'", specifier = ">=0.1.7" },
+    { name = "pygris", marker = "extra == 'spatial'", specifier = ">=0.1.7,<1" },
     { name = "pymdown-extensions", marker = "extra == 'docs'" },
     { name = "pytest", marker = "extra == 'test'" },
     { name = "rich", specifier = ">=11.0.0" },

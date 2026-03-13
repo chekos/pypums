@@ -22,34 +22,40 @@ def _pygris_func(name: str) -> Callable[..., Any]:
     """Lazily import a pygris function by name."""
     import pygris
 
-    return getattr(pygris, name)
+    func = getattr(pygris, name, None)
+    if func is None:
+        raise ImportError(
+            f"pygris does not expose '{name}'. "
+            "Upgrade with: pip install 'pypums[spatial]'"
+        )
+    return func
 
 
-# Mapping of pypums geography names to (pygris_function_name, accepts_state).
-_GEO_TO_PYGRIS: dict[str, tuple[str, bool]] = {
-    "state": ("states", False),
-    "county": ("counties", True),
-    "tract": ("tracts", True),
-    "block group": ("block_groups", True),
-    "place": ("places", True),
-    "congressional district": ("congressional_districts", False),
-    "zcta": ("zctas", False),
-    "puma": ("pumas", True),
-    "cbsa": ("core_based_statistical_areas", False),
-    "csa": ("combined_statistical_areas", False),
+# Mapping: geography name -> (pygris_function, accepts_state, accepts_resolution).
+_GEO_TO_PYGRIS: dict[str, tuple[str, bool, bool]] = {
+    "state": ("states", False, True),
+    "county": ("counties", True, True),
+    "tract": ("tracts", True, False),
+    "block group": ("block_groups", True, False),
+    "place": ("places", True, False),
+    "congressional district": ("congressional_districts", False, True),
+    "zcta": ("zctas", False, False),
+    "puma": ("pumas", True, False),
+    "cbsa": ("core_based_statistical_areas", False, True),
+    "csa": ("combined_statistical_areas", False, True),
 }
 
 
 def _normalize_geoid(gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """Ensure the GeoDataFrame has a ``GEOID`` column.
 
-    pygris may return ``GEOID20``, ``GEOID10``, or ``AFFGEOID`` depending
-    on the geography and vintage year.  This normalizes to ``GEOID``.
+    pygris may return ``GEOID20`` or ``GEOID10`` depending on the geography
+    and vintage year.  This normalizes to ``GEOID``.
     """
     if "GEOID" in gdf.columns:
         return gdf
 
-    for candidate in ("GEOID20", "GEOID10", "AFFGEOID"):
+    for candidate in ("GEOID20", "GEOID10"):
         if candidate in gdf.columns:
             return gdf.rename(columns={candidate: "GEOID"})
 
@@ -66,6 +72,7 @@ def _fetch_tiger_shapes(
     state: str | None = None,
     year: int = 2023,
     resolution: str = "500k",
+    cache: bool = True,
 ) -> gpd.GeoDataFrame:
     """Download cartographic boundary shapefiles via pygris.
 
@@ -79,7 +86,12 @@ def _fetch_tiger_shapes(
     year
         Data year for the shapefiles.
     resolution
-        Resolution: ``"500k"``, ``"5m"``, or ``"20m"``.
+        Resolution: ``"500k"``, ``"5m"``, or ``"20m"``.  Only applies to
+        geographies that support multiple resolutions (state, county,
+        congressional district, cbsa, csa).
+    cache
+        If True (default), cache downloaded shapefiles locally so
+        subsequent calls are fast.
 
     Returns
     -------
@@ -92,15 +104,16 @@ def _fetch_tiger_shapes(
     if entry is None:
         raise ValueError(f"No shapefile mapping for geography: {geography!r}")
 
-    func_name, accepts_state = entry
+    func_name, accepts_state, accepts_resolution = entry
     func = _pygris_func(func_name)
 
     kwargs: dict[str, Any] = {
         "cb": True,
-        "resolution": resolution,
         "year": year,
-        "cache": True,
+        "cache": cache,
     }
+    if accepts_resolution:
+        kwargs["resolution"] = resolution
     if accepts_state and state is not None:
         kwargs["state"] = state
 
@@ -123,6 +136,7 @@ def attach_geometry(
     state: str | None = None,
     year: int = 2023,
     resolution: str = "500k",
+    cache: bool = True,
 ) -> gpd.GeoDataFrame:
     """Fetch shapes via pygris and merge with Census tabular data.
 
@@ -138,6 +152,8 @@ def attach_geometry(
         Data year.
     resolution
         Shapefile resolution.
+    cache
+        If True (default), cache downloaded shapefiles locally.
 
     Returns
     -------
@@ -151,6 +167,7 @@ def attach_geometry(
         state=state,
         year=year,
         resolution=resolution,
+        cache=cache,
     )
 
     if "GEOID" not in df.columns:
