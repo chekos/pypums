@@ -1,5 +1,51 @@
 # Changelog
 
+## 0.3.1 (2026)
+
+### Changed
+
+- **Shapefile downloads now use pygris** — The internal `_fetch_tiger_shapes()`
+  function now delegates to [pygris](https://github.com/walkerke/pygris) instead
+  of manually constructing Census Bureau URLs. The public API (`geometry=True`,
+  `attach_geometry()`) is unchanged.
+
+### Added
+
+- **Automatic shapefile caching** — Downloaded shapefiles are cached locally via
+  pygris (`~/Library/Caches/pygris/` on macOS, `~/.cache/pygris/` on Linux).
+  Repeated `geometry=True` calls no longer re-download files.
+- **`cache` parameter** on `attach_geometry()` — Pass `cache=False` to force a
+  fresh download.
+- **Clear error for missing `state`** — Sub-state geographies (`tract`,
+  `block group`, `place`, `puma`) now raise a `ValueError` with a helpful message
+  when `state` is omitted.
+
+### Fixed
+
+- **ZCTA and PUMA geometry for pre-2020 years** — Previously broken due to
+  hardcoded 2020 vintage suffixes. pygris handles vintage selection correctly.
+- **Congressional district year mapping** — Previously used a hardcoded formula.
+  pygris handles this internally.
+
+### Improved
+
+- **Broader year range** — Geometry support extended from ~2014+ to ~1990+ for
+  most geography levels.
+- **Faster county downloads** — County-level queries now pass `state` through to
+  pygris when provided, downloading a smaller state-specific file.
+
+### Dependencies
+
+- Added `pygris>=0.1.7,<1` to the `spatial` optional dependency group.
+
+---
+
+## 0.3 (2026)
+
+Version bump. No user-facing changes from 0.2.
+
+---
+
 ## 0.2 (2026)
 
 Major release with complete Census API feature parity with R's tidycensus.
@@ -49,7 +95,7 @@ Major release with complete Census API feature parity with R's tidycensus.
     - `moe_product()` — MOE for derived products
     - `significance()` — Statistical significance testing
 
-- **Spatial support** — TIGER/Line cartographic boundary integration
+- **Spatial support** — Cartographic boundary integration
     - `attach_geometry()` — Merge shapefiles with Census data
     - `as_dot_density()` — Dot-density point conversion
     - `interpolate_pw()` — Population-weighted areal interpolation

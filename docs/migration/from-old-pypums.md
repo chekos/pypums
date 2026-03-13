@@ -79,7 +79,7 @@ pypums estimates state -s CA
 
 1. **No more large file downloads** — The Census API returns exactly the data you need, not gigabyte-sized CSV files
 2. **More data sources** — Access ACS summary tables, Decennial Census, population estimates, and migration flows in addition to PUMS microdata
-3. **Geometry support** — Get GeoDataFrames with TIGER/Line boundaries in a single call
+3. **Geometry support** — Get GeoDataFrames with cartographic boundary geometry in a single call (powered by pygris)
 4. **Feature parity with tidycensus** — If you can do it in R with tidycensus, you can now do it in Python with PyPUMS
 
 ## The ACS Class Still Works (For Now)

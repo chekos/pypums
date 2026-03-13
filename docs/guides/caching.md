@@ -114,8 +114,19 @@ structure:
     api/            # API response cache (get_acs, get_decennial, etc.)
     variables/      # Variable table cache (load_variables)
     pums_vars/      # PUMS variable dictionary cache
-    geography/      # Geometry / shapefile cache
 ```
+
+!!! note "Shapefile cache is managed by pygris"
+    When you use `geometry=True`, shapefiles are cached separately by
+    [pygris](https://github.com/walkerke/pygris) in its own directory:
+
+    - **macOS:** `~/Library/Caches/pygris/`
+    - **Linux:** `~/.cache/pygris/`
+    - **Windows:** `C:\Users\{user}\AppData\Local\pygris\Cache\`
+
+    To clear the shapefile cache, delete that directory manually.
+    `CensusCache.clear()` only clears the PyPUMS API response caches above,
+    not the pygris shapefile cache.
 
 You can inspect the cache directory at any time:
 

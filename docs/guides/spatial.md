@@ -328,8 +328,8 @@ The following geography levels have matching cartographic boundary shapefiles:
 
 !!! warning "Sub-state geographies require the `state` parameter"
     For `tract`, `block group`, `place`, and `puma`, the Census Bureau
-    publishes shapefiles per state. PyPUMS needs the `state` parameter to
-    know which file to download.
+    publishes shapefiles per state. PyPUMS will raise a `ValueError` if you
+    omit the `state` parameter for these geography levels.
 
 ---
 
@@ -412,6 +412,7 @@ attach_geometry(
     state=None,           # state FIPS or abbreviation
     year=2023,            # data year
     resolution="500k",    # "500k", "5m", or "20m"
+    cache=True,           # cache shapefiles locally (via pygris)
 ) -> GeoDataFrame
 ```
 
@@ -975,6 +976,10 @@ memory. A few tips for working with large datasets:
 **`ImportError: geopandas is required for spatial operations`**
 :   Install the spatial extra: `uv add "pypums[spatial]"`. This pulls in
     `geopandas`, `pygris`, `shapely`, and `pyproj`.
+
+**`ValueError: geography='tract' requires a state parameter`**
+:   Sub-state geographies (`tract`, `block group`, `place`, `puma`) need a
+    `state` argument.  Pass a FIPS code, abbreviation, or full name.
 
 **Geometry column is all `None`**
 :   The Census Bureau may not have shapefiles for the geography level and

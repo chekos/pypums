@@ -439,7 +439,7 @@ print(housing.head(3))
 
 ## Geometry support
 
-Set `geometry=True` to get a GeoDataFrame with TIGER/Line shapes:
+Set `geometry=True` to get a GeoDataFrame with cartographic boundary shapes:
 
 ```python
 pop_geo = pypums.get_estimates(

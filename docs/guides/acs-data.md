@@ -410,8 +410,8 @@ age_with_total["share"] = (
 
 ## Geometry support
 
-Set `geometry=True` to return a GeoDataFrame with TIGER/Line
-cartographic boundary shapes joined to your data.
+Set `geometry=True` to return a GeoDataFrame with cartographic boundary
+shapes joined to your data (downloaded via pygris, cached locally).
 
 ```python
 ca_counties_geo = pypums.get_acs(
@@ -759,4 +759,4 @@ See the [Finding Variables](variables.md) guide for full details.
 - [Finding Variables](variables.md) — Discovering variable codes with `load_variables()`
 - [Geography & FIPS](geography.md) — Understanding geography levels and FIPS code lookups
 - [Margins of Error](margins-of-error.md) — MOE propagation formulas and statistical testing
-- [Spatial Data](spatial.md) — Attaching TIGER/Line geometry to query results
+- [Spatial Data](spatial.md) — Attaching geometry to query results

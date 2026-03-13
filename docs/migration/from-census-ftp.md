@@ -73,7 +73,7 @@ df = pypums.get_pums(
 | **Survey design** | Manual SDR calculation | `to_survey()` helper |
 | **Caching** | Manage files yourself | Built-in with TTL |
 | **Summary tables** | Not available (PUMS only) | `get_acs()` for pre-tabulated data |
-| **Geometry** | Separate TIGER/Line download | `geometry=True` parameter |
+| **Geometry** | Separate TIGER/Line download | `geometry=True` (pygris handles the download) |
 
 ## When You Still Need FTP
 

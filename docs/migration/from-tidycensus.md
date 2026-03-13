@@ -236,7 +236,7 @@ If you've used Kyle Walker's [tidycensus](https://walker-data.com/tidycensus/) R
 | **Variable naming** | Can rename inline: `c(medincome = "B19013_001")` | Use standard variable codes; rename with pandas after |
 | **County parameter** | Accepts county names: `county = "Los Angeles"` | Uses FIPS codes: `county="037"`. Use `lookup_fips()` to find codes |
 | **Output type** | tibble / sf object | pandas DataFrame / GeoDataFrame |
-| **Spatial CRS** | Varies by function | Always NAD83 (EPSG:4269) from TIGER/Line |
+| **Spatial CRS** | Varies by function | Always NAD83 (EPSG:4269) via pygris |
 | **Plotting** | ggplot2 / tmap | Altair / geopandas |
 | **PUMS download** | Downloads CSV files from FTP | Queries Census API directly (faster for filtered requests) |
 | **Survey design** | Returns `tbl_svy` (srvyr package) | Returns `SurveyDesign` object with SDR methods |
@@ -246,6 +246,6 @@ If you've used Kyle Walker's [tidycensus](https://walker-data.com/tidycensus/) R
 - Same Census API under the hood
 - Same variable codes (B19013_001, P1_001N, etc.)
 - Same geography names ("state", "county", "tract", etc.)
-- Same TIGER/Line shapefiles for geometry
+- Same Census cartographic boundary files for geometry (via pygris)
 - Same MOE formulas from the ACS Handbook
 - Same replicate weight methodology (SDR with 80 weights)

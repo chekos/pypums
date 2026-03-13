@@ -30,7 +30,7 @@ If you plan to work with shapefiles, choropleths, or any geometry (the `geometry
 uv add "pypums[spatial]"
 ```
 
-This adds [`geopandas`](https://geopandas.org/) and its dependencies (`shapely`, `pyproj`, `fiona`), which enable PyPUMS to fetch TIGER/Line shapefiles and return `GeoDataFrame` objects.
+This adds [`geopandas`](https://geopandas.org/) and [`pygris`](https://github.com/walkerke/pygris) (plus their dependencies), enabling `geometry=True` to return `GeoDataFrame` objects. pygris handles shapefile downloads with automatic local caching — files are only downloaded once.
 
 ## Get a Census API key
 
@@ -124,7 +124,7 @@ Run this in your terminal to confirm PyPUMS is installed:
 python -c "import pypums; print(pypums.__version__)"
 ```
 
-You should see the version number printed (e.g. `0.2`).
+You should see the version number printed (e.g. `0.3`).
 
 To verify the CLI is available:
 
@@ -166,7 +166,7 @@ If this prints your key without raising an error, you are ready to go.
 
     If empty, follow the [configuration steps](#configure-your-api-key) above.
 
-??? question "I get `ImportError: geopandas` when using `geometry=True`"
+??? question "I get `ImportError: geopandas` or `ImportError: pygris` when using `geometry=True`"
     You need the spatial extras. Install them with:
 
     ```bash
