@@ -1096,6 +1096,20 @@ wheels = [
 ]
 
 [[package]]
+name = "pygris"
+version = "0.2.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "geopandas" },
+    { name = "platformdirs" },
+    { name = "requests" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/4b/c6/138d75978264144d11cfce5e03b1751c02d10ce5674a031d57f2573ac069/pygris-0.2.1.tar.gz", hash = "sha256:d0a6893b60a4f10c1fda1939228450a89b4c6f6c7a7afcbad441da24666d30d0", size = 52170, upload-time = "2025-12-27T15:06:35.281Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/64/8a/183cdcf7492b164d4e93abeb2c9af979c85e297aba5224395a023b793f4f/pygris-0.2.1-py3-none-any.whl", hash = "sha256:34645b3cc456f6b761326979f0bac98f780931e72956bb6c86e742895908beca", size = 58320, upload-time = "2025-12-27T15:06:36.444Z" },
+]
+
+[[package]]
 name = "pymdown-extensions"
 version = "10.21"
 source = { registry = "https://pypi.org/simple" }
@@ -1310,6 +1324,7 @@ docs = [
 ]
 spatial = [
     { name = "geopandas" },
+    { name = "pygris" },
 ]
 test = [
     { name = "pytest" },
@@ -1328,6 +1343,7 @@ requires-dist = [
     { name = "mkdocstrings", extras = ["python"], marker = "extra == 'docs'" },
     { name = "pandas", specifier = ">=1.1.0" },
     { name = "pyarrow", specifier = ">=10.0.0" },
+    { name = "pygris", marker = "extra == 'spatial'", specifier = ">=0.1.7" },
     { name = "pymdown-extensions", marker = "extra == 'docs'" },
     { name = "pytest", marker = "extra == 'test'" },
     { name = "rich", specifier = ">=11.0.0" },
