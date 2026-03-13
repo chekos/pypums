@@ -25,24 +25,24 @@ def _pygris_func(name: str) -> Callable[..., Any]:
     func = getattr(pygris, name, None)
     if func is None:
         raise ImportError(
-            f"pygris does not expose '{name}'. "
+            f"pygris>=0.1.7 is required but does not expose '{name}'. "
             "Upgrade with: pip install 'pypums[spatial]'"
         )
     return func
 
 
-# Mapping: geography name -> (pygris_function, accepts_state, accepts_resolution).
-_GEO_TO_PYGRIS: dict[str, tuple[str, bool, bool]] = {
-    "state": ("states", False, True),
-    "county": ("counties", True, True),
-    "tract": ("tracts", True, False),
-    "block group": ("block_groups", True, False),
-    "place": ("places", True, False),
-    "congressional district": ("congressional_districts", False, True),
-    "zcta": ("zctas", False, False),
-    "puma": ("pumas", True, False),
-    "cbsa": ("core_based_statistical_areas", False, True),
-    "csa": ("combined_statistical_areas", False, True),
+# geography -> (pygris_func, accepts_state, accepts_resolution, requires_state)
+_GEO_TO_PYGRIS: dict[str, tuple[str, bool, bool, bool]] = {
+    "state": ("states", False, True, False),
+    "county": ("counties", True, True, False),
+    "tract": ("tracts", True, False, True),
+    "block group": ("block_groups", True, False, True),
+    "place": ("places", True, False, True),
+    "congressional district": ("congressional_districts", False, True, False),
+    "zcta": ("zctas", False, False, False),
+    "puma": ("pumas", True, False, True),
+    "cbsa": ("core_based_statistical_areas", False, True, False),
+    "csa": ("combined_statistical_areas", False, True, False),
 }
 
 
@@ -104,7 +104,14 @@ def _fetch_tiger_shapes(
     if entry is None:
         raise ValueError(f"No shapefile mapping for geography: {geography!r}")
 
-    func_name, accepts_state, accepts_resolution = entry
+    func_name, accepts_state, accepts_resolution, requires_state = entry
+
+    if requires_state and state is None:
+        raise ValueError(
+            f"geography={geography!r} requires a state parameter. "
+            "Pass a state FIPS code, abbreviation, or name."
+        )
+
     func = _pygris_func(func_name)
 
     kwargs: dict[str, Any] = {
