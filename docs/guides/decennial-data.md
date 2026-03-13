@@ -228,7 +228,7 @@ print(hispanic_pop.head())
 
 ## Geometry support
 
-Set `geometry=True` to return a GeoDataFrame with TIGER/Line shapes:
+Set `geometry=True` to return a GeoDataFrame with cartographic boundary shapes:
 
 ```python
 county_geo = pypums.get_decennial(
@@ -605,5 +605,5 @@ print(pop_vars[["name", "label"]].head(5))
 
 - [API Reference](../reference/api.md) — Full `get_decennial()` function signature
 - [Geography & FIPS](geography.md) — Understanding geography levels and FIPS code lookups
-- [Spatial Data](spatial.md) — Attaching TIGER/Line geometry to query results
+- [Spatial Data](spatial.md) — Attaching geometry to query results
 - [ACS Data](acs-data.md) — For when you need margins of error and more recent annual data

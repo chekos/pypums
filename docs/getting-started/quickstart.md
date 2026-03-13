@@ -91,7 +91,7 @@ print(type(la_poverty))  # <class 'geopandas.geodataframe.GeoDataFrame'>
 2. **variables** -- `B17001_002` is the count of people whose income is below the poverty level (from table B17001).
 3. **state** -- Required for tract-level queries so the API knows which state to pull tracts from.
 4. **county** -- `"037"` is the FIPS code for Los Angeles County. Use `pypums.datasets.fips.lookup_fips(state="California", county="Los Angeles County")` to look up codes.
-5. **geometry** -- When `True`, PyPUMS fetches TIGER/Line cartographic boundary shapefiles and merges them with the data. The result is a `GeoDataFrame` with a `geometry` column.
+5. **geometry** -- When `True`, PyPUMS downloads cartographic boundary shapefiles (via pygris, cached locally) and merges them with the data. The result is a `GeoDataFrame` with a `geometry` column.
 
 Now plot it with [Altair](https://altair-viz.github.io/):
 
@@ -211,11 +211,13 @@ The resulting map shows poverty counts by Census tract across Los Angeles County
 }
 ```
 
-!!! info "What is a TIGER/Line shapefile?"
+!!! info "How does `geometry=True` work?"
     The Census Bureau publishes free geographic boundary files called
-    TIGER/Line shapefiles. When you set `geometry=True`, PyPUMS automatically
-    downloads the correct shapefile for your geography level and year, then
-    joins it to your data on the `GEOID` column.
+    TIGER/Line shapefiles. When you set `geometry=True`, PyPUMS uses
+    [pygris](https://github.com/walkerke/pygris) to download the correct
+    shapefile for your geography level and year, then joins it to your data
+    on the `GEOID` column. Files are cached locally so subsequent calls are
+    fast.
 
 **What to try next:** [Spatial Data & Mapping guide](../guides/spatial.md) for dot-density maps, population-weighted interpolation, and custom resolutions.
 

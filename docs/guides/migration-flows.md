@@ -21,7 +21,7 @@ df = get_flows(
     state=None,                   # state FIPS, abbreviation, or name
     county=None,                  # county FIPS code
     msa=None,                     # metropolitan statistical area code
-    geometry=False,               # attach TIGER/Line shapes
+    geometry=False,               # attach cartographic boundary shapes
     moe_level=90,                 # confidence level: 90, 95, or 99
     cache_table=False,            # cache API response on disk
     show_call=False,              # print the API URL
@@ -218,8 +218,8 @@ where z-scores are 1.645 (90%), 1.960 (95%), and 2.576 (99%).
 
 ## Geometry support
 
-Set `geometry=True` to attach TIGER/Line cartographic boundary shapes to
-the origin geography. This returns a GeoDataFrame you can plot directly:
+Set `geometry=True` to attach cartographic boundary shapes to the origin
+geography. This returns a GeoDataFrame you can plot directly:
 
 ```python
 ca_flows_geo = get_flows(

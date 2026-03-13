@@ -1,35 +1,69 @@
 """Spatial/geometry support for Census data.
 
-Provides TIGER/Line shapefile fetching and merging, plus
-dot-density conversion for thematic mapping.
+Provides shapefile fetching (via `pygris <https://github.com/walkerke/pygris>`_)
+and merging, plus dot-density conversion and areal interpolation for thematic
+mapping.
 
-Requires ``geopandas`` (optional dependency).
+Requires the ``spatial`` optional dependency group (``geopandas`` + ``pygris``).
 """
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     import geopandas as gpd
     import pandas as pd
 
-# TIGER/Line cartographic boundary base URL.
-_TIGER_BASE = "https://www2.census.gov/geo/tiger"
 
-# Mapping of pypums geography names to TIGER/Line shapefile identifiers.
-_GEO_TO_TIGER: dict[str, str] = {
-    "state": "cb_{year}_us_state_{resolution}",
-    "county": "cb_{year}_us_county_{resolution}",
-    "tract": "cb_{year}_{state_fips}_tract_{resolution}",
-    "block group": "cb_{year}_{state_fips}_bg_{resolution}",
-    "place": "cb_{year}_{state_fips}_place_{resolution}",
-    "congressional district": "cb_{year}_us_cd{congress}_{resolution}",
-    "zcta": "cb_{year}_us_zcta520_{resolution}",
-    "puma": "cb_{year}_{state_fips}_puma20_{resolution}",
-    "cbsa": "cb_{year}_us_cbsa_{resolution}",
-    "csa": "cb_{year}_us_csa_{resolution}",
+def _pygris_func(name: str) -> Callable[..., Any]:
+    """Lazily import a pygris function by name."""
+    import pygris
+
+    func = getattr(pygris, name, None)
+    if func is None:
+        raise ImportError(
+            f"pygris>=0.1.7 is required but does not expose '{name}'. "
+            "Upgrade with: pip install 'pypums[spatial]'"
+        )
+    return func
+
+
+# geography -> (pygris_func, accepts_state, accepts_resolution, requires_state)
+_GEO_TO_PYGRIS: dict[str, tuple[str, bool, bool, bool]] = {
+    "state": ("states", False, True, False),
+    "county": ("counties", True, True, False),
+    "tract": ("tracts", True, False, True),
+    "block group": ("block_groups", True, False, True),
+    "place": ("places", True, False, True),
+    "congressional district": ("congressional_districts", False, True, False),
+    "zcta": ("zctas", False, False, False),
+    "puma": ("pumas", True, False, True),
+    "cbsa": ("core_based_statistical_areas", False, True, False),
+    "csa": ("combined_statistical_areas", False, True, False),
 }
+
+
+def _normalize_geoid(gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    """Ensure the GeoDataFrame has a ``GEOID`` column.
+
+    pygris may return ``GEOID20`` or ``GEOID10`` depending on the geography
+    and vintage year.  This normalizes to ``GEOID``.
+    """
+    if "GEOID" in gdf.columns:
+        return gdf
+
+    for candidate in ("GEOID20", "GEOID10"):
+        if candidate in gdf.columns:
+            return gdf.rename(columns={candidate: "GEOID"})
+
+    msg = (
+        "pygris returned a GeoDataFrame without a GEOID column. "
+        f"Available columns: {list(gdf.columns)}"
+    )
+    raise ValueError(msg)
 
 
 def _fetch_tiger_shapes(
@@ -38,56 +72,68 @@ def _fetch_tiger_shapes(
     state: str | None = None,
     year: int = 2023,
     resolution: str = "500k",
+    cache: bool = True,
 ) -> gpd.GeoDataFrame:
-    """Download TIGER/Line cartographic boundary shapefiles.
+    """Download cartographic boundary shapefiles via pygris.
 
     Parameters
     ----------
     geography
         Geography level name.
     state
-        State FIPS code (required for sub-state geographies).
+        State FIPS code, abbreviation, or name (required for sub-state
+        geographies).
     year
         Data year for the shapefiles.
     resolution
-        Resolution: ``"500k"``, ``"5m"``, or ``"20m"``.
+        Resolution: ``"500k"``, ``"5m"``, or ``"20m"``.  Only applies to
+        geographies that support multiple resolutions (state, county,
+        congressional district, cbsa, csa).
+    cache
+        If True (default), cache downloaded shapefiles locally so
+        subsequent calls are fast.
 
     Returns
     -------
     gpd.GeoDataFrame
-        Shapefile geometries with a ``GEOID`` column.
+        Shapefile geometries with a ``GEOID`` column in EPSG:4269.
     """
-    import geopandas as _gpd
-
     geo = geography.lower()
 
-    # Build the shapefile URL.
-    template = _GEO_TO_TIGER.get(geo)
-    if template is None:
+    entry = _GEO_TO_PYGRIS.get(geo)
+    if entry is None:
+        raise ValueError(f"No shapefile mapping for geography: {geography!r}")
+
+    func_name, accepts_state, accepts_resolution, requires_state = entry
+
+    if requires_state and state is None:
         raise ValueError(
-            f"No TIGER/Line shapefile mapping for geography: {geography!r}"
+            f"geography={geography!r} requires a state parameter. "
+            "Pass a state FIPS code, abbreviation, or name."
         )
 
-    # Resolve state FIPS if needed.
-    state_fips = state or "us"
-    if state and not state.isdigit():
-        from pypums.api.geography import _resolve_state_fips
+    func = _pygris_func(func_name)
 
-        state_fips = _resolve_state_fips(state)
+    kwargs: dict[str, Any] = {
+        "cb": True,
+        "year": year,
+        "cache": cache,
+    }
+    if accepts_resolution:
+        kwargs["resolution"] = resolution
+    if accepts_state and state is not None:
+        kwargs["state"] = state
 
-    # Congress number changes every 2 years starting from the 113th (2013).
-    congress = str(113 + (year - 2013) // 2) if year >= 2013 else "113"
+    gdf = func(**kwargs)
 
-    filename = template.format(
-        year=year,
-        state_fips=state_fips,
-        resolution=resolution,
-        congress=congress,
-    )
+    # Normalize GEOID column name across vintages.
+    gdf = _normalize_geoid(gdf)
 
-    url = f"{_TIGER_BASE}/GENZ{year}/shp/{filename}.zip"
+    # Guarantee EPSG:4269 (NAD83) as documented.
+    if gdf.crs is None or gdf.crs.to_epsg() != 4269:
+        gdf = gdf.to_crs(epsg=4269)
 
-    return _gpd.read_file(url)
+    return gdf
 
 
 def attach_geometry(
@@ -97,8 +143,9 @@ def attach_geometry(
     state: str | None = None,
     year: int = 2023,
     resolution: str = "500k",
+    cache: bool = True,
 ) -> gpd.GeoDataFrame:
-    """Fetch TIGER/Line shapes and merge with Census tabular data.
+    """Fetch shapes via pygris and merge with Census tabular data.
 
     Parameters
     ----------
@@ -112,6 +159,8 @@ def attach_geometry(
         Data year.
     resolution
         Shapefile resolution.
+    cache
+        If True (default), cache downloaded shapefiles locally.
 
     Returns
     -------
@@ -125,6 +174,7 @@ def attach_geometry(
         state=state,
         year=year,
         resolution=resolution,
+        cache=cache,
     )
 
     if "GEOID" not in df.columns:

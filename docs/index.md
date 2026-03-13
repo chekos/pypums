@@ -46,7 +46,7 @@ print(df.head())
 
     ---
 
-    Add `geometry=True` to any query and get a GeoDataFrame with TIGER/Line boundaries.
+    Add `geometry=True` to any query and get a GeoDataFrame with cartographic boundary shapes (via pygris, cached locally).
 
     [:octicons-arrow-right-24: Spatial guide](guides/spatial.md)
 

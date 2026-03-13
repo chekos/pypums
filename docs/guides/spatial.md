@@ -1,12 +1,14 @@
 # Spatial Data & Mapping
 
-PyPUMS can attach TIGER/Line cartographic boundary shapefiles to any Census
+PyPUMS can attach Census cartographic boundary shapefiles to any Census
 query, returning a `GeoDataFrame` that is ready for mapping, spatial joins, and
-geospatial analysis.
+geospatial analysis.  Shapefile downloads are handled by
+[pygris](https://github.com/walkerke/pygris), with automatic local caching so
+files are only downloaded once.
 
 !!! info "Requires the spatial extras"
-    Geometry features depend on **geopandas** and its dependencies (`shapely`,
-    `pyproj`, `fiona`). Install them with:
+    Geometry features depend on **geopandas** and **pygris** (plus their
+    dependencies). Install them with:
 
     ```bash
     uv add "pypums[spatial]"
@@ -18,8 +20,9 @@ geospatial analysis.
 
 The fastest way to get spatial data is to pass `geometry=True` to any of the
 main data retrieval functions. PyPUMS will automatically download the
-corresponding TIGER/Line shapefile, merge it with the tabular data on the
-`GEOID` column, and return a `GeoDataFrame`.
+corresponding cartographic boundary shapefile (via pygris), merge it with the
+tabular data on the `GEOID` column, and return a `GeoDataFrame`.  Downloaded
+shapefiles are cached locally so subsequent calls are fast.
 
 === "get_acs()"
 
@@ -226,7 +229,7 @@ corresponding TIGER/Line shapefile, merge it with the tabular data on the
 ## Coordinate reference system
 
 All geometry returned by PyPUMS is in **NAD83 (EPSG:4269)**, which is the
-native CRS of the Census Bureau's TIGER/Line files. You can verify this on any
+native CRS of the Census Bureau's cartographic boundary files. You can verify this on any
 `GeoDataFrame`:
 
 ```python
@@ -291,7 +294,7 @@ You will often need to reproject to a different CRS depending on your use case.
 
 ## Shapefile resolution
 
-TIGER/Line cartographic boundary files come in three resolutions. The default
+Cartographic boundary files come in three resolutions. The default
 is `500k`, which strikes a good balance between detail and file size.
 
 | Resolution | Description                   | Best for                          |
@@ -308,7 +311,7 @@ always uses `500k`.
 
 ## Supported geographies
 
-The following geography levels have matching TIGER/Line shapefiles:
+The following geography levels have matching cartographic boundary shapefiles:
 
 | Geography              | Requires `state`? | Notes                                  |
 |------------------------|--------------------|----------------------------------------|
@@ -325,8 +328,8 @@ The following geography levels have matching TIGER/Line shapefiles:
 
 !!! warning "Sub-state geographies require the `state` parameter"
     For `tract`, `block group`, `place`, and `puma`, the Census Bureau
-    publishes shapefiles per state. PyPUMS needs the `state` parameter to
-    know which file to download.
+    publishes shapefiles per state. PyPUMS will raise a `ValueError` if you
+    omit the `state` parameter for these geography levels.
 
 ---
 
@@ -409,6 +412,7 @@ attach_geometry(
     state=None,           # state FIPS or abbreviation
     year=2023,            # data year
     resolution="500k",    # "500k", "5m", or "20m"
+    cache=True,           # cache shapefiles locally (via pygris)
 ) -> GeoDataFrame
 ```
 
@@ -960,8 +964,10 @@ memory. A few tips for working with large datasets:
         (1318, 6)
         ```
 
-    - **Cache your queries** with `cache_table=True` so repeated runs do not
-      re-fetch the shapefile from the Census Bureau servers.
+    - **Shapefile caching is automatic.** PyPUMS uses pygris with caching
+      enabled, so shapefiles are downloaded once and reused from a local
+      cache directory (`~/.cache/pygris/` on Linux,
+      `~/Library/Caches/pygris/` on macOS).
 
 ---
 
@@ -969,12 +975,16 @@ memory. A few tips for working with large datasets:
 
 **`ImportError: geopandas is required for spatial operations`**
 :   Install the spatial extra: `uv add "pypums[spatial]"`. This pulls in
-    `geopandas`, `shapely`, and `pyproj`.
+    `geopandas`, `pygris`, `shapely`, and `pyproj`.
+
+**`ValueError: geography='tract' requires a state parameter`**
+:   Sub-state geographies (`tract`, `block group`, `place`, `puma`) need a
+    `state` argument.  Pass a FIPS code, abbreviation, or full name.
 
 **Geometry column is all `None`**
-:   The Census TIGER/Line server may not have shapefiles for the geography
-    level and year you requested. Try a different year or a broader
-    geography (e.g., county instead of block group).
+:   The Census Bureau may not have shapefiles for the geography level and
+    year you requested. Try a different year or a broader geography (e.g.,
+    county instead of block group).
 
 **CRS mismatch when combining DataFrames**
 :   All PyPUMS geometry is returned in EPSG:4269 (NAD83). If you are
