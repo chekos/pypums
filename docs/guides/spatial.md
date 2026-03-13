@@ -26,7 +26,7 @@ shapefiles are cached locally so subsequent calls are fast.
 
 === "get_acs()"
 
-    ```python
+    ```python exec="on" source="tabbed-left" session="spatial"
     import pypums
 
     gdf = pypums.get_acs(
@@ -40,19 +40,6 @@ shapefiles are cached locally so subsequent calls are fast.
     print(gdf.head())
     ```
 
-    ```
-    <class 'geopandas.geodataframe.GeoDataFrame'>
-    ```
-
-    ```
-       GEOID                                           geometry                          NAME    variable  estimate        moe
-    0  06001  POLYGON ((-122.34225 37.80556, -122.33385 37.8...    Alameda County, California  B01001_001   1651949 -555555555
-    1  06003  POLYGON ((-120.07239 38.70277, -120.06762 38.7...     Alpine County, California  B01001_001      1695        234
-    2  06005  POLYGON ((-121.02741 38.50354, -121.02747 38.5...     Amador County, California  B01001_001     41029 -555555555
-    3  06007  POLYGON ((-122.06874 39.84222, -122.06694 39.8...      Butte County, California  B01001_001    209470 -555555555
-    4  06009  POLYGON ((-120.9936 38.22558, -120.99161 38.22...  Calaveras County, California  B01001_001     45995 -555555555
-    ```
-
     !!! tip
         Notice the `geometry` column — that is what makes this a
         **GeoDataFrame** instead of a plain DataFrame. Each row carries its
@@ -60,7 +47,7 @@ shapefiles are cached locally so subsequent calls are fast.
 
 === "get_decennial()"
 
-    ```python
+    ```python exec="on" source="tabbed-left" session="spatial"
     import pypums
 
     gdf = pypums.get_decennial(
@@ -72,18 +59,9 @@ shapefiles are cached locally so subsequent calls are fast.
     print(gdf.head())
     ```
 
-    ```
-       GEOID       NAME  variable      value                                           geometry
-    0     01    Alabama  P1_001N    5024279  MULTIPOLYGON (((-88.47 30.22, -88.47 30.22,...
-    1     02     Alaska  P1_001N     733391  MULTIPOLYGON ((-179.17 51.27, -179.17 51.27,...
-    2     04    Arizona  P1_001N    7151502  POLYGON ((-114.82 32.51, -114.82 32.51, -114....
-    3     05   Arkansas  P1_001N    3011524  POLYGON ((-94.62 36.50, -94.62 36.50, -94.48...
-    4     06  California  P1_001N   39538223  MULTIPOLYGON ((-122.42 37.87, -122.42 37.87,...
-    ```
-
 === "get_estimates()"
 
-    ```python
+    ```python exec="on" source="tabbed-left" session="spatial"
     import pypums
 
     gdf = pypums.get_estimates(
@@ -95,18 +73,9 @@ shapefiles are cached locally so subsequent calls are fast.
     print(gdf.head())
     ```
 
-    ```
-       GEOID       NAME     variable      value                                           geometry
-    0     01    Alabama  POP_2023    5108468  MULTIPOLYGON (((-88.47 30.22, -88.47 30.22,...
-    1     02     Alaska  POP_2023     733406  MULTIPOLYGON ((-179.17 51.27, -179.17 51.27,...
-    2     04    Arizona  POP_2023    7303398  POLYGON ((-114.82 32.51, -114.82 32.51, -114....
-    3     05   Arkansas  POP_2023    3067732  POLYGON ((-94.62 36.50, -94.62 36.50, -94.48...
-    4     06  California  POP_2023   38965193  MULTIPOLYGON ((-122.42 37.87, -122.42 37.87,...
-    ```
-
 === "get_flows()"
 
-    ```python
+    ```python exec="on" source="tabbed-left" session="spatial"
     import pypums
 
     gdf = pypums.get_flows(
@@ -116,15 +85,6 @@ shapefiles are cached locally so subsequent calls are fast.
         geometry=True,
     )
     print(gdf.head())
-    ```
-
-    ```
-       GEOID1  GEOID2                          NAME1                       NAME2  MOVEDIN  MOVEDOUT   AGE_MEDIAN                                         geometry
-    0   36001   36003  Albany County, New York     Allegany County, New York      45        38        31.5  POLYGON ((-74.26 42.41, -74.26 42.41, -74.08...
-    1   36001   36005  Albany County, New York        Bronx County, New York     120        95        27.0  POLYGON ((-74.26 42.41, -74.26 42.41, -74.08...
-    2   36001   36007  Albany County, New York       Broome County, New York      89        72        29.0  POLYGON ((-74.26 42.41, -74.26 42.41, -74.08...
-    3   36001   36009  Albany County, New York   Cattaraugus County, New York      12        18        34.0  POLYGON ((-74.26 42.41, -74.26 42.41, -74.08...
-    4   36001   36011  Albany County, New York      Cayuga County, New York       32        28        33.0  POLYGON ((-74.26 42.41, -74.26 42.41, -74.08...
     ```
 
 !!! example "Interactive preview — 2020 Census population by state"
@@ -232,20 +192,12 @@ All geometry returned by PyPUMS is in **NAD83 (EPSG:4269)**, which is the
 native CRS of the Census Bureau's cartographic boundary files. You can verify this on any
 `GeoDataFrame`:
 
-```python
+```python exec="on" source="tabbed-left" session="spatial"
 print(gdf.crs)
 ```
 
-```
-EPSG:4269
-```
-
-```python
+```python exec="on" source="tabbed-left" session="spatial"
 print(gdf.crs.name)
-```
-
-```
-NAD83
 ```
 
 ### Reprojecting
@@ -256,13 +208,9 @@ You will often need to reproject to a different CRS depending on your use case.
 
     Most web mapping libraries (Leaflet, Mapbox, Folium) expect **WGS 84**:
 
-    ```python
+    ```python exec="on" source="tabbed-left" session="spatial"
     gdf_wgs84 = gdf.to_crs(epsg=4326)
     print(gdf_wgs84.crs)
-    ```
-
-    ```
-    EPSG:4326
     ```
 
 === "Local analysis (projected CRS)"
@@ -270,19 +218,10 @@ You will often need to reproject to a different CRS depending on your use case.
     For area or distance calculations, use a projected CRS appropriate to your
     region. For example, **EPSG:2229** (NAD83 / California zone 5, in feet):
 
-    ```python
+    ```python exec="on" source="tabbed-left" session="spatial"
     gdf_projected = gdf.to_crs(epsg=2229)
     area_sq_ft = gdf_projected.geometry.area
     print(area_sq_ft.head())
-    ```
-
-    ```
-    0    4.983527e+11
-    1    2.065981e+10
-    2    1.694534e+10
-    3    4.622175e+10
-    4    2.854179e+10
-    dtype: float64
     ```
 
 !!! tip
@@ -339,7 +278,7 @@ If you already have a DataFrame with a `GEOID` column (for example, from a
 cached query or an external source), you can attach geometry after the fact
 with `attach_geometry()`:
 
-```python
+```python exec="on" source="tabbed-left" session="spatial"
 from pypums.spatial import attach_geometry
 import pypums
 
@@ -354,16 +293,7 @@ df = pypums.get_acs(
 print(df.head())
 ```
 
-```
-         GEOID                                        NAME    variable  estimate    moe
-0  17031010100     Census Tract 101; Cook County; Illinois  B19013_001     69460  21834
-1  17031010201  Census Tract 102.01; Cook County; Illinois  B19013_001     49639  24247
-2  17031010202  Census Tract 102.02; Cook County; Illinois  B19013_001     55119  15618
-3  17031010300     Census Tract 103; Cook County; Illinois  B19013_001     65871  14559
-4  17031010400     Census Tract 104; Cook County; Illinois  B19013_001     49017   8306
-```
-
-```python
+```python exec="on" source="tabbed-left" session="spatial"
 # Attach geometry separately, choosing a coarser resolution.
 gdf = attach_geometry(
     df,
@@ -375,27 +305,6 @@ gdf = attach_geometry(
 print(type(gdf))
 print(gdf.columns.tolist())
 print(gdf.head())
-```
-
-```
-<class 'geopandas.geodataframe.GeoDataFrame'>
-['GEOID', 'geometry', 'NAME', 'variable', 'estimate', 'moe']
-```
-
-```
-         GEOID                                           geometry                                        NAME  \
-0  17031010100  POLYGON ((-87.6772 42.02294, -87.67188 42.0229...     Census Tract 101; Cook County; Illinois
-1  17031010201  POLYGON ((-87.68465 42.01948, -87.68045 42.019...  Census Tract 102.01; Cook County; Illinois
-2  17031010202  POLYGON ((-87.67686 42.01941, -87.67331 42.019...  Census Tract 102.02; Cook County; Illinois
-3  17031010300  POLYGON ((-87.67133 42.01937, -87.6695 42.0193...     Census Tract 103; Cook County; Illinois
-4  17031010400  POLYGON ((-87.66345 42.01283, -87.66133 42.012...     Census Tract 104; Cook County; Illinois
-
-     variable  estimate    moe
-0  B19013_001     69460  21834
-1  B19013_001     49639  24247
-2  B19013_001     55119  15618
-3  B19013_001     65871  14559
-4  B19013_001     49017   8306
 ```
 
 !!! tip "Before and after"
@@ -696,7 +605,7 @@ dot represents a fixed number of people (or any other count). This is a
 popular technique for visualizing racial or ethnic composition at fine
 spatial scales.
 
-```python
+```python exec="on" source="tabbed-left" session="spatial"
 from pypums.spatial import as_dot_density
 import pypums
 
@@ -713,23 +622,7 @@ gdf = pypums.get_acs(
 print(gdf.head())
 ```
 
-```
-         GEOID                                           geometry                                           NAME  \
-0  06001400100  POLYGON ((-122.24691 37.88536, -122.24197 37.8...  Census Tract 4001; Alameda County; California
-1  06001400200  POLYGON ((-122.25742 37.8431, -122.2562 37.844...  Census Tract 4002; Alameda County; California
-2  06001400300  POLYGON ((-122.26534 37.83846, -122.26459 37.8...  Census Tract 4003; Alameda County; California
-3  06001400400  POLYGON ((-122.2618 37.84179, -122.2613 37.845...  Census Tract 4004; Alameda County; California
-4  06001400500  POLYGON ((-122.26941 37.84811, -122.26896 37.8...  Census Tract 4005; Alameda County; California
-
-   B03002_003E  B03002_004E  B03002_006E  B03002_012E  B03002_003M  B03002_004M  B03002_006M  B03002_012M
-0         2107          137          462          200          428          113          106          107
-1         1408           43          256          196          195           52          115           95
-2         3365          524          609          497          471          137          197          305
-3         2645          433          422          604          566          258          106          280
-4         1696          911          306          557          389          636          113          236
-```
-
-```python
+```python exec="on" source="tabbed-left" session="spatial"
 # Convert to dots (1 dot = 500 people).
 dots = as_dot_density(
     gdf,
@@ -743,20 +636,6 @@ dots = as_dot_density(
     seed=42,
 )
 print(dots.head(10))
-```
-
-```
-                      geometry  value
-0  POINT (-122.22019 37.86309)  White
-1  POINT (-122.24366 37.86566)  White
-2    POINT (-122.21322 37.858)  White
-3  POINT (-122.22063 37.86959)  White
-4  POINT (-122.24579 37.84953)  White
-5  POINT (-122.25481 37.84437)  White
-6  POINT (-122.25605 37.83734)  White
-7  POINT (-122.24739 37.84439)  White
-8  POINT (-122.24799 37.84545)  White
-9  POINT (-122.25714 37.84095)  White
 ```
 
 ```python
@@ -851,7 +730,7 @@ chart
       },
       "width": 500,
       "height": 500,
-      "title": "Racial & Ethnic Dot Density \u2014 Alameda County, CA (1 dot = 500 people)"
+      "title": "Racial & Ethnic Dot Density — Alameda County, CA (1 dot = 500 people)"
     }
     ```
 
@@ -942,26 +821,22 @@ memory. A few tips for working with large datasets:
       single state are much smaller than a nationwide download.
     - **Drop the geometry column** when you no longer need it:
 
-        ```python
+        ```python exec="on" source="tabbed-left" session="spatial"
+        import pandas as pd
         df = pd.DataFrame(gdf.drop(columns="geometry"))
         print(type(df))
         ```
 
-        ```
-        <class 'pandas.core.frame.DataFrame'>
-        ```
-
     - **Save to file** and work from disk instead of re-downloading:
 
-        ```python
-        gdf.to_parquet("tracts_il_2023.parquet")
+        ```python exec="on" source="tabbed-left" session="spatial"
+        import tempfile, os
+        import geopandas as gpd
+        tmpfile = os.path.join(tempfile.mkdtemp(), "tracts_il_2023.parquet")
+        gdf.to_parquet(tmpfile)
         # Later:
-        gdf = gpd.read_parquet("tracts_il_2023.parquet")
+        gdf = gpd.read_parquet(tmpfile)
         print(gdf.shape)
-        ```
-
-        ```
-        (1318, 6)
         ```
 
     - **Shapefile caching is automatic.** PyPUMS uses pygris with caching

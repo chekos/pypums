@@ -12,7 +12,7 @@ built-in features that simplify longitudinal work.
 The simplest approach is to loop over a range of years and concatenate the
 results:
 
-```python
+```python exec="on" source="tabbed-left" session="multiyear"
 import pandas as pd
 import pypums
 
@@ -32,15 +32,6 @@ for year in years:
 
 trend = pd.concat(frames, ignore_index=True)
 print(trend[["year", "NAME", "variable", "estimate"]])
-```
-
-```
-   year            NAME    variable    estimate
-0  2018  California  B01001_001  39557045.0
-1  2019  California  B01001_001  39512223.0
-2  2020  California  B01001_001  39538223.0
-3  2021  California  B01001_001  39237836.0
-4  2022  California  B01001_001  39029342.0
 ```
 
 This produces a tidy DataFrame with one row per year, ready for plotting or
@@ -146,8 +137,6 @@ definitions.
 **Best practice:** check `load_variables()` for each year you plan to use:
 
 ```python
-import pypums
-
 vars_2018 = pypums.load_variables(2018, "acs5", cache=True)
 vars_2022 = pypums.load_variables(2022, "acs5", cache=True)
 
@@ -189,7 +178,7 @@ critical for multi-year analysis.
 
 === "ACS 1-year"
 
-    ```python
+    ```python exec="on" source="tabbed-left" session="multiyear"
     # Only available for geographies with 65,000+ population.
     df = pypums.get_acs(
         geography="state",
@@ -201,19 +190,9 @@ critical for multi-year analysis.
     print(df.head())
     ```
 
-    ```
-    52 states
-         GEOID       NAME    variable    estimate       moe
-    0       01    Alabama  B01001_001   5039877.0   13200.0
-    1       02     Alaska  B01001_001    732673.0    8453.0
-    2       04    Arizona  B01001_001   7276316.0   12868.0
-    3       05   Arkansas  B01001_001   3025891.0   10142.0
-    4       06  California  B01001_001  39029342.0   26543.0
-    ```
-
 === "ACS 5-year"
 
-    ```python
+    ```python exec="on" source="tabbed-left" session="multiyear"
     # Available for all geographies, including tracts.
     df = pypums.get_acs(
         geography="tract",
@@ -224,10 +203,6 @@ critical for multi-year analysis.
         survey="acs5",
     )
     print(f"{len(df)} tracts in Los Angeles County")
-    ```
-
-    ```
-    2495 tracts in Los Angeles County
     ```
 
 ### Year interpretation for ACS 5-year
@@ -350,10 +325,7 @@ The Census Bureau does **not** adjust for inflation in its API responses.
 A common approach is to use the Consumer Price Index (CPI) from the Bureau of
 Labor Statistics:
 
-```python
-import pandas as pd
-import pypums
-
+```python exec="on" source="tabbed-left" session="multiyear"
 # CPI-U annual averages (illustrative values -- use actual BLS data).
 cpi = {
     2018: 251.1,
@@ -380,14 +352,6 @@ for year in [2018, 2019, 2021, 2022]:  # skip 2020 (no standard ACS 1-year)
 
 trend = pd.concat(frames, ignore_index=True)
 print(trend[["year", "estimate", "estimate_real"]])
-```
-
-```
-   year    estimate  estimate_real
-0  2018    75277.0      87760.6
-1  2019    78672.0      90046.7
-2  2021    80440.0      86906.3
-3  2022    84097.0      84097.0
 ```
 
 !!! note
@@ -418,12 +382,15 @@ print(df[["NAME", "DATE_CODE", "DATE_DESC", "value"]].head(10))
 ```
 
 ```
-         NAME  DATE_CODE                    DATE_DESC      value
-0  California          1  4/1/2020 Census population  39538223
-1  California          2  7/1/2020 population estimate  39499738
-2  California          3  7/1/2021 population estimate  39142991
-3  California          4  7/1/2022 population estimate  38965193
-4  California          5  7/1/2023 population estimate  38965193
+      NAME  DATE_CODE                    DATE_DESC      value
+0  California          1       4/1/2020 Census population  39538223
+1  California          2  4/1/2020 population estimates base  39538223
+2  California          3        7/1/2020 population estimate  39499738
+3  California          4        7/1/2021 population estimate  39142991
+4  California          5        7/1/2022 population estimate  38965193
+5  California          6        7/1/2023 population estimate  39128162
+6  California          7        7/1/2024 population estimate  39431263
+7  California          8        7/1/2025 population estimate  39794211
 ```
 
 This is more efficient than looping over individual years and avoids the need
