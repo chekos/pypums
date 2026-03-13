@@ -29,15 +29,17 @@ print(ca_income.head())
 4. **year** -- The data year. Defaults to `2023`.
 5. **survey** -- `"acs5"` (5-year, default) or `"acs1"` (1-year). See [Census 101](census-101.md) for guidance on which to choose.
 
-**Expected output** (tidy format, one row per geography per variable):
-
-```
-     GEOID               NAME      variable  estimate     moe
-0  06001  Alameda County, ...  B19013_001  113650.0  1282.0
-1  06003   Alpine County, ...  B19013_001   72857.0  9631.0
-2  06005   Amador County, ...  B19013_001   71346.0  4076.0
-3  06007    Butte County, ...  B19013_001   56219.0  1775.0
-4  06009 Calaveras County, ...  B19013_001   70587.0  5047.0
+```python exec="on" session="qs"
+# markdown-exec: hide
+import pypums
+ca_income = pypums.get_acs(
+    geography="county",
+    variables="B19013_001",
+    state="CA",
+    year=2023,
+    survey="acs5",
+)
+print(ca_income.head())
 ```
 
 | Column       | Description                                                  |
@@ -78,20 +80,27 @@ print(la_poverty.head())
 print(type(la_poverty))  # <class 'geopandas.geodataframe.GeoDataFrame'>
 ```
 
-```
-       GEOID                          NAME      variable  estimate    moe                                           geometry
-0  06037101100  Census Tract 1011, Los ...  B17001_002     352.0  189.0  POLYGON ((-118.26480 34.05315, -118.26193 34....
-1  06037101202  Census Tract 1012.02, ...  B17001_002     812.0  277.0  POLYGON ((-118.25714 34.04614, -118.25510 34....
-2  06037101300  Census Tract 1013, Los ...  B17001_002    1045.0  344.0  POLYGON ((-118.27310 34.04055, -118.26950 34....
-3  06037101400  Census Tract 1014, Los ...  B17001_002     627.0  258.0  POLYGON ((-118.28016 34.04400, -118.27670 34....
-4  06037102100  Census Tract 1021, Los ...  B17001_002     490.0  199.0  POLYGON ((-118.24380 34.06120, -118.24117 34....
-```
-
 1. **geography** -- `"tract"` gives you Census tracts, small statistical areas with 1,200--8,000 people.
 2. **variables** -- `B17001_002` is the count of people whose income is below the poverty level (from table B17001).
 3. **state** -- Required for tract-level queries so the API knows which state to pull tracts from.
 4. **county** -- `"037"` is the FIPS code for Los Angeles County. Use `pypums.datasets.fips.lookup_fips(state="California", county="Los Angeles County")` to look up codes.
 5. **geometry** -- When `True`, PyPUMS downloads cartographic boundary shapefiles (via pygris, cached locally) and merges them with the data. The result is a `GeoDataFrame` with a `geometry` column.
+
+```python exec="on" session="qs-spatial"
+# markdown-exec: hide
+import pypums
+la_poverty = pypums.get_acs(
+    geography="tract",
+    variables="B17001_002",
+    state="CA",
+    county="037",
+    year=2023,
+    survey="acs5",
+    geometry=True,
+)
+print(la_poverty.head())
+print(type(la_poverty))
+```
 
 Now plot it with [Altair](https://altair-viz.github.io/):
 
@@ -247,15 +256,17 @@ print(ca_pums.head())
 4. **survey** -- `"acs1"` (1-year) or `"acs5"` (5-year, default).
 5. **recode** -- When `True`, PyPUMS adds `*_label` columns that translate numeric codes into human-readable values. For example, `SEX=1` gets `SEX_label="Male"`.
 
-**Expected output:**
-
-```
-   SERIALNO  SPORDER  PWGTP  ST   PUMA  AGEP SEX    WAGP SEX_label
-0  2022...        1     72  06  03701    35   1   45000      Male
-1  2022...        2     55  06  03701    32   2   38000    Female
-2  2022...        1     88  06  03702    28   1   52000      Male
-3  2022...        1     63  06  03702    41   2   67000    Female
-4  2022...        2     45  06  03702    19   1    8500      Male
+```python exec="on" session="qs-pums"
+# markdown-exec: hide
+import pypums
+ca_pums = pypums.get_pums(
+    variables=["AGEP", "SEX", "WAGP"],
+    state="CA",
+    year=2023,
+    survey="acs5",
+    recode=True,
+)
+print(ca_pums.head())
 ```
 
 | Column       | Description                                                  |
