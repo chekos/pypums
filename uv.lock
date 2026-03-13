@@ -1299,7 +1299,7 @@ wheels = [
 
 [[package]]
 name = "pypums"
-version = "0.3"
+version = "0.3.1"
 source = { editable = "." }
 dependencies = [
     { name = "httpx" },
