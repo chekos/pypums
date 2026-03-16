@@ -118,14 +118,6 @@ significance(
 ```python exec="on" source="tabbed-left" session="moe"
 from pypums import significance
 
-income = get_acs(
-    "place",
-    variables="B19013_001",
-    state="CA",
-    year=2022,
-    output="wide",
-)
-
 # Suppose:
 # City A: estimate = $85,000, MOE = $4,000
 # City B: estimate = $78,000, MOE = $5,000

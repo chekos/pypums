@@ -61,7 +61,7 @@ shapefiles are cached locally so subsequent calls are fast.
 
 === "get_estimates()"
 
-    ```python exec="on" source="tabbed-left" session="spatial"
+    ```python
     import pypums
 
     gdf = pypums.get_estimates(
@@ -73,9 +73,18 @@ shapefiles are cached locally so subsequent calls are fast.
     print(gdf.head())
     ```
 
+    ```
+      GEONAME  POP_2023  ... geometry
+    0  Alabama   5074296  ...  POLYGON ((...))
+    1   Alaska    733583  ...  MULTIPOLYGON ((...))
+    2  Arizona   7359197  ...  POLYGON ((...))
+    3  Arkansas  3045637  ...  POLYGON ((...))
+    4  California 39029342 ... MULTIPOLYGON ((...))
+    ```
+
 === "get_flows()"
 
-    ```python exec="on" source="tabbed-left" session="spatial"
+    ```python
     import pypums
 
     gdf = pypums.get_flows(
@@ -85,6 +94,15 @@ shapefiles are cached locally so subsequent calls are fast.
         geometry=True,
     )
     print(gdf.head())
+    ```
+
+    ```
+      GEOID          NAME  ... geometry
+    0  36001  Albany County  ...  POLYGON ((...))
+    1  36003  Allegany County  ...  POLYGON ((...))
+    2  36005  Bronx County  ...  POLYGON ((...))
+    3  36007  Broome County  ...  POLYGON ((...))
+    4  36009  Cattaraugus County  ...  POLYGON ((...))
     ```
 
 !!! example "Interactive preview — 2020 Census population by state"
@@ -156,7 +174,7 @@ shapefiles are cached locally so subsequent calls are fast.
                 {"id": 49, "value": 3271616, "name": "Utah"},
                 {"id": 50, "value": 643077, "name": "Vermont"},
                 {"id": 51, "value": 8631393, "name": "Virginia"},
-                {"id": 53, "value": 7614893, "name": "Washington"},
+                {"id": 53, "value": 7705281, "name": "Washington"},
                 {"id": 54, "value": 1793716, "name": "West Virginia"},
                 {"id": 55, "value": 5893718, "name": "Wisconsin"},
                 {"id": 56, "value": 576851, "name": "Wyoming"}

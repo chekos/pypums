@@ -64,7 +64,7 @@ ca_flows = get_flows(
     year=2019,
 )
 
-ca_flows.head()
+print(ca_flows.head())
 ```
 
 In tidy output (the default), the DataFrame has `variable`, `estimate`, and `moe`

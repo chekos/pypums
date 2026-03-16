@@ -126,7 +126,7 @@ optionally which county) you want tracts for.
     print(f"{len(metros)} metro/micro areas")
 
     # All ZCTAs nationwide
-    zctas = get_acs("zcta", variables="B01003_001", year=2022)
+    zctas = get_acs("zcta", variables="B01003_001", year=2022, cache_table=True)
     print(f"{len(zctas)} ZCTAs")
     ```
 
