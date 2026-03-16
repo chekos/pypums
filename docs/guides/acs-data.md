@@ -37,7 +37,7 @@ pypums.get_acs(
 
 Retrieve total population (variable `B01003_001`) for every state:
 
-```python
+```python exec="on" source="tabbed-left" session="acs"
 import pypums
 
 pop = pypums.get_acs(
@@ -46,15 +46,6 @@ pop = pypums.get_acs(
     year=2022,
 )
 print(pop.head())
-```
-
-```
-       GEOID                 NAME     variable  estimate      moe
-0         01              Alabama  B01003_001   5074296      NaN
-1         02               Alaska  B01003_001    733583      NaN
-2         04              Arizona  B01003_001   7359197      NaN
-3         05             Arkansas  B01003_001   3045637      NaN
-4         06           California  B01003_001  39029342      NaN
 ```
 
 !!! info "Why is `moe` showing `NaN`?"
@@ -76,7 +67,7 @@ Pass a list to request several variables at once. Here we pull median
 household income (`B19013_001`) and median home value (`B25077_001`) for
 all counties in California:
 
-```python
+```python exec="on" source="tabbed-left" session="acs"
 income_housing = pypums.get_acs(
     geography="county",
     variables=["B19013_001", "B25077_001"],
@@ -86,22 +77,12 @@ income_housing = pypums.get_acs(
 print(income_housing.head(6))
 ```
 
-```
-       GEOID                          NAME     variable  estimate      moe
-0      06001      Alameda County, California  B19013_001    122488     1729
-1      06001      Alameda County, California  B25077_001    958200    11988
-2      06003       Alpine County, California  B19013_001     62750    20225
-3      06003       Alpine County, California  B25077_001    394500    76504
-4      06005       Amador County, California  B19013_001     70634     5180
-5      06005       Amador County, California  B25077_001    385800    13247
-```
-
 ### Full table
 
 Instead of listing individual variables, pass a table ID to pull the
 entire table. Table `B01001` is Sex by Age:
 
-```python
+```python exec="on" source="tabbed-left" session="acs"
 age_sex = pypums.get_acs(
     geography="state",
     table="B01001",
@@ -109,10 +90,6 @@ age_sex = pypums.get_acs(
     year=2022,
 )
 print(age_sex.shape)
-```
-
-```
-(49, 5)
 ```
 
 49 variables in B01001, one row per variable.
@@ -201,7 +178,7 @@ parent geography (state or county) as context.
 
 **All counties in a state:**
 
-```python
+```python exec="on" source="tabbed-left" session="acs"
 ca_counties = pypums.get_acs(
     geography="county",
     variables=["B01003_001"],
@@ -212,17 +189,9 @@ print(f"{len(ca_counties)} counties")
 print(ca_counties.head(3))
 ```
 
-```
-58 counties
-     GEOID                          NAME    variable  estimate    moe
-0  06001      Alameda County, California  B01003_001   1682353    NaN
-1  06003       Alpine County, California  B01003_001      1204    NaN
-2  06005       Amador County, California  B01003_001     40474    NaN
-```
-
 **All tracts in a single county:**
 
-```python
+```python exec="on" source="tabbed-left" session="acs"
 la_tracts = pypums.get_acs(
     geography="tract",
     variables=["B01003_001"],
@@ -233,10 +202,6 @@ la_tracts = pypums.get_acs(
 print(f"{len(la_tracts)} tracts in LA County")
 ```
 
-```
-2495 tracts in LA County
-```
-
 !!! tip "County FIPS codes"
     County FIPS codes are three-digit strings. Los Angeles County is
     `"037"`, Cook County (IL) is `"031"`, Harris County (TX) is `"201"`.
@@ -245,7 +210,7 @@ print(f"{len(la_tracts)} tracts in LA County")
 
 **All block groups in a county:**
 
-```python
+```python exec="on" source="tabbed-left" session="acs"
 cook_bgs = pypums.get_acs(
     geography="block group",
     variables=["B19013_001"],
@@ -256,13 +221,9 @@ cook_bgs = pypums.get_acs(
 print(f"{len(cook_bgs)} block groups in Cook County")
 ```
 
-```
-4010 block groups in Cook County
-```
-
 **All places in a state:**
 
-```python
+```python exec="on" source="tabbed-left" session="acs"
 tx_places = pypums.get_acs(
     geography="place",
     variables=["B01003_001"],
@@ -271,14 +232,6 @@ tx_places = pypums.get_acs(
 )
 print(f"{len(tx_places)} places in Texas")
 print(tx_places.head(3))
-```
-
-```
-1834 places in Texas
-     GEOID                    NAME    variable  estimate     moe
-0  4800100  Abernathy city, Texas  B01003_001      2846   229.0
-1  4800484     Addison town, Texas  B01003_001     16661  1031.0
-2  4800820      Adrian city, Texas  B01003_001       148    56.0
 ```
 
 ---
@@ -332,7 +285,7 @@ The `survey` parameter selects between the 1-year and 5-year ACS.
 ACS estimates come with margins of error (MOE) at the 90% confidence
 level by default. You can rescale them to 95% or 99%:
 
-```python
+```python exec="on" source="tabbed-left" session="acs"
 # Default: 90% confidence
 df_90 = pypums.get_acs(
     geography="state",
@@ -356,11 +309,6 @@ print(f"CA median income MOE at 90%: ±{ca_90:,.0f}")
 print(f"CA median income MOE at 95%: ±{ca_95:,.0f}")
 ```
 
-```
-CA median income MOE at 90%: ±482
-CA median income MOE at 95%: ±575
-```
-
 The rescaling uses the standard z-score formula:
 
 | Level | Z-score | Scale factor (from 90%) |
@@ -382,7 +330,7 @@ The rescaling uses the standard z-score formula:
 The `summary_var` parameter adds a denominator column alongside each
 row in tidy output, making it easy to compute proportions:
 
-```python
+```python exec="on" source="tabbed-left" session="acs"
 # Sex by Age, with total population as the summary variable
 age_with_total = pypums.get_acs(
     geography="county",
@@ -392,10 +340,6 @@ age_with_total = pypums.get_acs(
     summary_var="B01003_001",
 )
 print(age_with_total.columns.tolist())
-```
-
-```
-['GEOID', 'NAME', 'variable', 'estimate', 'moe', 'summary_est', 'summary_moe']
 ```
 
 The `summary_est` and `summary_moe` columns carry the denominator value for every row. You can then compute a share column directly:
@@ -413,7 +357,7 @@ age_with_total["share"] = (
 Set `geometry=True` to return a GeoDataFrame with cartographic boundary
 shapes joined to your data (downloaded via pygris, cached locally).
 
-```python
+```python exec="on" source="tabbed-left" session="acs"
 ca_counties_geo = pypums.get_acs(
     geography="county",
     variables=["B01003_001"],
@@ -423,14 +367,6 @@ ca_counties_geo = pypums.get_acs(
 )
 print(type(ca_counties_geo))
 print(ca_counties_geo.head(3))
-```
-
-```
-<class 'geopandas.geodataframe.GeoDataFrame'>
-     GEOID                          NAME    variable  estimate  moe                                           geometry
-0  06001      Alameda County, California  B01003_001   1682353  NaN  POLYGON ((-122.34230 37.76530, -122.33915 37....
-1  06003       Alpine County, California  B01003_001      1204  NaN  POLYGON ((-120.07210 38.50980, -120.07112 38....
-2  06005       Amador County, California  B01003_001     40474  NaN  POLYGON ((-121.02730 38.30210, -121.02516 38....
 ```
 
 ```python
@@ -454,7 +390,7 @@ By default, PyPUMS collapses the individual FIPS components (state,
 county, tract, etc.) into a single `GEOID` column and drops the raw
 parts. Set `keep_geo_vars=True` to retain them:
 
-```python
+```python exec="on" source="tabbed-left" session="acs"
 tracts = pypums.get_acs(
     geography="tract",
     variables=["B01003_001"],
@@ -464,10 +400,6 @@ tracts = pypums.get_acs(
     keep_geo_vars=True,
 )
 print(tracts.columns.tolist())
-```
-
-```
-['GEOID', 'NAME', 'state', 'county', 'tract', 'variable', 'estimate', 'moe']
 ```
 
 This is useful when you need to join against other data sources that
@@ -506,7 +438,7 @@ Census API.
 
 ### Median household income for all states
 
-```python
+```python exec="on" source="tabbed-left" session="acs"
 income = pypums.get_acs(
     geography="state",
     variables=["B19013_001"],
@@ -516,27 +448,13 @@ top_10 = income.nlargest(10, "estimate")
 print(top_10[["NAME", "estimate", "moe"]])
 ```
 
-```
-                         NAME  estimate    moe
-   District of Columbia         101027    NaN
-                Maryland          90203    NaN
-         New Jersey              89703    NaN
-        Massachusetts            89026    NaN
-             Hawaii              88005    NaN
-          Washington             84247    NaN
-        California               84097    NaN
-         Connecticut             83771    NaN
-        New Hampshire            83449    NaN
-          Colorado               82254    NaN
-```
-
 ### Poverty rate by county
 
 Table B17001 contains poverty status counts. Variable `B17001_002` is
 the count below the poverty level, and `B17001_001` is the universe
 (total for whom poverty status is determined):
 
-```python
+```python exec="on" source="tabbed-left" session="acs"
 poverty = pypums.get_acs(
     geography="county",
     variables=["B17001_002"],
@@ -549,18 +467,9 @@ poverty_sorted = poverty.sort_values("poverty_rate", ascending=False)
 print(poverty_sorted.head(5)[["NAME", "estimate", "summary_est", "poverty_rate"]])
 ```
 
-```
-                              NAME  estimate  summary_est  poverty_rate
-    Bronx County, New York          359876      1418207        0.2537
-    Kings County, New York          495322      2559903        0.1935
-    New York County, New York       256108      1629153        0.1572
-    Monroe County, New York         102814       721193        0.1426
-    Erie County, New York           120853       903638        0.1337
-```
-
 ### Race/ethnicity composition for a metro area
 
-```python
+```python exec="on" source="tabbed-left" session="acs"
 race = pypums.get_acs(
     geography="cbsa",
     variables=[
@@ -574,21 +483,9 @@ race = pypums.get_acs(
 print(race.head(8))
 ```
 
-```
-     GEOID                               NAME    variable  estimate      moe
-0  10180  Abilene, TX Metro Area          B03002_003    118252      NaN
-1  10180  Abilene, TX Metro Area          B03002_004     11368      NaN
-2  10180  Abilene, TX Metro Area          B03002_006      2985      NaN
-3  10180  Abilene, TX Metro Area          B03002_012     37620      NaN
-4  10420  Akron, OH Metro Area            B03002_003    536478      NaN
-5  10420  Akron, OH Metro Area            B03002_004     89742      NaN
-6  10420  Akron, OH Metro Area            B03002_006     14532      NaN
-7  10420  Akron, OH Metro Area            B03002_012     10853      NaN
-```
-
 ### Educational attainment for tracts with geometry
 
-```python
+```python exec="on" source="tabbed-left" session="acs"
 education = pypums.get_acs(
     geography="tract",
     variables=[
@@ -608,16 +505,9 @@ education["pct_bachelors_plus"] = (
 print(education[["NAME", "variable", "estimate", "summary_est", "pct_bachelors_plus"]].head(3))
 ```
 
-```
-                                  NAME    variable  estimate  summary_est  pct_bachelors_plus
-0  Census Tract 101, Suffolk County...  B15003_022      1285         3410              0.3768
-1  Census Tract 101, Suffolk County...  B15003_023       842         3410              0.2469
-2  Census Tract 101, Suffolk County...  B15003_025       215         3410              0.0631
-```
-
 ### Year-over-year comparison
 
-```python
+```python exec="on" source="tabbed-left" session="acs"
 import pandas as pd
 
 years = [2019, 2021, 2022, 2023]
@@ -637,14 +527,6 @@ trend = pd.concat(frames, ignore_index=True)
 print(trend[trend["GEOID"] == "06"][["NAME", "estimate", "year"]])
 ```
 
-```
-          NAME  estimate  year
-  California   78672  2019
-  California   84097  2021
-  California   91905  2022
-  California   95521  2023
-```
-
 !!! warning "2020 ACS 1-Year"
     The Census Bureau did not release a standard 2020 ACS 1-Year
     product due to low response rates during the COVID-19 pandemic.
@@ -656,7 +538,7 @@ print(trend[trend["GEOID"] == "06"][["NAME", "estimate", "year"]])
 After retrieving data, use PyPUMS MOE functions to compute derived
 margins of error:
 
-```python
+```python exec="on" source="tabbed-left" session="acs"
 from pypums import moe_sum, moe_prop, significance
 
 # Sum two estimates and their MOEs
@@ -681,12 +563,6 @@ is_sig = significance(
 print(f"Combined MOE: {combined_moe:.1f}")
 print(f"Proportion MOE: {prop_moe:.4f}")
 print(f"Statistically significant: {is_sig}")
-```
-
-```
-Combined MOE: 2746.4
-Proportion MOE: 0.0305
-Statistically significant: True
 ```
 
 ---

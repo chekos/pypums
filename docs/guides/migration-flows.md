@@ -55,7 +55,7 @@ Every call to `get_flows()` returns these columns automatically:
 
 ## Basic example: county flows for California
 
-```python
+```python exec="on" source="tabbed-left" session="flows"
 from pypums import get_flows
 
 ca_flows = get_flows(
@@ -64,19 +64,11 @@ ca_flows = get_flows(
     year=2019,
 )
 
-ca_flows.head()
+print(ca_flows.head())
 ```
 
 In tidy output (the default), the DataFrame has `variable`, `estimate`, and `moe`
 columns instead of separate MOVEDIN/MOVEDOUT/MOVEDNET columns:
-
-```
-  FULL1_NAME                  FULL2_NAME      GEOID  variable   estimate    moe
-  Alameda County, California  Los Angeles...  06001  MOVEDIN    2345.0      890.0
-  Alameda County, California  Los Angeles...  06001  MOVEDOUT   1987.0      780.0
-  Alameda County, California  Los Angeles...  06001  MOVEDNET    358.0     1182.0
-  ...
-```
 
 !!! tip "Wide output"
 
@@ -92,7 +84,7 @@ columns instead of separate MOVEDIN/MOVEDOUT/MOVEDNET columns:
 Metropolitan Statistical Area flows capture migration between metro regions,
 regardless of state boundaries:
 
-```python
+```python exec="on" source="tabbed-left" session="flows"
 msa_flows = get_flows(
     "metropolitan statistical area",
     year=2019,
@@ -108,14 +100,6 @@ print(f"{len(la_metro)} flow records for LA metro")
 print(la_metro.head(3))
 ```
 
-```
-312 flow records for LA metro
-                           FULL1_NAME                        FULL2_NAME  ...  variable  estimate     moe
-0  Los Angeles-Long Beach-Anaheim...  New York-Newark-Jersey City, ...  ...  MOVEDIN    28450.0  3120.0
-1  Los Angeles-Long Beach-Anaheim...  New York-Newark-Jersey City, ...  ...  MOVEDOUT   21340.0  2870.0
-2  Los Angeles-Long Beach-Anaheim...  New York-Newark-Jersey City, ...  ...  MOVEDNET    7110.0  4236.0
-```
-
 ## Breakdowns by demographic characteristics
 
 The flows API supports several breakdown dimensions that let you slice
@@ -129,7 +113,7 @@ migration by age, race, sex, and Hispanic origin:
 | `SEX_GROUP` | Male, Female, Both sexes |
 | `HISP_GROUP` | Hispanic or Latino, Non-Hispanic, Both |
 
-```python
+```python exec="on" source="tabbed-left" session="flows"
 # County flows broken down by age group
 age_flows = get_flows(
     "county",
@@ -140,17 +124,13 @@ age_flows = get_flows(
 print(f"{len(age_flows)} flow records with age breakdowns")
 ```
 
-```
-45210 flow records with age breakdowns
-```
-
 ### Adding human-readable labels
 
 By default, breakdown columns contain numeric codes (e.g., `"004"` for the
 18-24 age group). Set `breakdown_labels=True` to add a `*_label` column
 with the decoded description:
 
-```python
+```python exec="on" source="tabbed-left" session="flows"
 age_flows = get_flows(
     "county",
     state="CA",
@@ -159,14 +139,6 @@ age_flows = get_flows(
     year=2019,
 )
 print(age_flows[["FULL1_NAME", "AGE_GROUP", "AGE_GROUP_label", "variable"]].head(4))
-```
-
-```
-                          FULL1_NAME AGE_GROUP     AGE_GROUP_label  variable
-0  Alameda County, California          001      All ages          MOVEDIN
-1  Alameda County, California          001      All ages          MOVEDOUT
-2  Alameda County, California          001      All ages          MOVEDNET
-3  Alameda County, California          004  18 to 24 years        MOVEDIN
 ```
 
 The label mapping comes from `pypums.datasets.mig_recodes`. You can inspect
@@ -298,17 +270,13 @@ flows = get_flows("county", state="CA", year=2019, show_call=True)
 
 ### Example: is net migration significant?
 
-```python
+```python exec="on" source="tabbed-left" session="flows"
 from pypums import significance
 
 # Suppose a county shows MOVEDNET=500 with MOVEDNET_M=1200
 # Is this net inflow statistically significant?
 result = significance(500, 0, 1200, 0, clevel=0.90)
 print(result)
-```
-
-```
-False
 ```
 
 The MOE (1,200) swamps the estimate (500), so the net inflow is not statistically significant.
@@ -318,7 +286,7 @@ The MOE (1,200) swamps the estimate (500), so the net inflow is not statisticall
 Putting it all together --- county-level flows for California, broken down
 by age, with labels and geometry:
 
-```python
+```python exec="on" source="tabbed-left" session="flows"
 from pypums import get_flows
 
 ca_age_flows = get_flows(
@@ -339,14 +307,6 @@ young_workers = ca_age_flows[
 ]
 print(f"{len(young_workers)} counties with 25-34 age group flows")
 print(young_workers[["FULL1_NAME", "MOVEDNET"]].head(3))
-```
-
-```
-58 counties with 25-34 age group flows
-                          FULL1_NAME  MOVEDNET
-0  Alameda County, California            -2340
-1   Alpine County, California              -12
-2   Amador County, California              -45
 ```
 
 ```python

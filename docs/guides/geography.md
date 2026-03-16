@@ -114,7 +114,7 @@ optionally which county) you want tracts for.
 
 === "No parent required"
 
-    ```python
+    ```python exec="on" source="tabbed-left" session="geo"
     from pypums import get_acs
 
     # All states
@@ -126,19 +126,13 @@ optionally which county) you want tracts for.
     print(f"{len(metros)} metro/micro areas")
 
     # All ZCTAs nationwide
-    zctas = get_acs("zcta", variables="B01003_001", year=2022)
+    zctas = get_acs("zcta", variables="B01003_001", year=2022, cache_table=True)
     print(f"{len(zctas)} ZCTAs")
-    ```
-
-    ```
-    52 states/territories
-    939 metro/micro areas
-    33120 ZCTAs
     ```
 
 === "State required"
 
-    ```python
+    ```python exec="on" source="tabbed-left" session="geo"
     # All counties in California
     counties = get_acs(
         "county",
@@ -158,14 +152,9 @@ optionally which county) you want tracts for.
     print(f"{len(places)} places in TX")
     ```
 
-    ```
-    58 counties in CA
-    1834 places in TX
-    ```
-
 === "State + county required"
 
-    ```python
+    ```python exec="on" source="tabbed-left" session="geo"
     # All tracts in Los Angeles County, CA
     tracts = get_acs(
         "tract",
@@ -185,11 +174,6 @@ optionally which county) you want tracts for.
         year=2022,
     )
     print(f"{len(bgs)} block groups in Cook County")
-    ```
-
-    ```
-    2495 tracts in LA County
-    4010 block groups in Cook County
     ```
 
 ## FIPS codes explained
@@ -271,7 +255,7 @@ lookup_name(state_code="36", county_code="047")
 For bulk lookups or custom filtering, access the full FIPS codes table
 directly:
 
-```python
+```python exec="on" source="tabbed-left" session="geo"
 from pypums.datasets import fips_codes
 
 print(fips_codes.head())
@@ -284,15 +268,6 @@ print(fips_codes.head())
 # Find all counties in California
 ca_counties = fips_codes[fips_codes["state"] == "California"]
 print(ca_counties[["county", "county_code"]].head())
-```
-
-```
-              county county_code
-  Alameda County         001
-    Alpine County         003
-    Amador County         005
-     Butte County         007
- Calaveras County         009
 ```
 
 The DataFrame has four columns:

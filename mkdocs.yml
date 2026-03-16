@@ -66,6 +66,7 @@ nav:
 plugins:
   - search
   - autorefs
+  - markdown-exec
   - charts
   - mkdocstrings:
       default_handler: python

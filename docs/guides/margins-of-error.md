@@ -68,7 +68,7 @@ patterns are usually meaningful even if individual values are uncertain.
 
 By default, `get_acs()` returns both the estimate and MOE in tidy format:
 
-```python
+```python exec="on" source="tabbed-left" session="moe"
 from pypums import get_acs
 
 df = get_acs(
@@ -79,13 +79,6 @@ df = get_acs(
 )
 
 print(df[["NAME", "variable", "estimate", "moe"]].head())
-```
-
-```
-                       NAME     variable  estimate     moe
-0     Alameda County, Cali...  B19013_001  110000.0  2500.0
-1     Alpine County, Calif...  B19013_001   62000.0  28000.0
-2     Amador County, Calif...  B19013_001   72000.0   7500.0
 ```
 
 Notice how Alpine County (population ~1,100) has a much larger MOE relative
@@ -122,16 +115,8 @@ significance(
 
 #### Example: comparing two cities' income
 
-```python
-from pypums import get_acs, significance
-
-income = get_acs(
-    "place",
-    variables="B19013_001",
-    state="CA",
-    year=2022,
-    output="wide",
-)
+```python exec="on" source="tabbed-left" session="moe"
+from pypums import significance
 
 # Suppose:
 # City A: estimate = $85,000, MOE = $4,000
@@ -139,10 +124,6 @@ income = get_acs(
 
 is_different = significance(85000, 78000, 4000, 5000, clevel=0.90)
 print(is_different)
-```
-
-```
-True
 ```
 
 The $7,000 gap is statistically significant at the 90% confidence level.
@@ -157,17 +138,11 @@ The `clevel` parameter controls how strict the test is:
 | `0.95` | 1.960 | Common in academic research --- "probably different" |
 | `0.99` | 2.576 | Very strict --- "almost certainly different" |
 
-```python
+```python exec="on" source="tabbed-left" session="moe"
 # Same comparison at different confidence levels
 print(f"90% confidence: {significance(85000, 78000, 4000, 5000, clevel=0.90)}")
 print(f"95% confidence: {significance(85000, 78000, 4000, 5000, clevel=0.95)}")
 print(f"99% confidence: {significance(85000, 78000, 4000, 5000, clevel=0.99)}")
-```
-
-```
-90% confidence: True
-95% confidence: True
-99% confidence: False
 ```
 
 !!! info "How the test works"
@@ -256,7 +231,7 @@ $$
 
 **Example:** Combine two age groups to get total population 18-34.
 
-```python
+```python exec="on" source="tabbed-left" session="moe"
 from pypums import moe_sum
 
 # Age 18-24: estimate=5000, moe=800
@@ -266,10 +241,6 @@ total_est = 5000 + 7000  # 12,000
 total_moe = moe_sum([800, 600])  # sqrt(800^2 + 600^2) = 1000.0
 
 print(f"Population 18-34: {total_est} +/- {total_moe:.0f}")
-```
-
-```
-Population 18-34: 12000 +/- 1000
 ```
 
 !!! note
@@ -295,7 +266,7 @@ $$
 
 **Example:** Ratio of renters to homeowners.
 
-```python
+```python exec="on" source="tabbed-left" session="moe"
 from pypums import moe_ratio
 
 # Renters: estimate=3000, moe=400
@@ -305,10 +276,6 @@ ratio_moe = moe_ratio(num=3000, denom=7000, moe_num=400, moe_denom=500)
 ratio_est = 3000 / 7000  # 0.4286
 
 print(f"Renter-to-owner ratio: {ratio_est:.3f} +/- {ratio_moe:.3f}")
-```
-
-```
-Renter-to-owner ratio: 0.429 +/- 0.065
 ```
 
 ### `moe_prop()` --- margins of error for proportions
@@ -339,7 +306,7 @@ where $\hat{p} = num / denom$.
 
 **Example:** Proportion of population with a bachelor's degree.
 
-```python
+```python exec="on" source="tabbed-left" session="moe"
 from pypums import moe_prop
 
 # Bachelor's holders: estimate=15000, moe=1200
@@ -349,10 +316,6 @@ prop_moe = moe_prop(num=15000, denom=50000, moe_num=1200, moe_denom=800)
 prop_est = 15000 / 50000  # 0.30
 
 print(f"Bachelor's rate: {prop_est:.1%} +/- {prop_moe:.4f}")
-```
-
-```
-Bachelor's rate: 30.0% +/- 0.0228
 ```
 
 ### `moe_product()` --- margins of error for products
@@ -371,7 +334,7 @@ $$
 
 **Example:** Estimated total income (households x median income).
 
-```python
+```python exec="on" source="tabbed-left" session="moe"
 from pypums import moe_product
 
 # Households: estimate=10000, moe=500
@@ -383,17 +346,13 @@ product_est = 10000 * 60000  # 600,000,000
 print(f"Total income: ${product_est:,.0f} +/- ${product_moe:,.0f}")
 ```
 
-```
-Total income: $600,000,000 +/- $42,426,407
-```
-
 ### Practical workflow: deriving a custom estimate
 
 Here is a complete example that computes the percentage of housing units that
 are vacant, with a properly propagated MOE:
 
-```python
-from pypums import get_acs, moe_prop
+```python exec="on" source="tabbed-left" session="moe"
+from pypums import moe_prop
 
 # Get occupied and total housing units
 df = get_acs(
@@ -420,15 +379,6 @@ df["vacancy_moe"] = df.apply(
 )
 
 print(df[["NAME", "vacancy_rate", "vacancy_moe"]].head())
-```
-
-```
-                          NAME  vacancy_rate  vacancy_moe
-0  Alameda County, California        0.0485       0.0032
-1   Alpine County, California        0.3611       0.0789
-2   Amador County, California        0.1842       0.0198
-3    Butte County, California        0.0836       0.0068
-4 Calaveras County, California       0.2534       0.0231
 ```
 
 ### Z-score reference table
